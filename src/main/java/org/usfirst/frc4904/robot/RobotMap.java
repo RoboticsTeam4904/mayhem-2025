@@ -49,22 +49,22 @@ public class RobotMap {
         
         // 2023 robot constants // TODO: update ports for swerve
         public static class CANMotor {
-            public static final int FRONT_LEFT_DRIVE = 0;
-            public static final int FRONT_LEFT_TURN = 1;
+            public static final int FRONT_LEFT_DRIVE = 1;
+            public static final int FRONT_LEFT_TURN = 5;
             public static final int FRONT_RIGHT_DRIVE = 2;
-            public static final int FRONT_RIGHT_TURN = 3;
-            public static final int BACK_LEFT_DRIVE = 0;
-            public static final int BACK_LEFT_TURN = 1;
-            public static final int BACK_RIGHT_DRIVE = 2;
-            public static final int BACK_RIGHT_TURN = 3;
+            public static final int FRONT_RIGHT_TURN = 6;
+            public static final int BACK_LEFT_DRIVE = 3;
+            public static final int BACK_LEFT_TURN = 7;
+            public static final int BACK_RIGHT_DRIVE = 4;
+            public static final int BACK_RIGHT_TURN = 8;
 
         }
 
         public static class PWM {
             public static final int ENCODER_FL = 0;
-            public static final int ENCODER_FR = 0;
-            public static final int ENCODER_BL = 0;
-            public static final int ENCODER_BR = 0;
+            public static final int ENCODER_FR = 1;
+            public static final int ENCODER_BL = 2;
+            public static final int ENCODER_BR = 3;
         }
 
         public static class CAN {
@@ -92,13 +92,12 @@ public class RobotMap {
             public static final double EncoderTicksPerRevolution = 2048;
 
             //these are allowed maxes ratehr than max capabilities
-
-            //TODO: need max accellerations
+            //constants taken from https://github.com/REVrobotics/MAXSwerve-Java-Template/blob/main/src/main/java/frc/robot/Constants.java
             public static final double MAX_SPEED = 4.8; //allowed max speed in meters per second
             public static final double MAX_ACCELERATION = 3; //allowed max acceleration in meters per second squared
             public static final double MAX_TRANSLATION_SPEED = 4.8;
-            public static final double MAX_TURN_SPEED = 2*Math.PI; //allowed max turn speed in radians per second
-            public static final double MAX_TURN_ACCELERATION = -1; //TODO: this is a placeholder
+            public static final double MAX_TURN_SPEED = 360; //allowed max turn speed in degrees per second
+            public static final double MAX_TURN_ACCELERATION = 180; //allowed max turn acceleration in degrees per second squared
         }
         
 
@@ -117,9 +116,9 @@ public class RobotMap {
             // public static final double kV = 3.0683;
             // public static final double kA = 0.7358;
             //post sfr characterization
-            public static final double kS = 0; //TODO: use sysid to find these
-            public static final double kV = 0;
-            public static final double kA = 0;
+            public static final double kS = .02; //TODO: these are placeholders use sysid to find these
+            public static final double kV = 3;
+            public static final double kA = .5;
         }
 
         public static class Turn { //TODO: tune
@@ -128,9 +127,9 @@ public class RobotMap {
             public static final double kI = 0;
             public static final double kD = 0;
             // feedforward constants
-            public static final double kS = 0; //TODO: use sysid to find these
-            public static final double kV = 0;
-            public static final double kA = 0;
+            public static final double kS = .02; //TODO:these are placeholders use sysid to find these
+            public static final double kV = 3;
+            public static final double kA = .5;
         }
     }
 
