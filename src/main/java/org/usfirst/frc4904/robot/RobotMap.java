@@ -68,6 +68,10 @@ public class RobotMap {
         }
 
         public static class PWM {
+            public static final int ENCODER_FL = 0;
+            public static final int ENCODER_FR = 0;
+            public static final int ENCODER_BL = 0;
+            public static final int ENCODER_BR = 0;
         }
 
         public static class CAN {
@@ -91,22 +95,23 @@ public class RobotMap {
 
         // // 2023-robot constants
         public static class Chassis {
-            public static final double GEAR_RATIO = 496/45; // https://www.desmos.com/calculator/llz7giggcf
-            public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(5.12);
-            public static final double TRACK_WIDTH_METERS = .8713; // +/- 0.5 inches
-            public static final double TRACK_LENGTH_METERS = 1; //TODO: measure this 
-            public static final double CHASSIS_LENGTH = Units.inchesToMeters(37); // +/- 0.5 inches
+            public static final double GEAR_RATIO_DRIVE = 5.1; // 5.1:1 gear ratio
+            public static final double GEAR_RATIO_TURN = 46.42; // 46.42:1 gear ratio
+            public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(3); // 3 inch wheels
+            public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(12.241*2); // +/- 0.5 inches
+            public static final double TRACK_LENGTH_METERS = Units.inchesToMeters(12.259*2); // 
+            public static final double CHASSIS_LENGTH = Units.inchesToMeters(28); // +/- 0.5 inches
             public static final Translation2d CENTER_MASS_OFFSET = new Translation2d(0,0); // no offset
             public static final double EncoderTicksPerRevolution = 2048;
 
-            //TODO: set 2024 swerve module metrics
-            public static final double MAX_SPEED = -1;
-            public static final double MAX_ACCELERATION = -1;
-            public static final double MAX_TRANSLATION_SPEED = -1;
-            public static final double MAX_TURN_SPEED = -1;
-            public static final double MAX_TURN_ACCELERATION = -1;
-            public static final double DRIVE_GEAR_RATIO = -1;
-            public static final double TURN_GEAR_RATIO = -1;
+            //these are allowed maxes ratehr than max capabilities
+
+            //TODO: need max accellerations
+            public static final double MAX_SPEED = 4.8; //allowed max speed in meters per second
+            public static final double MAX_ACCELERATION = 3; //allowed max acceleration in meters per second squared
+            public static final double MAX_TRANSLATION_SPEED = 4.8;
+            public static final double MAX_TURN_SPEED = 2*Math.PI; //allowed max turn speed in radians per second
+            public static final double MAX_TURN_ACCELERATION = -1; //TODO: this is a placeholder
         }
         
 
@@ -116,7 +121,7 @@ public class RobotMap {
         public static class Drive {
             // PID constants
             // public static final double kP = 1.5;
-            public static final double kP = 3.3016;
+            public static final double kP = .04; //TODO: tune, this is from maxswerve repo but seems too low
             public static final double kI = 0;  // FIXME: tune
             public static final double kD = 0;
             // feedforward constants
@@ -125,18 +130,18 @@ public class RobotMap {
             // public static final double kV = 3.0683;
             // public static final double kA = 0.7358;
             //post sfr characterization
-            public static final double kS = 0.12507; 
-            public static final double kV = 2.9669;
-            public static final double kA = 0.67699;
+            public static final double kS = 0; //TODO: use sysid to find these
+            public static final double kV = 0;
+            public static final double kA = 0;
         }
 
         public static class Turn { //TODO: tune
             // PID constants
-            public static final double kP = 0;
+            public static final double kP = 1;
             public static final double kI = 0;
             public static final double kD = 0;
             // feedforward constants
-            public static final double kS = 0;
+            public static final double kS = 0; //TODO: use sysid to find these
             public static final double kV = 0;
             public static final double kA = 0;
         }
@@ -223,6 +228,8 @@ public class RobotMap {
         *************************/
         
         //TODO: fix invert type, talk to anna
+       
+
         Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
         Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
         Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
@@ -239,19 +246,28 @@ public class RobotMap {
         // Component.frontLeftWheelTalon.setSafetyEnabled(false);
 
         //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
-        Translation2d locationFL = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        Translation2d locationFR = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
-        Translation2d locationBL = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
+        //FR is ++, FL is +-, BR is -+, BL is --
+        Translation2d locationFL = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
+        Translation2d locationFR = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, Metrics.Chassis.TRACK_WIDTH_METERS / 2);
+        Translation2d locationBL = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
+        Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
         SwerveDriveKinematics kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
 
-        Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL);
-        Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR);
-        Component.BLmodule   = new SwerveModule(Component.BLdrive, Component.BLturn, Component.BLturnEncoder, locationBL);
-        Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR);
+        Component.FLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
+        Component.FRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
+        Component.BLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
+        Component.BRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
+        Component.FLturnEncoder.setPositionOffset(0); //TODO: fix offset
+        Component.FRturnEncoder.setPositionOffset(0); //TODO: fix offset
+        Component.BLturnEncoder.setPositionOffset(0); //TODO: fix offset
+        Component.BRturnEncoder.setPositionOffset(0); //TODO: fix offset
+
+        Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL, "FLmodule");
+        Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR, "FRmodule");
+        Component.BLmodule   = new SwerveModule(Component.BLdrive, Component.BLturn, Component.BLturnEncoder, locationBL, "BLmodule");
+        Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR, "BRmodule");
         SwerveModule[] modules = {Component.FLmodule, Component.FRmodule, Component.BLmodule, Component.BRmodule};
 
-                        //TODO: talk to anna about talonmotorsubsystem
 
         //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
         Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));
