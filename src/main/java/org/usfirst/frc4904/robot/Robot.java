@@ -43,6 +43,7 @@ public class Robot extends CommandRobotBase {
 
     private final Driver driver = new SwerveGain();
     private final org.usfirst.frc4904.standard.humaninput.Operator operator = new DefaultOperator();
+    private final RobotMap map = new RobotMap();
 
     protected double scaleGain(double input, double gain, double exp) {
 		return Math.pow(Math.abs(input), exp) * gain * Math.signum(input);
