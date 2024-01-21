@@ -4,7 +4,7 @@ import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
-//import com.ctre.phoenix.motorcontrol.NeutralMode; //broken
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.kauailabs.navx.frc.AHRS;
 
 //imports for rev robotics neo 550s
@@ -30,20 +30,13 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 import org.usfirst.frc4904.standard.subsystems.motor.SparkMaxMotorSubsystem;
 import org.usfirst.frc4904.standard.subsystems.chassis.SwerveDrive;
 import org.usfirst.frc4904.standard.subsystems.chassis.SwerveModule;
-//import org.usfirst.frc4904.standard.subsystems.chassis.WestCoastDrive;
-//import org.usfirst.frc4904.standard.subsystems.motor.TalonMotorSubsystem; //TODO: fix, is required for swerve
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class RobotMap {
 
     public static class Port {
-        // public static class Network {
-        //     public static SocketAddress LOCAL_SOCKET_ADDRESS = new InetSocketAddress(3375);
-        //     public static SocketAddress LOCALIZATION_ADDRESS = new InetSocketAddress("10.49.04.10", 4321);
-        // }
 
         public static class HumanInput {
             public static final int xyJoystickPort = 0;
@@ -86,12 +79,6 @@ public class RobotMap {
        }
 
     public static class Metrics {
-        // blinky constants
-        // public static class Chassis {
-        //     public static final double GEAR_RATIO = 69/5;
-        //     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);
-        //     public static final double TRACK_WIDTH_METERS = 0.59;
-        // }
 
         // // 2023-robot constants
         public static class Chassis {
@@ -213,7 +200,7 @@ public class RobotMap {
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(Port.HumanInput.xyJoystickPort, 0.01);
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(Port.HumanInput.zJoystickPort, 0.01);
-	HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+	    HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // UDP things
         // try {
         //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);

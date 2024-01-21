@@ -81,6 +81,16 @@ public class Robot extends CommandRobotBase {
         SmartDashboard.putNumber("FR angle", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("BL angle", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("BR angle", RobotMap.Component.BRturnEncoder.getAbsolutePosition());
+
+        SmartDashboard.putNumber("FL speed", RobotMap.Component.FLdrive.get());
+        SmartDashboard.putNumber("FR speed", RobotMap.Component.FRdrive.get());
+        SmartDashboard.putNumber("BL speed", RobotMap.Component.BLdrive.get());
+        SmartDashboard.putNumber("BR speed", RobotMap.Component.BRdrive.get());
+
+        SmartDashboard.putNumber("driver X ", driver.getX());
+        SmartDashboard.putNumber("driver Y ", driver.getY());
+        SmartDashboard.putNumber("driver Z ", driver.getTurnSpeed());
+
     }
 
     @Override
