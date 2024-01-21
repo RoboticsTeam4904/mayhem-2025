@@ -77,10 +77,15 @@ public class Robot extends CommandRobotBase {
     public void teleopExecute() {
         //various logging can go here
         //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
-        SmartDashboard.putNumber("FL angle", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("FR angle", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("BL angle", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("BR angle", RobotMap.Component.BRturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("FL angle-2 (we want 2 to work)", RobotMap.Component.FLmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("FR angle-1", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("FR angle-2", RobotMap.Component.FRmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("BL angle-1", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("BL angle-2", RobotMap.Component.BLmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("BR angle-1", RobotMap.Component.BRturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("BR angle-2", RobotMap.Component.BRmodule.getAbsoluteAngle());
+
 
         SmartDashboard.putNumber("FL speed", RobotMap.Component.FLdrive.get());
         SmartDashboard.putNumber("FR speed", RobotMap.Component.FRdrive.get());
@@ -91,6 +96,8 @@ public class Robot extends CommandRobotBase {
         SmartDashboard.putNumber("driver Y ", driver.getY());
         SmartDashboard.putNumber("driver Z ", driver.getTurnSpeed());
 
+        //navx gyro readings
+        SmartDashboard.putNumber("navx angle", RobotMap.Component.navx.getAngle());
     }
 
     @Override
