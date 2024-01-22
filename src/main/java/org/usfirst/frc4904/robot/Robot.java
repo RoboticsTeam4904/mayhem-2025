@@ -140,12 +140,22 @@ public class Robot extends CommandRobotBase {
     @Override
     public void testExecute() {
         //coast drive
+        RobotMap.Component.FLdrive.stopMotor();
+        RobotMap.Component.FRdrive.stopMotor();
+        RobotMap.Component.BLdrive.stopMotor();
+        RobotMap.Component.BRdrive.stopMotor();
+
         RobotMap.Component.FLdrive.setNeutralMode(NeutralModeValue.Coast);
         RobotMap.Component.FRdrive.setNeutralMode(NeutralModeValue.Coast);
         RobotMap.Component.BLdrive.setNeutralMode(NeutralModeValue.Coast);
         RobotMap.Component.BRdrive.setNeutralMode(NeutralModeValue.Coast);
-
+        
         //coast turn
+        RobotMap.Component.FLturn.neutralOutput();
+        RobotMap.Component.FRturn.neutralOutput();
+        RobotMap.Component.BLturn.neutralOutput();
+        RobotMap.Component.BRturn.neutralOutput();
+
         RobotMap.Component.FLturn.setCoastOnNeutral();
         RobotMap.Component.FRturn.setCoastOnNeutral();
         RobotMap.Component.BLturn.setCoastOnNeutral();
