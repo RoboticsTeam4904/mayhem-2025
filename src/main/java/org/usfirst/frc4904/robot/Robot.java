@@ -17,6 +17,8 @@ import org.usfirst.frc4904.standard.CommandRobotBase;
 // import org.usfirst.frc4904.standard.custom.CommandSendableChooser;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -37,6 +39,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static org.usfirst.frc4904.robot.Utils.nameCommand;
+
+import javax.swing.RowFilter.ComparisonType;
+
 import org.usfirst.frc4904.robot.RobotMap.Component;
 
 public class Robot extends CommandRobotBase {
@@ -134,6 +139,45 @@ public class Robot extends CommandRobotBase {
     
     @Override
     public void testExecute() {
+        //coast drive
+        RobotMap.Component.FLdrive.setNeutralMode(NeutralModeValue.Coast);
+        RobotMap.Component.FRdrive.setNeutralMode(NeutralModeValue.Coast);
+        RobotMap.Component.BLdrive.setNeutralMode(NeutralModeValue.Coast);
+        RobotMap.Component.BRdrive.setNeutralMode(NeutralModeValue.Coast);
+
+        //coast turn
+        RobotMap.Component.FLturn.setCoastOnNeutral();
+        RobotMap.Component.FRturn.setCoastOnNeutral();
+        RobotMap.Component.BLturn.setCoastOnNeutral();
+        RobotMap.Component.BRturn.setCoastOnNeutral();
+
+        //various logging can go here
+        //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
+        SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.FLmodule.getAbsoluteAngle());
+        
+        SmartDashboard.putNumber("FR angle-1", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("FR angle-2", RobotMap.Component.FRmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("BL angle-1", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("BL angle-2", RobotMap.Component.BLmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("BR angle-1", RobotMap.Component.BRturnEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("BR angle-2", RobotMap.Component.BRmodule.getAbsoluteAngle());
+
+        var moduleTargets = RobotMap.Component.chassis.kinematics.toSwerveModuleStates(new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed()));
+        for (var c : moduleTargets){
+            SmartDashboard.putNumber(c.toString(), c.angle.getDegrees());
+        }
+        SmartDashboard.putNumber("FL speed", RobotMap.Component.FLdrive.get());
+        SmartDashboard.putNumber("FR speed", RobotMap.Component.FRdrive.get());
+        SmartDashboard.putNumber("BL speed", RobotMap.Component.BLdrive.get());
+        SmartDashboard.putNumber("BR speed", RobotMap.Component.BRdrive.get());
+
+        SmartDashboard.putNumber("driver X ", driver.getX());
+        SmartDashboard.putNumber("driver Y ", driver.getY());
+        SmartDashboard.putNumber("driver Z ", driver.getTurnSpeed());
+
+        //navx gyro readings
+        SmartDashboard.putNumber("navx angle", RobotMap.Component.navx.getAngle());
     }
 
     @Override
