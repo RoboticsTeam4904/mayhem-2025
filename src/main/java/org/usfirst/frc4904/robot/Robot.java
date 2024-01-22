@@ -18,6 +18,9 @@ import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Kinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 // import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -79,7 +82,8 @@ public class Robot extends CommandRobotBase {
         //various logging can go here
         //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
         SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("FL angle-2 (we want 2 to work)", RobotMap.Component.FLmodule.getAbsoluteAngle());
+        SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.FLmodule.getAbsoluteAngle());
+        
         SmartDashboard.putNumber("FR angle-1", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("FR angle-2", RobotMap.Component.FRmodule.getAbsoluteAngle());
         SmartDashboard.putNumber("BL angle-1", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
@@ -87,7 +91,10 @@ public class Robot extends CommandRobotBase {
         SmartDashboard.putNumber("BR angle-1", RobotMap.Component.BRturnEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("BR angle-2", RobotMap.Component.BRmodule.getAbsoluteAngle());
 
-
+        var moduleTargets = RobotMap.Component.chassis.kinematics.toSwerveModuleStates(new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed()));
+        for (var c : moduleTargets){
+            SmartDashboard.putNumber(c.toString(), c.angle.getDegrees());
+        }
         SmartDashboard.putNumber("FL speed", RobotMap.Component.FLdrive.get());
         SmartDashboard.putNumber("FR speed", RobotMap.Component.FRdrive.get());
         SmartDashboard.putNumber("BL speed", RobotMap.Component.BLdrive.get());
