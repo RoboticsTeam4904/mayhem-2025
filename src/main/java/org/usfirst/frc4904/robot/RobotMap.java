@@ -243,10 +243,10 @@ public class RobotMap {
         Component.FRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
         Component.BLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
         Component.BRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
-        Component.FLturnEncoder.setPositionOffset(0); //TODO: fix offset
-        Component.FRturnEncoder.setPositionOffset(0); //TODO: fix offset
-        Component.BLturnEncoder.setPositionOffset(0); //TODO: fix offset
-        Component.BRturnEncoder.setPositionOffset(0); //TODO: fix offset
+        Component.FLturnEncoder.setPositionOffset(.45); //TODO: fix offset
+        Component.FRturnEncoder.setPositionOffset(.037); //TODO: fix offset
+        Component.BLturnEncoder.setPositionOffset(.7344); //TODO: fix offset
+        Component.BRturnEncoder.setPositionOffset(.651); //TODO: fix offset
 
         Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL, "FLmodule");
         Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR, "FRmodule");
