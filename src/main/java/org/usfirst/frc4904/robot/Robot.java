@@ -78,9 +78,9 @@ public class Robot extends CommandRobotBase {
                 RobotMap.Component.chassis.c_drive(
                     () -> {
                         var target = new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
-                        SmartDashboard.putNumber("help", target.omegaRadiansPerSecond);
-                        SmartDashboard.putNumber("drivexsupplier", driver.getX());
-            
+                        SmartDashboard.putNumber("ChassisSpeeds x", target.vxMetersPerSecond);
+                        SmartDashboard.putNumber("ChassisSpeeds y", target.vyMetersPerSecond);
+                        SmartDashboard.putNumber("ChassisSpeeds omega", target.omegaRadiansPerSecond);
                         return target;
                     }, true)
                 ));
