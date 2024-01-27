@@ -77,7 +77,11 @@ public class Robot extends CommandRobotBase {
             nameCommand("chassis - Teleop_Default - c_swerveDrive", 
                 RobotMap.Component.chassis.c_drive(
                     () -> {
-                        return new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
+                        var target = new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
+                        SmartDashboard.putNumber("help", target.omegaRadiansPerSecond);
+                        SmartDashboard.putNumber("drivexsupplier", driver.getX());
+            
+                        return target;
                     }, true)
                 ));
     }
@@ -98,7 +102,7 @@ public class Robot extends CommandRobotBase {
 
         var moduleTargets = RobotMap.Component.chassis.kinematics.toSwerveModuleStates(new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed()));
         for (var c : moduleTargets){
-            SmartDashboard.putNumber(c.toString(), c.angle.getDegrees());
+            SmartDashboard.putNumber("placeholder", c.angle.getDegrees());
         }
         SmartDashboard.putNumber("FL speed", RobotMap.Component.FLdrive.get());
         SmartDashboard.putNumber("FR speed", RobotMap.Component.FRdrive.get());
