@@ -219,7 +219,7 @@ public class RobotMap {
         Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
         Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
         Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
-        Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_DRIVE, MotorType.kBrushless, false);
+        Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
         Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
         Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
         Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
