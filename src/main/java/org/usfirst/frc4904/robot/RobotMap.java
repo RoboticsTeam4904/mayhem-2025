@@ -1,5 +1,6 @@
 package org.usfirst.frc4904.robot;
 
+import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -24,12 +25,16 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.io.File;
+import edu.wpi.first.wpilibj.Filesystem;
+import swervelib.parser.SwerveParser;
+import swervelib.SwerveDrive;
+import edu.wpi.first.math.util.Units;
+
 // import org.usfirst.frc4904.standard.LogKitten;
 
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 import org.usfirst.frc4904.standard.subsystems.motor.SparkMaxMotorSubsystem;
-import org.usfirst.frc4904.standard.subsystems.chassis.SwerveDrive;
-import org.usfirst.frc4904.standard.subsystems.chassis.SwerveModule;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -144,11 +149,6 @@ public class RobotMap {
         public static CANTalonFX BRdrive;
         public static CustomCANSparkMax BRturn;
 
-        public static SwerveModule FLmodule;
-        public static SwerveModule FRmodule;
-        public static SwerveModule BLmodule;
-        public static SwerveModule BRmodule;
-
         //encoders are dutycycle encoders, not standard can encoders
         public static DutyCycleEncoder FLturnEncoder;
         public static DutyCycleEncoder FRturnEncoder;
@@ -159,7 +159,7 @@ public class RobotMap {
 
         // public static RobotUDP robotUDP;
 
-        public static SwerveDrive chassis;
+        public static SwerveSubsystem chassis;
     }
 
     public static class NetworkTables {
@@ -195,76 +195,78 @@ public class RobotMap {
     }
 
     public RobotMap() {
-        Component.navx = new AHRS(SerialPort.Port.kMXP);
+        Component.chassis = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"), 360, 0.000022919477654, 4);
 
-        HumanInput.Driver.xyJoystick = new CustomCommandJoystick(Port.HumanInput.xyJoystickPort, 0.01);
-        HumanInput.Driver.turnJoystick = new CustomCommandJoystick(Port.HumanInput.zJoystickPort, 0.01);
-	    HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
-        // // UDP things
-        // try {
-        //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
-        // } catch (IOException ex) {
-        //     LogKitten.f("Failed to initialize UDP subsystem");
-        //     LogKitten.ex(ex);
-        // }
+        // Component.navx = new AHRS(SerialPort.Port.kMXP);
+
+        // HumanInput.Driver.xyJoystick = new CustomCommandJoystick(Port.HumanInput.xyJoystickPort, 0.01);
+        // HumanInput.Driver.turnJoystick = new CustomCommandJoystick(Port.HumanInput.zJoystickPort, 0.01);
+	    // HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+        // // // UDP things
+        // // try {
+        // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
+        // // } catch (IOException ex) {
+        // //     LogKitten.f("Failed to initialize UDP subsystem");
+        // //     LogKitten.ex(ex);
+        // // }
 
 
-        /***********************
-         * Chassis Subsystem
-        *************************/
+        // /***********************
+        //  * Chassis Subsystem
+        // *************************/
         
-        //TODO: fix invert type, talk to anna
+        // //TODO: fix invert type, talk to anna
        
 
-        Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
-        Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
-        Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
-        Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
-        Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
-        Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
-        Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
-        Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
+        // Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
+        // Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
+        // Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
+        // Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
+        // Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
+        // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
+        // Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
+        // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
 
 
-        // Component.backRightWheelTalon.setSafetyEnabled(false);
-        // Component.frontRightWheelTalon.setSafetyEnabled(false);
-        // Component.backLeftWheelTalon.setSafetyEnabled(false);
-        // Component.frontLeftWheelTalon.setSafetyEnabled(false);
+        // // Component.backRightWheelTalon.setSafetyEnabled(false);
+        // // Component.frontRightWheelTalon.setSafetyEnabled(false);
+        // // Component.backLeftWheelTalon.setSafetyEnabled(false);
+        // // Component.frontLeftWheelTalon.setSafetyEnabled(false);
 
-        //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
-        //FR is ++, FL is +-, BR is -+, BL is --
-        Translation2d locationFL = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
-        Translation2d locationFR = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        Translation2d locationBL = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
-        Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        SwerveDriveKinematics kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
+        // //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
+        // //FR is ++, FL is +-, BR is -+, BL is --
+        // Translation2d locationFL = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
+        // Translation2d locationFR = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, Metrics.Chassis.TRACK_WIDTH_METERS / 2);
+        // Translation2d locationBL = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
+        // Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
+        // SwerveDriveKinematics kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
 
-        Component.FLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
-        Component.FRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
-        Component.BLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
-        Component.BRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
-        Component.FLturnEncoder.setPositionOffset(.45); //TODO: fix offset
-        Component.FRturnEncoder.setPositionOffset(.037); //TODO: fix offset
-        Component.BLturnEncoder.setPositionOffset(.7344); //TODO: fix offset
-        Component.BRturnEncoder.setPositionOffset(.651); //TODO: fix offset
+        // Component.FLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
+        // Component.FRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
+        // Component.BLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
+        // Component.BRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
+        // Component.FLturnEncoder.setPositionOffset(.45); //TODO: fix offset
+        // Component.FRturnEncoder.setPositionOffset(.037); //TODO: fix offset
+        // Component.BLturnEncoder.setPositionOffset(.7344); //TODO: fix offset
+        // Component.BRturnEncoder.setPositionOffset(.651); //TODO: fix offset
 
-        Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL, "FLmodule");
-        Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR, "FRmodule");
-        Component.BLmodule   = new SwerveModule(Component.BLdrive, Component.BLturn, Component.BLturnEncoder, locationBL, "BLmodule");
-        Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR, "BRmodule");
-        SwerveModule[] modules = {Component.FLmodule, Component.FRmodule, Component.BLmodule, Component.BRmodule};
-
-
-        //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
-        Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));
+        // Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL, "FLmodule");
+        // Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR, "FRmodule");
+        // Component.BLmodule   = new SwerveModule(Component.BLdrive, Component.BLturn, Component.BLturnEncoder, locationBL, "BLmodule");
+        // Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR, "BRmodule");
+        // SwerveModule[] modules = {Component.FLmodule, Component.FRmodule, Component.BLmodule, Component.BRmodule};
 
 
-        // Autonomous.autonCommand = Component.chassis.c_buildPathPlannerAuto(
-        //     PID.Drive.kS, PID.Drive.kV, PID.Drive.kA,
-        //     Autonomous.RAMSETE_B, Autonomous.RAMSETE_ZETA,
-        //     Autonomous.AUTON_NAME, Autonomous.MAX_VEL, Autonomous.MAX_ACCEL,
-        //     Autonomous.autonEventMap
-        // );
+        // //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
+        // Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));
+
+
+        // // Autonomous.autonCommand = Component.chassis.c_buildPathPlannerAuto(
+        // //     PID.Drive.kS, PID.Drive.kV, PID.Drive.kA,
+        // //     Autonomous.RAMSETE_B, Autonomous.RAMSETE_ZETA,
+        // //     Autonomous.AUTON_NAME, Autonomous.MAX_VEL, Autonomous.MAX_ACCEL,
+        // //     Autonomous.autonEventMap
+        // // );
 
 }
 }
