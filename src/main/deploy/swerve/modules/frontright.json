@@ -6,13 +6,13 @@
   "absoluteEncoderOffset": null,
   "drive": {
     "type": "falcon",
-    "id": null,
-    "canbus": 2
+    "id": 2,
+    "canbus": null
   },
   "angle": {
     "type": "sparkmax",
-    "id": null,
-    "canbus": 6
+    "id": 6,
+    "canbus": null
   },
   "conversionFactor": {
     "angle": null,
