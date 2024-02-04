@@ -19,13 +19,13 @@
     "drive": null
   },
   "encoder": {
-    "type": "throughbore",
-    "id": 1,
+    "type": "attached",
+    "id": 6,
     "canbus": null
   },
   "inverted": {
     "drive": false,
     "angle": false
   },
-  "absoluteEncoderInverted": true
+  "absoluteEncoderInverted": false
 }

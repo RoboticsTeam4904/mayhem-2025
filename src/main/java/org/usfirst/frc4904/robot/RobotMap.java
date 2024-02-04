@@ -195,7 +195,7 @@ public class RobotMap {
     }
 
     public RobotMap() {
-        Component.chassis = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"), 360, 0.000022919477654, 4);
+        Component.chassis = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"), 1, 0.000022919477654, 4);
 
         // Component.navx = new AHRS(SerialPort.Port.kMXP);
 
