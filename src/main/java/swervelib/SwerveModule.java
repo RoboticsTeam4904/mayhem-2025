@@ -82,7 +82,6 @@ public class SwerveModule
    */
   private       boolean                synchronizeEncoderQueued = false;
 
-
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
    *
@@ -388,7 +387,6 @@ public class SwerveModule
     {
       angle += 360;
     }
-
     return angle;
   }
 

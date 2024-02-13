@@ -291,7 +291,6 @@ public class TalonFXSwerve extends SwerveMotor
     //    Timer.delay(1);
     motor.setInverted(inverted);
   }
-
   /**
    * Save the configurations from flash to EEPROM.
    */
