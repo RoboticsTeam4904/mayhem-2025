@@ -91,7 +91,7 @@ public void teleopInitialize() {
     //         )
     //     ));
     RobotMap.Component.chassis.setDefaultCommand(
-        RobotMap.Component.chassis.driveCommand(() -> driver.getY(), () -> driver.getX(), () -> driver.getTurnSpeed())
+        RobotMap.Component.chassis.brickDriveCommand(() -> driver.getButton1Pressed(), () -> driver.getY(), () -> driver.getX(), () -> driver.getTurnSpeed())
     );
 
 }   

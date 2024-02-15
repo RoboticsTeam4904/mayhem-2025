@@ -533,4 +533,6 @@ public class SwerveModule
     SmartDashboard.putNumber("Module[" + configuration.name + "] Absolute Encoder Read Issue",
                              getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
+
+  
 }

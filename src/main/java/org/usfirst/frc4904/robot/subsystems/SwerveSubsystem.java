@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -247,6 +248,20 @@ public class SwerveSubsystem extends SubsystemBase
                         true,
                         false);
     });
+  }
+
+  public Command brickDriveCommand(BooleanSupplier buttonPressed, DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
+    if (buttonPressed.getAsBoolean()) {
+      // brick mode
+      return run(() -> {
+        swerveDrive.brickMode();
+      });
+    } else {
+      // normal drive command
+      return run(() -> {
+        driveCommand(translationX, translationY, angularRotationX);
+      });
+    }
   }
 
   /**
