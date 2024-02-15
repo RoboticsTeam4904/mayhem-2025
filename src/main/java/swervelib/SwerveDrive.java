@@ -1158,8 +1158,8 @@ public class SwerveDrive
 
   public void brickMode(){
     swerveModules[0].setAngle(45);
-    swerveModules[1].setAngle(45);
-    swerveModules[2].setAngle(45);
+    swerveModules[1].setAngle(-45);
+    swerveModules[2].setAngle(-45);
     swerveModules[3].setAngle(45);
   }
 
