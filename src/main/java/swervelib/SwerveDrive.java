@@ -68,7 +68,7 @@ public class SwerveDrive
   /**
    * Swerve modules.
    */
-  private final SwerveModule[]           swerveModules;
+  public final SwerveModule[]           swerveModules;
   /**
    * WPILib {@link Notifier} to keep odometry up to date.
    */
@@ -1155,12 +1155,4 @@ public class SwerveDrive
       module.configuration.useCosineCompensator = enabled;
     }
   }
-
-  public void brickMode(){
-    swerveModules[0].setAngle(45);
-    swerveModules[1].setAngle(-45);
-    swerveModules[2].setAngle(-45);
-    swerveModules[3].setAngle(45);
-  }
-
 }

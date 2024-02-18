@@ -21,10 +21,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
@@ -50,7 +54,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Swerve drive object.
    */
-  private final SwerveDrive swerveDrive;
+  public final SwerveDrive swerveDrive;
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
@@ -164,7 +168,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   /**
    * Use PathPlanner Path finding to go to a point on the field.
-   *
+   *00000
    * @param pose Target {@link Pose2d} to go to.
    * @return PathFinding command
    */
@@ -248,20 +252,6 @@ public class SwerveSubsystem extends SubsystemBase
                         true,
                         false);
     });
-  }
-
-  public Command brickDriveCommand(BooleanSupplier buttonPressed, DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
-    if (buttonPressed.getAsBoolean()) {
-      // brick mode
-      return run(() -> {
-        swerveDrive.brickMode();
-      });
-    } else {
-      // normal drive command
-      return run(() -> {
-        driveCommand(translationX, translationY, angularRotationX);
-      });
-    }
   }
 
   /**
@@ -503,5 +493,12 @@ public class SwerveSubsystem extends SubsystemBase
   public void addFakeVisionReading()
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
+  }
+
+  public void brickMode(){
+    swerveDrive.swerveModules[0].setAngle(45);
+    swerveDrive.swerveModules[1].setAngle(-45);
+    swerveDrive.swerveModules[2].setAngle(-45);
+    swerveDrive.swerveModules[3].setAngle(45);
   }
 }

@@ -91,13 +91,16 @@ public void teleopInitialize() {
     //         )
     //     ));
     RobotMap.Component.chassis.setDefaultCommand(
-        RobotMap.Component.chassis.brickDriveCommand(() -> driver.getButton1Pressed(), () -> driver.getY(), () -> driver.getX(), () -> driver.getTurnSpeed())
+        RobotMap.Component.chassis.driveCommand(() -> driver.getY(), () -> driver.getX(), () -> driver.getTurnSpeed())
     );
 
 }   
 
     @Override
     public void teleopExecute() {
+        SmartDashboard.putBoolean("button", RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean());
+        SmartDashboard.putNumber("max angular velocity", RobotMap.Component.chassis.swerveDrive.getMaximumAngularVelocity());
+        
         // //various logging can go here
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
         // SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
@@ -129,7 +132,9 @@ public void teleopInitialize() {
 
     @Override
     public void autonomousInitialize() {
-        //start autons here
+        // start autons here
+        RobotMap.Component.chassis.getAutonomousCommand("line", true
+        ).schedule();
     }
 
     @Override
