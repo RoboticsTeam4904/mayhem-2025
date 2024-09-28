@@ -6,25 +6,14 @@
 /*----------------------------------------------------------------------------*/
 package org.usfirst.frc4904.robot;
 
-// import java.util.function.BooleanSupplier;
-// import java.util.function.DoubleSupplier;
-//import java.util.function.Supplier;
-
-import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
-import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
-import org.usfirst.frc4904.standard.CommandRobotBase;
-//import org.usfirst.frc4904.standard.CommandRobotBase;
-// import org.usfirst.frc4904.standard.custom.CommandSendableChooser;
-import org.usfirst.frc4904.standard.humaninput.Driver;
+import static org.usfirst.frc4904.robot.Utils.nameCommand;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 
 // import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
@@ -39,14 +28,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
-import static org.usfirst.frc4904.robot.Utils.nameCommand;
-
 import javax.swing.RowFilter.ComparisonType;
-
 import org.usfirst.frc4904.robot.RobotMap.Component;
+// import java.util.function.BooleanSupplier;
+// import java.util.function.DoubleSupplier;
+//import java.util.function.Supplier;
+
+import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
+import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
+import org.usfirst.frc4904.standard.CommandRobotBase;
+//import org.usfirst.frc4904.standard.CommandRobotBase;
+// import org.usfirst.frc4904.standard.custom.CommandSendableChooser;
+import org.usfirst.frc4904.standard.humaninput.Driver;
 
 public class Robot extends CommandRobotBase {
+
     // private final RobotMap map = new RobotMap();
     // private final RobotContainer2 donttouchme = new RobotContainer2(RobotMap.Component.frontLeftWheelTalon, RobotMap.Component.backLeftWheelTalon, RobotMap.Component.frontRightWheelTalon, RobotMap.Component.backRightWheelTalon, RobotMap.Component.navx);
     // private SendableChooser<Supplier<Command>> autonomousCommand = new SendableChooser<Supplier<Command>>();
@@ -56,56 +52,62 @@ public class Robot extends CommandRobotBase {
     private final RobotMap map = new RobotMap();
 
     protected double scaleGain(double input, double gain, double exp) {
-		return Math.pow(Math.abs(input), exp) * gain * Math.signum(input);
-	}
+        return Math.pow(Math.abs(input), exp) * gain * Math.signum(input);
+    }
 
     public Robot() {
         super();
         //can set deafault auton command here
-        }
-
-    @Override
-    public void initialize() {
     }
 
-@Override
-public void teleopInitialize() {
+    @Override
+    public void initialize() {}
 
-    driver.bindCommands();
-    operator.bindCommands();
+    @Override
+    public void teleopInitialize() {
+        driver.bindCommands();
+        operator.bindCommands();
 
-    // final double TURN_MULTIPLIER = 2;
-    // RobotMap.Component.chassis.setDefaultCommand(
-    //     nameCommand("chassis - Teleop_Default - c_swerveDrive", 
-    //         new ConditionalCommand(
-    //             RobotMap.Component.chassis.c_drive(
-    //                 () -> {
-    //                     var target = new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
-    //                     SmartDashboard.putNumber("help", target.omegaRadiansPerSecond);
-    //                     SmartDashboard.putNumber("drivexsupplier", driver.getX());
-            
-    //                     return target;
-    //                 }, true),
-    //             new InstantCommand(),
-    //             () -> driver.getX() != 0 || driver.getY() != 0 || driver.getTurnSpeed() != 0
-    //         )
-    //     ));
-    RobotMap.Component.chassis.setDefaultCommand(
-        RobotMap.Component.chassis.driveCommand(() -> driver.getY(), () -> driver.getX(), () -> driver.getTurnSpeed())
-    );
+        // final double TURN_MULTIPLIER = 2;
+        // RobotMap.Component.chassis.setDefaultCommand(
+        //     nameCommand("chassis - Teleop_Default - c_swerveDrive",
+        //         new ConditionalCommand(
+        //             RobotMap.Component.chassis.c_drive(
+        //                 () -> {
+        //                     var target = new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
+        //                     SmartDashboard.putNumber("help", target.omegaRadiansPerSecond);
+        //                     SmartDashboard.putNumber("drivexsupplier", driver.getX());
 
-}   
+        //                     return target;
+        //                 }, true),
+        //             new InstantCommand(),
+        //             () -> driver.getX() != 0 || driver.getY() != 0 || driver.getTurnSpeed() != 0
+        //         )
+        //     ));
+        RobotMap.Component.chassis.setDefaultCommand(
+            RobotMap.Component.chassis.driveCommand(
+                () -> driver.getY(),
+                () -> driver.getX(),
+                () -> driver.getTurnSpeed()
+            )
+        );
+    }
 
     @Override
     public void teleopExecute() {
-        SmartDashboard.putBoolean("button", RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean());
-        SmartDashboard.putNumber("max angular velocity", RobotMap.Component.chassis.swerveDrive.getMaximumAngularVelocity());
-        
+        SmartDashboard.putBoolean(
+            "button",
+            RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean()
+        );
+        SmartDashboard.putNumber(
+            "max angular velocity",
+            RobotMap.Component.chassis.swerveDrive.getMaximumAngularVelocity()
+        );
         // //various logging can go here
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
         // SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
         // SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.FLmodule.getAbsoluteAngle());
-        
+
         // SmartDashboard.putNumber("FR angle-1", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
         // SmartDashboard.putNumber("FR angle-2", RobotMap.Component.FRmodule.getAbsoluteAngle());
         // SmartDashboard.putNumber("BL angle-1", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
@@ -133,8 +135,7 @@ public void teleopInitialize() {
     @Override
     public void autonomousInitialize() {
         // start autons here
-        RobotMap.Component.chassis.getAutonomousCommand("line", true
-        ).schedule();
+        RobotMap.Component.chassis.getAutonomousCommand("line", true).schedule();
     }
 
     @Override
@@ -148,14 +149,13 @@ public void teleopInitialize() {
     }
 
     @Override
-    public void disabledExecute() {
-    }
+    public void disabledExecute() {}
 
     @Override
     public void testInitialize() {
         //do things like setting neutral or brake mode on the mechanism or wheels here
     }
-    
+
     @Override
     public void testExecute() {
         // //coast drive
@@ -168,7 +168,7 @@ public void teleopInitialize() {
         // RobotMap.Component.FRdrive.setNeutralMode(NeutralModeValue.Coast);
         // RobotMap.Component.BLdrive.setNeutralMode(NeutralModeValue.Coast);
         // RobotMap.Component.BRdrive.setNeutralMode(NeutralModeValue.Coast);
-        
+
         // //coast turn
         // RobotMap.Component.FLturn.neutralOutput();
         // RobotMap.Component.FRturn.neutralOutput();
@@ -184,7 +184,7 @@ public void teleopInitialize() {
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
         // SmartDashboard.putNumber("FL angle-1", RobotMap.Component.FLturnEncoder.getAbsolutePosition());
         // SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.FLmodule.getAbsoluteAngle());
-        
+
         // SmartDashboard.putNumber("FR angle-1", RobotMap.Component.FRturnEncoder.getAbsolutePosition());
         // SmartDashboard.putNumber("FR angle-2", RobotMap.Component.FRmodule.getAbsoluteAngle());
         // SmartDashboard.putNumber("BL angle-1", RobotMap.Component.BLturnEncoder.getAbsolutePosition());
@@ -214,8 +214,3 @@ public void teleopInitialize() {
         // logging stuff can go here
     }
 }
-
-
-
-
-    
