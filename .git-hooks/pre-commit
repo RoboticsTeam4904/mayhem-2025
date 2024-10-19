@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+# format files
+function format {
+  echo "$1" | xargs npx prettier --ignore-unknown --write
+}
+
+# add files to git
+function add_files {
+  echo "$1" | xargs git add
+}
+
+# run `npm install`
+function npm_install {
+  print -P '%B%F{yellow}action%f%b: running `npm install`'
+
+  npm install
+
+  if [[ $status == 0 ]]; then
+    print -P '%B%F{blue}info%f%b: `npm install` succeeded'
+    print -P '%B%F{blue}action%f%b: running formatter'
+
+    # run formatter
+    format "$1"
+    add_files "$1"
+  else
+    print -P '%B%F{red}error%f%b: `npm install` failed'
+  fi
+}
+
+# changed files
+local files="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.java$')"
+
+# no changed files
+if [ -z "$files" ]; then
+  exit 0
+fi
+
+format "$files"
+
+if [[ $status == 0 ]]; then
+  # add files to git
+  add_files "$1"
+else
+  print -P "%B%F{red}error%f%b: prettier exited $status"
+
+  if which npx &> /dev/null; then
+    # try `npm install`
+    npm_install "$files"
+  else
+    echo '%B%F{blue}info%f%b: `npm` is not accessible'
+  fi
+fi
