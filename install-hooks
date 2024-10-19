@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+# add hooks path
+git config core.hooksPath .git-hooks

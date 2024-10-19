@@ -25,6 +25,5 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests",
-  "editor.fontSize": 14
+  "java.test.defaultConfig": "WPIlibUnitTests"
 }
