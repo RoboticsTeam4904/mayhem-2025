@@ -48,6 +48,7 @@ else
     # try `npm install`
     npm_install "$files"
   else
-    echo '%B%F{blue}info%f%b: `npm` is not accessible'
+    print -P '%B%F{red}error%f%b: `npx` is not accessible'
+    print -P '%B%F{blue}info%f%b: install npm and verify it is in $PATH'
   fi
 fi

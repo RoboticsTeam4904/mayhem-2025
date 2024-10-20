@@ -2,3 +2,5 @@
 
 # add hooks path
 git config core.hooksPath .git-hooks
+
+print -P '%B%F{blue}info%f%b: installed hooks'
