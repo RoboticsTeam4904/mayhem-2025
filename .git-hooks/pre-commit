@@ -18,7 +18,7 @@ function npm_install {
 
   if [[ $status == 0 ]]; then
     print -P '%B%F{blue}info%f%b: `npm install` succeeded'
-    print -P '%B%F{blue}action%f%b: running formatter'
+    print -P '%B%F{yellow}action%f%b: running formatter'
 
     # run formatter
     format "$1"
