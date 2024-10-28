@@ -1,54 +1,59 @@
 #!/bin/zsh
 
 # format files
-function format {
-  echo "$1" | xargs npx prettier --ignore-unknown --write
-}
+function format_files {
+  action 'running formatter'
 
-# add files to git
-function add_files {
-  echo "$1" | xargs git add
+  echo "$files" | xargs npx prettier --ignore-unknown --write
+
+  if [[ $status == 0 ]]; then
+    info 'formatter succeeded'
+
+    # stage formatted files
+    echo "$files" | xargs git add
+  else
+    return 1
+  fi
 }
 
 # run `npm install`
 function npm_install {
-  print -P '%B%F{yellow}action%f%b: running `npm install`'
+  action 'installing node packages'
 
   npm install
 
   if [[ $status == 0 ]]; then
-    print -P '%B%F{blue}info%f%b: `npm install` succeeded'
-    print -P '%B%F{yellow}action%f%b: running formatter'
-
-    # run formatter
-    format "$1"
-    add_files "$1"
+    info 'installing succeeded'
+    format_files
   else
-    print -P '%B%F{red}error%f%b: `npm install` failed'
+    error 'installing failed'
+    info 'try running `npm install` manually'
   fi
 }
 
-# changed files
+# logging
+function action { print -P "%B%F{yellow}action%f%b: $1" }
+function info   { print -P "%B%F{blue}info%f%b: $1" }
+function error  { print -P "%B%F{red}error%f%b: $1" }
+
+# staged java files
 local files="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.java$')"
 
-# no changed files
-if [ -z "$files" ]; then
+if [[ -z "$files" ]]; then
+  # no staged files
   exit 0
 fi
 
-format "$files"
+format_files "$files"
 
-if [[ $status == 0 ]]; then
-  # add files to git
-  add_files "$1"
-else
-  print -P "%B%F{red}error%f%b: prettier exited $status"
+if [[ $status != 0 ]]; then
+  error 'formatter failed'
 
   if which npx &> /dev/null; then
     # try `npm install`
-    npm_install "$files"
+    npm_install
   else
-    print -P '%B%F{red}error%f%b: `npx` is not accessible'
-    print -P '%B%F{blue}info%f%b: install npm and verify it is in $PATH'
+    error '`npx` is not accessible'
+    info 'install npm and verify it is in $PATH'
   fi
 fi
