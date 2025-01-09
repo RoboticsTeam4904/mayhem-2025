@@ -9,12 +9,12 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -36,25 +36,25 @@ public class SwerveDriveTest {
     /**
      * Tracks the voltage being applied to a motor
      */
-    private static final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    private static final MutVoltage m_appliedVoltage = mutable(Volts.of(0));
     /**
      * Tracks the distance travelled of a position motor
      */
-    private static final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+    private static final MutDistance m_distance = mutable(Meters.of(0));
     /**
      * Tracks the velocity of a positional motor
      */
-    private static final MutableMeasure<Velocity<Distance>> m_velocity = mutable(
+    private static final MutLinearVelocity m_velocity = mutable(
         MetersPerSecond.of(0)
     );
     /**
      * Tracks the rotations of an angular motor
      */
-    private static final MutableMeasure<Angle> m_anglePosition = mutable(Degrees.of(0));
+    private static final MutAngle m_anglePosition = mutable(Degrees.of(0));
     /**
      * Tracks the velocity of an angular motor
      */
-    private static final MutableMeasure<Velocity<Angle>> m_angVelocity = mutable(
+    private static final MutAngularVelocity m_angVelocity = mutable(
         DegreesPerSecond.of(0)
     );
 
@@ -333,7 +333,7 @@ public class SwerveDriveTest {
         return new SysIdRoutine(
             config,
             new SysIdRoutine.Mechanism(
-                (Measure<Voltage> voltage) -> {
+                (Voltage voltage) -> {
                     SwerveDriveTest.centerModules(swerveDrive);
                     SwerveDriveTest.powerDriveMotorsVoltage(
                         swerveDrive,
@@ -426,7 +426,7 @@ public class SwerveDriveTest {
         return new SysIdRoutine(
             config,
             new SysIdRoutine.Mechanism(
-                (Measure<Voltage> voltage) -> {
+                (Voltage voltage) -> {
                     SwerveDriveTest.powerAngleMotorsVoltage(swerveDrive, voltage.in(Volts));
                     SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
                 },
