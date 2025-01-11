@@ -1,71 +1,67 @@
 package swervelib.imu;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.Optional;
 
 /**
- * Creates a IMU for {@link edu.wpi.first.wpilibj.AnalogGyro} devices, only uses yaw.
+ * SwerveIMU interface for the Boron {@link Canandgyro} by Redux Robotics
  */
-public class AnalogGyroSwerve extends SwerveIMU
+public class CanandgyroSwerve extends SwerveIMU
 {
 
   /**
-   * Gyroscope object.
+   * Wait time for status frames to show up.
    */
-  private final AnalogGyro         imu;
+  public static double             STATUS_TIMEOUT_SECONDS = 0.04;
+  /**
+   * Boron {@link Canandgyro} by Redux Robotics.
+   */
+  private final Canandgyro         imu;
   /**
    * Mutable {@link AngularVelocity} for readings.
    */
-  private final MutAngularVelocity yawVel      = new MutAngularVelocity(0, 0, DegreesPerSecond);
+  private final MutAngularVelocity yawVel                 = new MutAngularVelocity(0, 0, RotationsPerSecond);
   /**
-   * Offset for the analog gyro.
+   * Offset for the Boron {@link Canandgyro}.
    */
-  private       Rotation3d         offset      = new Rotation3d();
+  private       Rotation3d         offset                 = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private       boolean            invertedIMU = false;
+  private       boolean            invertedIMU            = false;
 
   /**
-   * Analog port in which the gyroscope is connected. Can only be attached to analog ports 0 or 1.
+   * Generate the SwerveIMU for {@link Canandgyro}.
    *
-   * @param channel Analog port 0 or 1.
+   * @param canid CAN ID for the Boron {@link Canandgyro}
    */
-  public AnalogGyroSwerve(int channel)
+  public CanandgyroSwerve(int canid)
   {
-    if (!(channel == 0 || channel == 1))
-    {
-      throw new RuntimeException(
-          "Analog Gyroscope must be attached to port 0 or 1 on the roboRIO.\n");
-    }
-    imu = new AnalogGyro(channel);
-    factoryDefault();
-    SmartDashboard.putData(imu);
+    imu = new Canandgyro(canid);
   }
 
   /**
-   * Reset IMU to factory default.
+   * Reset {@link Canandgyro} to factory default.
    */
   @Override
   public void factoryDefault()
   {
-    imu.calibrate();
-    offset = new Rotation3d(0, 0, 0);
+    imu.resetFactoryDefaults(STATUS_TIMEOUT_SECONDS);
   }
 
   /**
-   * Clear sticky faults on IMU.
+   * Clear sticky faults on {@link Canandgyro}.
    */
   @Override
   public void clearStickyFaults()
   {
-    // Do nothing.
+    imu.clearStickyFaults();
   }
 
   /**
@@ -93,9 +89,10 @@ public class AnalogGyroSwerve extends SwerveIMU
    *
    * @return {@link Rotation3d} from the IMU.
    */
+  @Override
   public Rotation3d getRawRotation3d()
   {
-    Rotation3d reading = new Rotation3d(0, 0, Math.toRadians(-imu.getAngle()));
+    Rotation3d reading = imu.getRotation3d();
     return invertedIMU ? reading.unaryMinus() : reading;
   }
 
@@ -119,17 +116,18 @@ public class AnalogGyroSwerve extends SwerveIMU
   @Override
   public Optional<Translation3d> getAccel()
   {
-    return Optional.empty();
+
+    return Optional.of(new Translation3d(imu.getAccelerationFrame().getValue()).times(9.81 / 16384.0));
   }
 
   @Override
   public MutAngularVelocity getYawAngularVelocity()
   {
-    return yawVel.mut_setMagnitude(imu.getRate());
+    return yawVel.mut_setMagnitude(imu.getAngularVelocityYaw());
   }
 
   /**
-   * Get the instantiated IMU object.
+   * Get the instantiated {@link Canandgyro} IMU object.
    *
    * @return IMU object.
    */

@@ -1,165 +1,183 @@
 package swervelib.imu;
 
-import com.ctre.phoenix6.StatusCode;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
- * SwerveIMU interface for the Pigeon2
+ * SwerveIMU interface for the {@link Pigeon2}
  */
-public class Pigeon2Swerve extends SwerveIMU {
+public class Pigeon2Swerve extends SwerveIMU
+{
 
-    /**
-     * Wait time for status frames to show up.
-     */
-    public static double STATUS_TIMEOUT_SECONDS = 0.04;
-    /**
-     * Pigeon2 IMU device.
-     */
-    Pigeon2 imu;
-    /**
-     * Offset for the Pigeon 2.
-     */
-    private Rotation3d offset = new Rotation3d();
-    /**
-     * Inversion for the gyro
-     */
-    private boolean invertedIMU = false;
+  /**
+   * Wait time for status frames to show up.
+   */
+  public static double             STATUS_TIMEOUT_SECONDS = 0.04;
+  /**
+   * {@link Pigeon2} IMU device.
+   */
+  private final Pigeon2            imu;
+  /**
+   * Mutable {@link AngularVelocity} for readings.
+   */
+  private final MutAngularVelocity yawVel                 = new MutAngularVelocity(0, 0, DegreesPerSecond);
 
-    /**
-     * Generate the SwerveIMU for pigeon.
-     *
-     * @param canid  CAN ID for the pigeon
-     * @param canbus CAN Bus name the pigeon resides on.
-     */
-    public Pigeon2Swerve(int canid, String canbus) {
-        imu = new Pigeon2(canid, canbus);
-        SmartDashboard.putData(imu);
-    }
+  /**
+   * Offset for the {@link Pigeon2}.
+   */
+  private Rotation3d          offset      = new Rotation3d();
+  /**
+   * Inversion for the gyro
+   */
+  private boolean             invertedIMU = false;
+  /**
+   * {@link Pigeon2} configurator.
+   */
+  private Pigeon2Configurator cfg;
 
-    /**
-     * Generate the SwerveIMU for pigeon.
-     *
-     * @param canid CAN ID for the pigeon
-     */
-    public Pigeon2Swerve(int canid) {
-        this(canid, "");
-    }
+  /**
+   * X Acceleration supplier
+   */
+  private Supplier<StatusSignal<LinearAcceleration>> xAcc;
+  /**
+   * Y Accelleration supplier.
+   */
+  private Supplier<StatusSignal<LinearAcceleration>> yAcc;
+  /**
+   * Z Acceleration supplier.
+   */
+  private Supplier<StatusSignal<LinearAcceleration>> zAcc;
 
-    /**
-     * Reset IMU to factory default.
-     */
-    @Override
-    public void factoryDefault() {
-        Pigeon2Configurator cfg = imu.getConfigurator();
-        Pigeon2Configuration config = new Pigeon2Configuration();
+  /**
+   * Generate the SwerveIMU for {@link Pigeon2}.
+   *
+   * @param canid  CAN ID for the {@link Pigeon2}
+   * @param canbus CAN Bus name the {@link Pigeon2} resides on.
+   */
+  public Pigeon2Swerve(int canid, String canbus)
+  {
+    imu = new Pigeon2(canid, canbus);
+    this.cfg = imu.getConfigurator();
+    xAcc = imu::getAccelerationX;
+    yAcc = imu::getAccelerationY;
+    zAcc = imu::getAccelerationZ;
+    SmartDashboard.putData(imu);
+  }
 
-        // Compass utilization causes readings to jump dramatically in some cases.
-        cfg.apply(config.Pigeon2Features.withEnableCompass(false));
-    }
+  /**
+   * Generate the SwerveIMU for {@link Pigeon2}.
+   *
+   * @param canid CAN ID for the {@link Pigeon2}
+   */
+  public Pigeon2Swerve(int canid)
+  {
+    this(canid, "");
+  }
 
-    /**
-     * Clear sticky faults on IMU.
-     */
-    @Override
-    public void clearStickyFaults() {
-        imu.clearStickyFaults();
-    }
+  /**
+   * Reset {@link Pigeon2} to factory default.
+   */
+  @Override
+  public void factoryDefault()
+  {
+    Pigeon2Configuration config = new Pigeon2Configuration();
 
-    /**
-     * Set the gyro offset.
-     *
-     * @param offset gyro offset as a {@link Rotation3d}.
-     */
-    public void setOffset(Rotation3d offset) {
-        this.offset = offset;
-    }
+    // Compass utilization causes readings to jump dramatically in some cases.
+    cfg.apply(config.Pigeon2Features.withEnableCompass(false));
+  }
 
-    /**
-     * Set the gyro to invert its default direction
-     *
-     * @param invertIMU invert gyro direction
-     */
-    public void setInverted(boolean invertIMU) {
-        invertedIMU = invertIMU;
-    }
+  /**
+   * Clear sticky faults on {@link Pigeon2}.
+   */
+  @Override
+  public void clearStickyFaults()
+  {
+    imu.clearStickyFaults();
+  }
 
-    /**
-     * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
-     *
-     * @return {@link Rotation3d} from the IMU.
-     */
-    @Override
-    public Rotation3d getRawRotation3d() {
-        // TODO: Switch to suppliers.
-        StatusSignal<Double> w = imu.getQuatW();
-        StatusSignal<Double> x = imu.getQuatX();
-        StatusSignal<Double> y = imu.getQuatY();
-        StatusSignal<Double> z = imu.getQuatZ();
-        if (w.getStatus() != StatusCode.OK) {
-            w = w.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-        }
-        if (x.getStatus() != StatusCode.OK) {
-            x = x.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-        }
-        if (y.getStatus() != StatusCode.OK) {
-            y = y.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-        }
-        if (z.getStatus() != StatusCode.OK) {
-            z = z.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-        }
-        Rotation3d reading = new Rotation3d(
-            new Quaternion(w.getValue(), x.getValue(), y.getValue(), z.getValue())
-        );
-        return invertedIMU ? reading.unaryMinus() : reading;
-    }
+  /**
+   * Set the gyro offset.
+   *
+   * @param offset gyro offset as a {@link Rotation3d}.
+   */
+  public void setOffset(Rotation3d offset)
+  {
+    this.offset = offset;
+  }
 
-    /**
-     * Fetch the {@link Rotation3d} from the IMU. Robot relative.
-     *
-     * @return {@link Rotation3d} from the IMU.
-     */
-    @Override
-    public Rotation3d getRotation3d() {
-        return getRawRotation3d().minus(offset);
-    }
+  /**
+   * Set the gyro to invert its default direction
+   *
+   * @param invertIMU invert gyro direction
+   */
+  public void setInverted(boolean invertIMU)
+  {
+    invertedIMU = invertIMU;
+  }
 
-    /**
-     * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If acceleration isn't supported returns
-     * empty.
-     *
-     * @return {@link Translation3d} of the acceleration as an {@link Optional}.
-     */
-    @Override
-    public Optional<Translation3d> getAccel() {
-        // TODO: Switch to suppliers.
-        StatusSignal<Double> xAcc = imu.getAccelerationX();
-        StatusSignal<Double> yAcc = imu.getAccelerationY();
-        StatusSignal<Double> zAcc = imu.getAccelerationZ();
+  /**
+   * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
+   *
+   * @return {@link Rotation3d} from the IMU.
+   */
+  @Override
+  public Rotation3d getRawRotation3d()
+  {
+    Rotation3d reading = imu.getRotation3d();
+    return invertedIMU ? reading.unaryMinus() : reading;
+  }
 
-        return Optional.of(
-            new Translation3d(
-                xAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue(),
-                yAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue(),
-                zAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue()
-            ).times(9.81 / 16384.0)
-        );
-    }
+  /**
+   * Fetch the {@link Rotation3d} from the IMU. Robot relative.
+   *
+   * @return {@link Rotation3d} from the IMU.
+   */
+  @Override
+  public Rotation3d getRotation3d()
+  {
+    return getRawRotation3d().minus(offset);
+  }
 
-    /**
-     * Get the instantiated IMU object.
-     *
-     * @return IMU object.
-     */
-    @Override
-    public Object getIMU() {
-        return imu;
-    }
+
+  /**
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If acceleration isn't supported returns
+   * empty.
+   *
+   * @return {@link Translation3d} of the acceleration as an {@link Optional}.
+   */
+  @Override
+  public Optional<Translation3d> getAccel()
+  {
+    // TODO: Implement later.
+
+    return Optional.empty();
+  }
+
+  @Override
+  public MutAngularVelocity getYawAngularVelocity()
+  {
+    return yawVel.mut_replace(imu.getAngularVelocityZWorld().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue());
+  }
+
+  /**
+   * Get the instantiated {@link Pigeon2} object.
+   *
+   * @return IMU object.
+   */
+  @Override
+  public Object getIMU()
+  {
+    return imu;
+  }
 }

@@ -2,29 +2,30 @@ package swervelib.imu;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 /**
- * Creates a IMU for {@link edu.wpi.first.wpilibj.AnalogGyro} devices, only uses yaw.
+ * SwerveIMU interface for the {@link WPI_PigeonIMU}.
  */
-public class AnalogGyroSwerve extends SwerveIMU
+public class PigeonSwerve extends SwerveIMU
 {
 
   /**
-   * Gyroscope object.
+   * {@link WPI_PigeonIMU} IMU device.
    */
-  private final AnalogGyro         imu;
+  private final WPI_PigeonIMU      imu;
   /**
    * Mutable {@link AngularVelocity} for readings.
    */
   private final MutAngularVelocity yawVel      = new MutAngularVelocity(0, 0, DegreesPerSecond);
   /**
-   * Offset for the analog gyro.
+   * Offset for the {@link WPI_PigeonIMU}.
    */
   private       Rotation3d         offset      = new Rotation3d();
   /**
@@ -33,19 +34,14 @@ public class AnalogGyroSwerve extends SwerveIMU
   private       boolean            invertedIMU = false;
 
   /**
-   * Analog port in which the gyroscope is connected. Can only be attached to analog ports 0 or 1.
+   * Generate the SwerveIMU for {@link WPI_PigeonIMU}.
    *
-   * @param channel Analog port 0 or 1.
+   * @param canid CAN ID for the {@link WPI_PigeonIMU}, does not support CANBus.
    */
-  public AnalogGyroSwerve(int channel)
+  public PigeonSwerve(int canid)
   {
-    if (!(channel == 0 || channel == 1))
-    {
-      throw new RuntimeException(
-          "Analog Gyroscope must be attached to port 0 or 1 on the roboRIO.\n");
-    }
-    imu = new AnalogGyro(channel);
-    factoryDefault();
+    imu = new WPI_PigeonIMU(canid);
+    offset = new Rotation3d();
     SmartDashboard.putData(imu);
   }
 
@@ -55,8 +51,7 @@ public class AnalogGyroSwerve extends SwerveIMU
   @Override
   public void factoryDefault()
   {
-    imu.calibrate();
-    offset = new Rotation3d(0, 0, 0);
+    imu.configFactoryDefault();
   }
 
   /**
@@ -65,7 +60,7 @@ public class AnalogGyroSwerve extends SwerveIMU
   @Override
   public void clearStickyFaults()
   {
-    // Do nothing.
+    imu.clearStickyFaults();
   }
 
   /**
@@ -93,9 +88,12 @@ public class AnalogGyroSwerve extends SwerveIMU
    *
    * @return {@link Rotation3d} from the IMU.
    */
+  @Override
   public Rotation3d getRawRotation3d()
   {
-    Rotation3d reading = new Rotation3d(0, 0, Math.toRadians(-imu.getAngle()));
+    double[] wxyz = new double[4];
+    imu.get6dQuaternion(wxyz);
+    Rotation3d reading = new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
     return invertedIMU ? reading.unaryMinus() : reading;
   }
 
@@ -119,7 +117,9 @@ public class AnalogGyroSwerve extends SwerveIMU
   @Override
   public Optional<Translation3d> getAccel()
   {
-    return Optional.empty();
+    short[] initial = new short[3];
+    imu.getBiasedAccelerometer(initial);
+    return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
   }
 
   @Override
@@ -129,7 +129,7 @@ public class AnalogGyroSwerve extends SwerveIMU
   }
 
   /**
-   * Get the instantiated IMU object.
+   * Get the instantiated {@link WPI_PigeonIMU} IMU object.
    *
    * @return IMU object.
    */
