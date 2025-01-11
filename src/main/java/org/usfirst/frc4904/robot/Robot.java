@@ -101,7 +101,7 @@ public class Robot extends CommandRobotBase {
         );
         SmartDashboard.putNumber(
             "max angular velocity",
-            RobotMap.Component.chassis.swerveDrive.getMaximumAngularVelocity()
+            RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
         );
         // //various logging can go here
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
