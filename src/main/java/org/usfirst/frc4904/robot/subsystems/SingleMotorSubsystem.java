@@ -6,9 +6,20 @@ public class SingleMotorSubsystem extends SubsystemBase {
 
     public final CANTalonFX motor;
 
-    public SingleMotorSubsystem(CANTalonFX motor) {
+    public final int forwardVoltage;
+    public final int backwardVoltage;
+
+    public SingleMotorSubsystem(CANTalonFX motor, int voltage) {
+        this.SingleMotorSubsystem(motor, voltage, voltage);
+    }
+
+    // BOTH VOLTAGES SHOULD BE POSITIVE - 'backwardVoltage' is negated later
+    public SingleMotorSubsystem(CANTalonFX motor, int forwardVoltage, int backwardVoltage) {
         this.motor = motor;
         this.motor.setIdleMode(IdleMode.kBrake);
+
+        this.forwardVoltage = forwardVoltage;
+        this.backwardVoltage = backwardVoltage;
     }
 
     public Command c_setVoltage(int voltage) {
@@ -18,11 +29,11 @@ public class SingleMotorSubsystem extends SubsystemBase {
     }
 
     public Command c_forward() {
-        return this.c_setVoltage(1);
+        return this.c_setVoltage(this.forwardVoltage);
     }
 
     public Command c_backward() {
-        return this.c_setVoltage(-1);
+        return this.c_setVoltage(-this.backwardVoltage);
     }
 
     public Command c_stop() {
