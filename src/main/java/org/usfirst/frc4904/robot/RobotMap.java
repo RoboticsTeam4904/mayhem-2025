@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import java.io.File;
 
-import org.usfirst.frc4904.robot.subsystems.RampSubsystem;
+import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
@@ -57,6 +57,7 @@ public class RobotMap {
             public static final int BACK_RIGHT_DRIVE = 4;
             public static final int BACK_RIGHT_TURN = 8;
             public static final int RAMP = -1;
+            public static final int INTAKE = -1;
         }
 
         public static class PWM {
@@ -154,9 +155,11 @@ public class RobotMap {
         // public static RobotUDP robotUDP;
         //Subsystems
         public static SwerveSubsystem chassis;
-        public static RampSubsystem ramp;
+        public static SingleMotorSubsystem ramp;
+        public static SingleMotorSubsystem intake;
         //Motor time
         public static CANTalonFX rampMotor;
+        public static CANTalonFX intakeMotor;
     }
 
     public static class NetworkTables {
@@ -204,7 +207,10 @@ public class RobotMap {
             4.5
         );
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
-        Component.ramp = new RampSubsystem(Component.rampMotor);
+        Component.ramp = new SingleMotorSubsystem(Component.rampMotor);
+
+        Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
+        Component.intake = new SingleMotorSubsystem(Component.intakeMotor);
         // Component.navx = new AHRS(SerialPort.Port.kMXP);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
