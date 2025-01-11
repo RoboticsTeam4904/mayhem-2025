@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import java.io.File;
+
+import org.usfirst.frc4904.robot.subsystems.RampSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
@@ -54,6 +56,7 @@ public class RobotMap {
             public static final int BACK_LEFT_TURN = 7;
             public static final int BACK_RIGHT_DRIVE = 4;
             public static final int BACK_RIGHT_TURN = 8;
+            public static final int RAMP = -1;
         }
 
         public static class PWM {
@@ -149,8 +152,11 @@ public class RobotMap {
         public static AHRS navx;
 
         // public static RobotUDP robotUDP;
-
+        //Subsystems
         public static SwerveSubsystem chassis;
+        public static RampSubsystem ramp;
+        //Motor time
+        public static CANTalonFX rampMotor;
     }
 
     public static class NetworkTables {
@@ -197,7 +203,8 @@ public class RobotMap {
             .0473,
             4.5
         );
-
+        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
+        Component.ramp = new RampSubsystem(Component.rampMotor);
         // Component.navx = new AHRS(SerialPort.Port.kMXP);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
