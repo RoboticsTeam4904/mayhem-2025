@@ -93,7 +93,7 @@ public class RobotMap {
             public static final Translation2d CENTER_MASS_OFFSET = new Translation2d(0, 0); // no offset
             public static final double EncoderTicksPerRevolution = 2048;
 
-            //these are allowed maxes ratehr than max capabilities
+            //these are allowed maxes rather than max capabilities
             //constants taken from https://github.com/REVrobotics/MAXSwerve-Java-Template/blob/main/src/main/java/frc/robot/Constants.java
             public static final double MAX_SPEED = 4.8; //allowed max speed in meters per second
             public static final double MAX_ACCELERATION = 3; //allowed max acceleration in meters per second squared

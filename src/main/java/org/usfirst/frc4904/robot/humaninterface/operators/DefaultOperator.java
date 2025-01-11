@@ -31,7 +31,7 @@ public class DefaultOperator extends Operator {
         // joystick.button5.onFalse(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> 0));
 
         // // Intake
-        // // FIXME: use nameCommand to make it cleaner with expresions (no varibales)
+        // // FIXME: use nameCommand to make it cleaner with expressions (no variables)
         // var zeroIntake = RobotMap.Component.intake.c_holdVoltage(0);
         // var runOuttake = RobotMap.Component.intake.c_holdVoltage(3);
 

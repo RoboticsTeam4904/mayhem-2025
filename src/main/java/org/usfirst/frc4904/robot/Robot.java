@@ -57,7 +57,7 @@ public class Robot extends CommandRobotBase {
 
     public Robot() {
         super();
-        //can set deafault auton command here
+        //can set default auton command here
     }
 
     @Override
