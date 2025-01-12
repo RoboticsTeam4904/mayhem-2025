@@ -1,11 +1,9 @@
 package org.usfirst.frc4904.robot.subsystems;
 
-import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
-
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
 public class SingleMotorSubsystem extends SubsystemBase {
 
@@ -22,7 +20,6 @@ public class SingleMotorSubsystem extends SubsystemBase {
     public SingleMotorSubsystem(CANTalonFX motor, int forwardVoltage, int backwardVoltage) {
         this.motor = motor;
         this.motor.setNeutralMode(NeutralModeValue.Brake);
-
 
         this.forwardVoltage = forwardVoltage;
         this.backwardVoltage = backwardVoltage;

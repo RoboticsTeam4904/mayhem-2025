@@ -6,11 +6,11 @@
 package org.usfirst.frc4904.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.*;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
-import com.pathplanner.lib.config.*;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -50,8 +50,6 @@ public class SwerveSubsystem extends SubsystemBase {
      * Maximum speed of the robot in meters per second, used to limit acceleration.
      */
     private final double maximumSpeed;
-    
-
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -277,8 +275,10 @@ public class SwerveSubsystem extends SubsystemBase {
             // Make the robot move
             swerveDrive.drive(
                 new Translation2d(
-                    Math.pow(translationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
-                    Math.pow(translationY.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity()
+                    Math.pow(translationX.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(translationY.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisVelocity()
                 ),
                 Math.pow(angularRotationX.getAsDouble(), 1) *
                 swerveDrive.getMaximumChassisAngularVelocity(),

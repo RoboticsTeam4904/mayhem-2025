@@ -1,12 +1,12 @@
 package org.usfirst.frc4904.robot;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.studica.frc.AHRS;
 //import com.ctre.phoenix.motorcontrol.InvertType; //broken
 //import com.revrobotics.CANSparkMax.IdleMode; //broken
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 //imports for rev robotics neo 550s
 import com.revrobotics.spark.SparkMax;
+import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
