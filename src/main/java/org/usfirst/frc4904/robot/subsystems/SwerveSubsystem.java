@@ -8,11 +8,9 @@ package org.usfirst.frc4904.robot.subsystems;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.config.*;
-import com.pathplanner.lib.controllers.PathFollowingController;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,16 +21,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.math.SwerveMath;
-import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -57,6 +50,8 @@ public class SwerveSubsystem extends SubsystemBase {
      * Maximum speed of the robot in meters per second, used to limit acceleration.
      */
     private final double maximumSpeed;
+    
+
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -118,13 +113,22 @@ public class SwerveSubsystem extends SubsystemBase {
      * Setup AutoBuilder for PathPlanner.
      */
     public void setupPathPlanner() {
+        RobotConfig config;
+
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            System.out.println(e);
+            return;
+        }
+
         AutoBuilder.configure(
             this::getPose, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             //YAGSL problem -- sunday problem
             this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new PathFollowingController(
+            new PPHolonomicDriveController(
                 // HolonomicPathFollowerConfig, this should likely live in your Constants class
                 new PIDConstants(5.0, 0.0, 0.0),
                 // Translation PID constants
@@ -132,15 +136,9 @@ public class SwerveSubsystem extends SubsystemBase {
                     swerveDrive.swerveController.config.headingPIDF.p,
                     swerveDrive.swerveController.config.headingPIDF.i,
                     swerveDrive.swerveController.config.headingPIDF.d
-                ),
-                // Rotation PID constants
-                4.5,
-                // Max module speed, in m/s
-                swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
-                // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig()
-                // Default path replanning config. See the API for the options here
+                )
             ),
+            config,
             () -> {
                 // Boolean supplier that controls when the path will be mirrored for the red alliance
                 // This will flip the path being followed to the red side of the field.
@@ -160,8 +158,15 @@ public class SwerveSubsystem extends SubsystemBase {
      * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
      */
     public Command getAutonomousCommand(String pathName, boolean setOdomToStart) {
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+        PathPlannerPath path;
+
+        try {
+            // Load the path you want to follow using its name in the GUI
+            path = PathPlannerPath.fromPathFile(pathName);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
 
         if (setOdomToStart) {
             resetOdometry(new Pose2d(path.getPoint(0).position, getHeading()));
@@ -180,9 +185,9 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command driveToPose(Pose2d pose) {
         // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
-            swerveDrive.getMaximumVelocity(),
+            swerveDrive.getMaximumChassisVelocity(),
             4.0,
-            swerveDrive.getMaximumAngularVelocity(),
+            swerveDrive.getMaximumChassisAngularVelocity(),
             Units.degreesToRadians(720)
         );
 
@@ -190,8 +195,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return AutoBuilder.pathfindToPose(
             pose,
             constraints,
-            0.0, // Goal end velocity in meters/sec
-            0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+            0.0 // Goal end velocity in meters/sec
         );
     }
 
@@ -222,7 +226,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     headingX.getAsDouble(),
                     headingY.getAsDouble(),
                     swerveDrive.getOdometryHeading().getRadians(),
-                    swerveDrive.getMaximumVelocity()
+                    swerveDrive.getMaximumChassisVelocity()
                 )
             );
         });
@@ -250,7 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     translationY.getAsDouble(),
                     rotation.getAsDouble() * Math.PI,
                     swerveDrive.getOdometryHeading().getRadians(),
-                    swerveDrive.getMaximumVelocity()
+                    swerveDrive.getMaximumChassisVelocity()
                 )
             );
         });
@@ -273,11 +277,11 @@ public class SwerveSubsystem extends SubsystemBase {
             // Make the robot move
             swerveDrive.drive(
                 new Translation2d(
-                    Math.pow(translationX.getAsDouble(), 1) * swerveDrive.getMaximumVelocity(),
-                    Math.pow(translationY.getAsDouble(), 1) * swerveDrive.getMaximumVelocity()
+                    Math.pow(translationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(translationY.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity()
                 ),
                 Math.pow(angularRotationX.getAsDouble(), 1) *
-                swerveDrive.getMaximumAngularVelocity(),
+                swerveDrive.getMaximumChassisAngularVelocity(),
                 true,
                 false
             );
@@ -360,7 +364,8 @@ public class SwerveSubsystem extends SubsystemBase {
      *
      * @param chassisSpeeds Chassis Speeds to set.
      */
-    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        //we handle feedforward stuff separately
         swerveDrive.setChassisSpeeds(chassisSpeeds);
     }
 

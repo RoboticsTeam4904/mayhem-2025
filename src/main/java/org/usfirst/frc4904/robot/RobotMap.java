@@ -28,7 +28,7 @@ import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 // import org.usfirst.frc4904.standard.LogKitten;
 
-import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
+//import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 //import org.usfirst.frc4904.standard.subsystems.motor.SparkMaxMotorSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -134,14 +134,14 @@ public class RobotMap {
     public static class Component {
 
         //TODO: turn motors are NOT falcons and so can't use cantalons
-        public static CANTalonFX FLdrive;
-        public static CustomCANSparkMax FLturn;
-        public static CANTalonFX FRdrive;
-        public static CustomCANSparkMax FRturn;
-        public static CANTalonFX BLdrive;
-        public static CustomCANSparkMax BLturn;
-        public static CANTalonFX BRdrive;
-        public static CustomCANSparkMax BRturn;
+        // public static CANTalonFX FLdrive;
+        // public static CustomCANSparkMax FLturn;
+        // public static CANTalonFX FRdrive;
+        // public static CustomCANSparkMax FRturn;
+        // public static CANTalonFX BLdrive;
+        // public static CustomCANSparkMax BLturn;
+        // public static CANTalonFX BRdrive;
+        // public static CustomCANSparkMax BRturn;
 
         //encoders are dutycycle encoders, not standard can encoders
         public static DutyCycleEncoder FLturnEncoder;
