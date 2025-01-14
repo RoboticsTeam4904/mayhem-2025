@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import java.io.File;
+
+import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -57,6 +59,9 @@ public class RobotMap {
             public static final int BACK_RIGHT_TURN = 8;
             public static final int RAMP = -1;
             public static final int INTAKE = -1;
+            public static final int ELEVATOR_MOTOR_ONE = -1;
+            public static final int ELEVATOR_MOTOR_TWO = -1;
+            
         }
 
         public static class PWM {
@@ -156,9 +161,12 @@ public class RobotMap {
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
+        public static ElevatorSubsystem elevator;
         //Motor time
         public static CANTalonFX rampMotor;
         public static CANTalonFX intakeMotor;
+        public static CANTalonFX elevatorMotorOne;
+        public static CANTalonFX elevatorMotorTwo;
     }
 
     public static class NetworkTables {
@@ -220,6 +228,7 @@ public class RobotMap {
             Port.HumanInput.zJoystickPort,
             0.01
         );
+        Component.elevator = new ElevatorSubsystem(Component.elevatorMotorOne, Component.elevatorMotorTwo);
         // HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {
