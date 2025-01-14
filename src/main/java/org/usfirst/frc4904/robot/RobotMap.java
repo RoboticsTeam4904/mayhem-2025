@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,6 +24,7 @@ import java.io.File;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
+import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -167,6 +167,7 @@ public class RobotMap {
         public static CANTalonFX intakeMotor;
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
+        public static OrchestraSubsystem orchestra;
     }
 
     public static class NetworkTables {
@@ -207,6 +208,7 @@ public class RobotMap {
     }
 
     public RobotMap() {
+        Component.orchestra = new OrchestraSubsystem();
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,

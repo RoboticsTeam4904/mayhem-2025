@@ -1,7 +1,7 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
-// import org.usfirst.frc4904.robot.RobotMap;
-// import org.usfirst.frc4904.standard.commands.CreateAndDisown;
+import org.usfirst.frc4904.robot.RobotMap;
+import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -20,7 +20,9 @@ public class DefaultOperator extends Operator {
 
     @Override
     public void bindCommands() {
-        // var joystick = RobotMap.HumanInput.Operator.joystick;
+        var joystick = RobotMap.HumanInput.Operator.joystick;
+        //Orchestra
+        joystick.button7.onTrue(new CreateAndDisown(() -> RobotMap.Component.orchestra.playSound("music.chrp", RobotMap.Component.orchestra.motor)));
 
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
