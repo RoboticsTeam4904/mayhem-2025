@@ -15,8 +15,8 @@
     "canbus": null
   },
   "conversionFactor": {
-    "angle": null,
-    "drive": null
+    "angle": {"gearRatio": 46.42},
+    "drive": {"diameter": 3, "gearRatio": 5.1}
   },
   "encoder": {
     "type": "attached",
