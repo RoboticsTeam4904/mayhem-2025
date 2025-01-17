@@ -22,8 +22,14 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
         //Orchestra
-        joystick.button7.onTrue(new CreateAndDisown(() -> RobotMap.Component.orchestra.playSound("music.chrp", RobotMap.Component.orchestra.motor)));
-
+        joystick.button7.onTrue(
+            new CreateAndDisown(() ->
+                RobotMap.Component.orchestra.playSound(
+                    "music.chrp",
+                    RobotMap.Component.orchestra.motor
+                )
+            )
+        );
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
         // joystick.button3.onFalse(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> 0));
