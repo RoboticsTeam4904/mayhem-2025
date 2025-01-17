@@ -70,16 +70,14 @@ public class NathanGain extends Driver {
         double rawSpeed =
             RobotMap.HumanInput.Driver.xbox.getRightTriggerAxis() -
             RobotMap.HumanInput.Driver.xbox.getLeftTriggerAxis();
-        double speed;
-
-        speed = scaleGain(rawSpeed, NathanGain.precisionScaleY, NathanGain.SPEED_EXP) *
-        NathanGain.Y_SPEED_SCALE;
+        double speed =
+            scaleGain(rawSpeed, NathanGain.precisionScaleY, NathanGain.SPEED_EXP) *
+            NathanGain.Y_SPEED_SCALE;
 
         // double precisionDrive = scaleGain(RobotMap.HumanInput.Driver.xbox.getLeftY(), 0.08, 1.2);
         // double operatorDrive = scaleGain(-RobotMap.HumanInput.Operator.joystick.getAxis(1), 0.1, 1.2);
 
-        if (NathanGain.isFlippy) return (speed) * -1;
-        return speed; // + precisionDrive;
+        return NathanGain.isFlippy ? -speed : speed;
     }
 
     @Override
@@ -88,10 +86,10 @@ public class NathanGain extends Driver {
         double turnSpeed =
             scaleGain(rawTurnSpeed, NathanGain.precisionScaleTurn, NathanGain.TURN_EXP) *
             NathanGain.TURN_SPEED_SCALE;
+
         // double precisionTurnSpeed = scaleGain(RobotMap.HumanInput.Driver.xbox.getRightX(), 0.08, 1.2);
         // double operatorControlTurnSpeed = scaleGain(RobotMap.HumanInput.Operator.joystick.getAxis(0), 0.2, 1.5);
 
-        if (NathanGain.isFlippy) return (turnSpeed) * -1;
-        return turnSpeed; // + precisionTurnSpeed;
+        return NathanGain.isFlippy ? -turnSpeed : turnSpeed;
     }
 }

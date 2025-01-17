@@ -20,11 +20,10 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import java.io.File;
-
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
-import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -61,7 +60,6 @@ public class RobotMap {
             public static final int INTAKE = -1;
             public static final int ELEVATOR_MOTOR_ONE = -1;
             public static final int ELEVATOR_MOTOR_TWO = -1;
-            
         }
 
         public static class PWM {
@@ -212,7 +210,7 @@ public class RobotMap {
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
-            .0473,
+            0.0473,
             4.5
         );
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
@@ -230,7 +228,10 @@ public class RobotMap {
             Port.HumanInput.zJoystickPort,
             0.01
         );
-        Component.elevator = new ElevatorSubsystem(Component.elevatorMotorOne, Component.elevatorMotorTwo);
+        Component.elevator = new ElevatorSubsystem(
+            Component.elevatorMotorOne,
+            Component.elevatorMotorTwo
+        );
         // HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {

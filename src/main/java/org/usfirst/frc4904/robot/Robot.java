@@ -40,15 +40,12 @@ import org.usfirst.frc4904.standard.CommandRobotBase;
 //import org.usfirst.frc4904.standard.CommandRobotBase;
 // import org.usfirst.frc4904.standard.custom.CommandSendableChooser;
 import org.usfirst.frc4904.standard.humaninput.Driver;
+import org.usfirst.frc4904.standard.humaninput.Operator;
 
 public class Robot extends CommandRobotBase {
 
-    // private final RobotMap map = new RobotMap();
-    // private final RobotContainer2 donttouchme = new RobotContainer2(RobotMap.Component.frontLeftWheelTalon, RobotMap.Component.backLeftWheelTalon, RobotMap.Component.frontRightWheelTalon, RobotMap.Component.backRightWheelTalon, RobotMap.Component.navx);
-    // private SendableChooser<Supplier<Command>> autonomousCommand = new SendableChooser<Supplier<Command>>();
-
     private final Driver driver = new SwerveGain();
-    private final org.usfirst.frc4904.standard.humaninput.Operator operator = new DefaultOperator();
+    private final Operator operator = new DefaultOperator();
     private final RobotMap map = new RobotMap();
 
     protected double scaleGain(double input, double gain, double exp) {
@@ -68,27 +65,11 @@ public class Robot extends CommandRobotBase {
         driver.bindCommands();
         operator.bindCommands();
 
-        // final double TURN_MULTIPLIER = 2;
-        // RobotMap.Component.chassis.setDefaultCommand(
-        //     nameCommand("chassis - Teleop_Default - c_swerveDrive",
-        //         new ConditionalCommand(
-        //             RobotMap.Component.chassis.c_drive(
-        //                 () -> {
-        //                     var target = new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed());
-        //                     SmartDashboard.putNumber("help", target.omegaRadiansPerSecond);
-        //                     SmartDashboard.putNumber("drivexsupplier", driver.getX());
-
-        //                     return target;
-        //                 }, true),
-        //             new InstantCommand(),
-        //             () -> driver.getX() != 0 || driver.getY() != 0 || driver.getTurnSpeed() != 0
-        //         )
-        //     ));
         RobotMap.Component.chassis.setDefaultCommand(
             RobotMap.Component.chassis.driveCommand(
-                () -> driver.getY(),
-                () -> driver.getX(),
-                () -> driver.getTurnSpeed()
+                driver::getY,
+                driver::getX,
+                driver::getTurnSpeed
             )
         );
     }
@@ -134,7 +115,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousInitialize() {
-        // start autons here
+        // start auton here
         RobotMap.Component.chassis.getAutonomousCommand("line", true).schedule();
     }
 
@@ -144,9 +125,7 @@ public class Robot extends CommandRobotBase {
     }
 
     @Override
-    public void disabledInitialize() {
-        //do things like setting brake mode here
-    }
+    public void disabledInitialize() {}
 
     @Override
     public void disabledExecute() {}
