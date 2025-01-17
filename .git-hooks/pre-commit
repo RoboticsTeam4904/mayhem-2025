@@ -1,4 +1,9 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
+# logging
+function action { print -P "%B%F{yellow}action%f%b: $1" }
+function info   { print -P "%B%F{blue}info%f%b: $1" }
+function error  { print -P "%B%F{red}error%f%b: $1" }
 
 # format files
 function format_files {
@@ -30,11 +35,6 @@ function npm_install {
     info 'try running `npm install` manually'
   fi
 }
-
-# logging
-function action { print -P "%B%F{yellow}action%f%b: $1" }
-function info   { print -P "%B%F{blue}info%f%b: $1" }
-function error  { print -P "%B%F{red}error%f%b: $1" }
 
 # staged java files
 local files="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.java$')"

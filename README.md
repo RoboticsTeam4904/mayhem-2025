@@ -1,4 +1,6 @@
 # 2025 Reefscape
-## Team 4904
 
-amazing readme
+Set up [standard](https://github.com/roboticsteam4904/standard) and the Git hooks by running:
+```sh
+$ ./setup
+```
