@@ -24,7 +24,7 @@ public class DefaultOperator extends Operator {
         //Orchestra
         joystick.button7.onTrue(
             new CreateAndDisown(() ->
-                RobotMap.Component.orchestra.playSound(
+                RobotMap.Component.orchestra.c_playSound(
                     "music.chrp",
                     RobotMap.Component.orchestra.motor
                 )
