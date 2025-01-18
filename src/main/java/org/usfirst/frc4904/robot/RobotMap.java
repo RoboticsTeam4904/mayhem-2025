@@ -137,13 +137,13 @@ public class RobotMap {
     public static class Component {
 
         //TODO: turn motors are NOT falcons and so can't use cantalons
-        // public static CANTalonFX FLdrive;
+        public static CANTalonFX FLdrive;
         // public static CustomCANSparkMax FLturn;
-        // public static CANTalonFX FRdrive;
+        public static CANTalonFX FRdrive;
         // public static CustomCANSparkMax FRturn;
-        // public static CANTalonFX BLdrive;
+        public static CANTalonFX BLdrive;
         // public static CustomCANSparkMax BLturn;
-        // public static CANTalonFX BRdrive;
+        public static CANTalonFX BRdrive;
         // public static CustomCANSparkMax BRturn;
 
         //encoders are dutycycle encoders, not standard can encoders
@@ -248,13 +248,13 @@ public class RobotMap {
 
         // //TODO: fix invert type, talk to anna
 
-        // Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
+        Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
         // Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
-        // Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
+        Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
         // Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
-        // Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
+        Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
         // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
-        // Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
+        Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
 
         // // Component.backRightWheelTalon.setSafetyEnabled(false);
