@@ -67,8 +67,8 @@ public class Robot extends CommandRobotBase {
 
         RobotMap.Component.chassis.setDefaultCommand(
             RobotMap.Component.chassis.driveCommand(
-                driver::getY,
                 driver::getX,
+                driver::getY,
                 driver::getTurnSpeed
             )
         );
@@ -78,7 +78,7 @@ public class Robot extends CommandRobotBase {
     public void teleopExecute() {
         SmartDashboard.putBoolean(
             "button",
-            RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean()
+            RobotMap.HumanInput.Driver.xbox.x().getAsBoolean()
         );
         SmartDashboard.putNumber(
             "max angular velocity",
