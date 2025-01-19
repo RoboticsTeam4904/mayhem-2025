@@ -228,11 +228,11 @@ public class RobotMap {
             Port.HumanInput.zJoystickPort,
             0.01
         );
-        Component.elevator = new MultiMotorSubsystem(
-            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
-            new double[] { 1, -1 },
-            1
-        );
+        // Component.elevator = new MultiMotorSubsystem(
+        //     new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
+        //     new double[] { 1, -1 },
+        //     1
+        // );
         // HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {
