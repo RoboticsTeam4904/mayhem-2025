@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -210,6 +211,7 @@ public class RobotMap {
             0.0473,
             4.5
         );
+        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0,0,90));
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
