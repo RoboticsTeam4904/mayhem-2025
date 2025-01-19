@@ -137,13 +137,13 @@ public class RobotMap {
     public static class Component {
 
         //TODO: turn motors are NOT falcons and so can't use cantalons
-        // public static CANTalonFX FLdrive;
+        public static CANTalonFX FLdrive;
         // public static CustomCANSparkMax FLturn;
-        // public static CANTalonFX FRdrive;
+        public static CANTalonFX FRdrive;
         // public static CustomCANSparkMax FRturn;
-        // public static CANTalonFX BLdrive;
+        public static CANTalonFX BLdrive;
         // public static CustomCANSparkMax BLturn;
-        // public static CANTalonFX BRdrive;
+        public static CANTalonFX BRdrive;
         // public static CustomCANSparkMax BRturn;
 
         //encoders are dutycycle encoders, not standard can encoders
@@ -160,12 +160,13 @@ public class RobotMap {
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
         public static MultiMotorSubsystem elevator;
+
         //Motor time
         public static CANTalonFX rampMotor;
         public static CANTalonFX intakeMotor;
+
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
-        public static OrchestraSubsystem orchestra;
     }
 
     public static class NetworkTables {
@@ -204,7 +205,6 @@ public class RobotMap {
     }
 
     public RobotMap() {
-        Component.orchestra = new OrchestraSubsystem();
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
@@ -243,15 +243,19 @@ public class RobotMap {
 
         // //TODO: fix invert type, talk to anna
 
-        // Component.FLdrive  = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
+        Component.FLdrive = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
         // Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
-        // Component.FRdrive  = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
+        Component.FRdrive = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
         // Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
-        // Component.BLdrive  = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
+        Component.BLdrive = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
         // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
-        // Component.BRdrive  = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
+        Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
 
+        OrchestraSubsystem.addSong(
+            "delfino",
+            new OrchestraSubsystem("delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
+        );
         // // Component.backRightWheelTalon.setSafetyEnabled(false);
         // // Component.frontRightWheelTalon.setSafetyEnabled(false);
         // // Component.backLeftWheelTalon.setSafetyEnabled(false);
