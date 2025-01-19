@@ -228,6 +228,8 @@ public class RobotMap {
             Port.HumanInput.zJoystickPort,
             0.01
         );
+        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
+        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
         Component.elevator = new MultiMotorSubsystem(
             new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
             new double[] { 1, -1 },
