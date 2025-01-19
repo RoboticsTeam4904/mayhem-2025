@@ -1,6 +1,7 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
 import org.usfirst.frc4904.robot.RobotMap;
+import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
@@ -23,13 +24,7 @@ public class DefaultOperator extends Operator {
         var joystick = RobotMap.HumanInput.Operator.joystick;
         //Orchestra
         joystick.button7.onTrue(
-            new CreateAndDisown(() ->
-                RobotMap.Component.orchestra.c_playSound(
-                    "delfinoPlaza.chrp",
-                    RobotMap.Component.FLdrive,
-                    RobotMap.Component.FRdrive
-                )
-            )
+            new CreateAndDisown(() -> OrchestraSubsystem.c_playSong("delfino"))
         );
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));

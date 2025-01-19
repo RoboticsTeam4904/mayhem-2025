@@ -160,12 +160,13 @@ public class RobotMap {
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
         public static MultiMotorSubsystem elevator;
+
         //Motor time
         public static CANTalonFX rampMotor;
         public static CANTalonFX intakeMotor;
+
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
-        public static OrchestraSubsystem orchestra;
     }
 
     public static class NetworkTables {
@@ -206,7 +207,6 @@ public class RobotMap {
     }
 
     public RobotMap() {
-        Component.orchestra = new OrchestraSubsystem();
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
@@ -259,6 +259,10 @@ public class RobotMap {
         Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
 
+        OrchestraSubsystem.addSong(
+            "delfino",
+            new OrchestraSubsystem("delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
+        );
         // // Component.backRightWheelTalon.setSafetyEnabled(false);
         // // Component.frontRightWheelTalon.setSafetyEnabled(false);
         // // Component.backLeftWheelTalon.setSafetyEnabled(false);
