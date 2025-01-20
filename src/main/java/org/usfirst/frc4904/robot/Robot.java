@@ -75,9 +75,6 @@ public class Robot extends CommandRobotBase {
                 driver::getTurnSpeed
             )
         );
-
-        AdvantageKitLogger.configureDataReceivers();
-        Logger.start();
     }
 
     @Override
