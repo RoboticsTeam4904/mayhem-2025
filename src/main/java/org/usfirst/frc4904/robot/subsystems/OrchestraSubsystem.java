@@ -54,28 +54,49 @@ public class OrchestraSubsystem extends SubsystemBase {
      *               There should be at least as many motors as there are tracks in the song.
      */
     public OrchestraSubsystem(String file, int tracks, CANTalonFX... motors) {
-        System.out.println("I am inside your walls");
+        System.out.println("Initializing Orchestra with file: " + file);
         if (motors.length < tracks) {
-            System.out.println(
-                "Not enough motors passed to OrchestraSubsystem to play all tracks of the song '" +
-                file +
-                "'. (Got: " +
-                motors.length +
-                ", Recommended: " +
-                tracks +
-                ")"
+            DriverStation.reportWarning(
+                String.format(
+                    "Not enough motors for song '%s' (Got: %d, Recommended: %d)",
+                    file,
+                    motors.length,
+                    tracks
+                ),
+                false
             );
         }
 
+        System.out.println("Adding " + motors.length + " instruments...");
         for (int i = 0; i < motors.length; i++) {
             orchestra.addInstrument(motors[i], i % tracks);
         }
-        System.out.println(orchestra.loadMusic(file));
+
+        boolean loadSuccess = orchestra.loadMusic(file);
+        if (!loadSuccess) {
+            DriverStation.reportError(
+                "Failed to load music file: " +
+                file +
+                ". Verify the file exists and path is correct.",
+                false
+            );
+        } else {
+            System.out.println("Successfully loaded music file: " + file);
+        }
     }
 
     public Command c_play() {
-        System.out.println("trying to play");
-        System.out.println(orchestra.loadMusic("deploy/chirp/delfino.chrp"));
+        System.out.println("Attempting to play music...");
+        String musicFile = "deploy/chirp/delfino.chrp";
+        var loadStatus = orchestra.loadMusic(musicFile);
+        if (!loadStatus.isOK()) {
+            DriverStation.reportError(
+                "Failed to reload music file: " + musicFile + " during play attempt.",
+                false
+            );
+            return new Noop();
+        }
+        System.out.println("Playing music...");
         return this.run(() -> orchestra.play());
     }
 }
