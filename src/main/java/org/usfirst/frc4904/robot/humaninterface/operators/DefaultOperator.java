@@ -27,12 +27,12 @@ public class DefaultOperator extends Operator {
 
         OrchestraSubsystem.loadSong(
             "delfino",
-            1,
+            2,
             RobotMap.Component.FLdrive,
             RobotMap.Component.FRdrive
         );
         joystick.button7.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("delfino")));
-        // manual extension and retraction
+        // // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
         // joystick.button3.onFalse(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> 0));
         // joystick.button5.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> 0.45));
