@@ -211,7 +211,7 @@ public class RobotMap {
             0.0473,
             4.5
         );
-        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0,0,90));
+        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 90));
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
@@ -226,10 +226,7 @@ public class RobotMap {
             1
         );
 
-        HumanInput.Driver.xbox = new CustomCommandXbox(
-            Port.HumanInput.xboxPort,
-            0.01
-        );
+        HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {
@@ -253,11 +250,6 @@ public class RobotMap {
         // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
         Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
-        System.out.println("a");
-        OrchestraSubsystem.addSong(
-            "delfino",
-            new OrchestraSubsystem("chirp/delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
-        );
         // // Component.backRightWheelTalon.setSafetyEnabled(false);
         // // Component.frontRightWheelTalon.setSafetyEnabled(false);
         // // Component.backLeftWheelTalon.setSafetyEnabled(false);

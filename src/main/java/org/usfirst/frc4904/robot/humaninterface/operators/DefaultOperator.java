@@ -1,5 +1,7 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.standard.commands.CreateAndDisown;
@@ -22,13 +24,14 @@ public class DefaultOperator extends Operator {
     @Override
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
-        //Orchestra
-        joystick.button7.onTrue(
-            new CreateAndDisown(() -> {
-                System.out.println("I am inside your life");
-                return OrchestraSubsystem.c_playSong("delfino");
-            })
+
+        OrchestraSubsystem.loadSong(
+            "delfino",
+            1,
+            RobotMap.Component.FLdrive,
+            RobotMap.Component.FRdrive
         );
+        joystick.button7.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("delfino")));
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
         // joystick.button3.onFalse(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> 0));

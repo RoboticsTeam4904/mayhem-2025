@@ -1,116 +1,95 @@
 package org.usfirst.frc4904.robot.subsystems;
 
 import com.ctre.phoenix6.Orchestra;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
-import org.usfirst.frc4904.standard.commands.Noop;
+import java.util.stream.Stream;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
-import org.usfirst.frc4904.robot.RobotMap;
 
 /** Orchestra™ */
 public class OrchestraSubsystem extends SubsystemBase {
 
-    private static final HashMap<String, OrchestraSubsystem> orchestras = new HashMap<>();
+    private static final HashMap<String, OrchestraSubsystem> songs = new HashMap<>();
 
     /**
-     * Register an instance of <code>OrchestraSubsystem</code> to be played later.
-     * @param name The name of the song.
-     * @param orchestra The instance of <code>OrchestraSubsystem</code>.
+     * Loads a song to be played later with {@link OrchestraSubsystem#playSong(String)}.
+     * <p>
+     * Files for the song should be located at {@code deploy/chirp/<name>_<track>.chrp}
+     *
+     * @param name The name of the song to load.
+     * @param tracks The number of tracks the song has.
+     * @param motors The motors that will be used to play the song. There should be at least as many motors as there are tracks.
      */
-    public static void addSong(String name, OrchestraSubsystem orchestra) {
-        orchestras.put(name, orchestra);
+    public static void loadSong(String name, int tracks, CANTalonFX... motors) {
+        songs.put(name, new OrchestraSubsystem(name, tracks, motors));
     }
 
     /**
-     * Play a song that was already created with <code>OrchestraSubsystem.addSong()</code>.
+     * Play a song that was already loaded with {@link OrchestraSubsystem#loadSong(String, int, CANTalonFX...)}.
      * @param name The name of the song to play.
-     * @return A {@link Command} that plays the song (or a {@link Noop} command if the song does not exist).
+     * @return Whether the song was successfully played.
      */
-    public static Command c_playSong(String name) {
-        OrchestraSubsystem orchestra = orchestras.get(name);
-
-        System.out.println("tried play" + name);
+    public static boolean playSong(String name) {
+        OrchestraSubsystem orchestra = songs.get(name);
 
         if (orchestra == null) {
             System.out.println("Song '" + name + "' does not exist");
-            return new Noop();
+            return false;
         }
 
-        System.out.println("going through with play" + name);
-
-        return orchestra.c_play(RobotMap.Component.FLdrive,RobotMap.Component.FRdrive);
+        return orchestra.play();
     }
 
-    Orchestra orchestra = new Orchestra();
+    public static String PATH = "/home/lvuser/deploy/chirp/";
 
-    /**
-     * Create an instance of <code>OrchestraSubsystem</code> to be played later. Use with <code>OrchestraSubsystem.addSong()</code>.
-     *
-     * @param file The file path of the .chrp file for the song. Needs to be in robot/chirp.
-     * @param tracks The amount of tracks in the song.
-     * @param motors The motors that will be used to play the song. One motor will be assigned to each track, and once
-     *               all tracks are filled, it will wrap around and start assigning multiple motors to tracks.
-     *               There should be at least as many motors as there are tracks in the song.
-     */
-    public OrchestraSubsystem(String file, int tracks, CANTalonFX... motors) {
-        System.out.println("Initializing Orchestra with file: " + file);
+    private final Orchestra[] orchestras;
+    public final String songName;
+
+    private OrchestraSubsystem(String name, int tracks, CANTalonFX... motors) {
+        songName = name;
+
         if (motors.length < tracks) {
-            DriverStation.reportWarning(
-                String.format(
-                    "Not enough motors for song '%s' (Got: %d, Recommended: %d)",
-                    file,
-                    motors.length,
-                    tracks
-                ),
-                false
+            System.out.printf(
+                "Not enough motors for song '%s' (Got: %d, Recommended: %d).%n",
+                name,
+                motors.length,
+                tracks
             );
         }
 
-        System.out.println("Adding " + motors.length + " instruments...");
-        for (int i = 0; i < motors.length; i++) {
-            System.out.println(i);
-            System.out.println(i%tracks);
-            orchestra.addInstrument(motors[i]);
-        }
-        // orchestra.addInstrument(RobotMap.Component.FRdrive,1);
-        // orchestra.addInstrument(RobotMap.Component.FLdrive,1);
+        orchestras = (Orchestra[]) Stream.of(tracks)
+            .map(track -> {
+                var orchestra = new Orchestra();
 
+                String path = PATH + name + "_" + track + ".chrp";
+                if (!orchestra.loadMusic(path).isOK()) {
+                    System.out.printf(
+                        "Failed to load song '%s', track %d. Make sure the file '%s' exists.%n",
+                        path,
+                        track,
+                        path
+                    );
+                }
 
-        var loadSuccess = orchestra.loadMusic(file);
-        if (!loadSuccess.isOK()) {
-            DriverStation.reportError(
-                "Failed to load music file: " +
-                file +
-                ". Verify the file exists and path is correct.",
-                false
-            );
-        } else {
-            System.out.println("Successfully loaded music file: " + file);
-        }
+                for (int i = track; i < motors.length; i += tracks) {
+                    orchestra.addInstrument(motors[i], 0);
+                }
+
+                return orchestra;
+            })
+            .toArray();
     }
 
-    public Command c_play(CANTalonFX motor1, CANTalonFX motor2) {
-        // orchestra.addInstrument(motor1,1);
-        // orchestra.addInstrument(motor2,2);
-        System.out.println("Attempting to play music...");
-        String musicFile = "home/lvuser/deploy/chirp/delfinoAttempt2.chrp";
+    public boolean play() {
+        boolean success = true;
 
-        var loadStatus = orchestra.loadMusic(musicFile);
-        if (!loadStatus.isOK()) {
-            DriverStation.reportError(
-                "Failed to reload music file: " +
-                musicFile +
-                " during play attempt. Status: " +
-                loadStatus.toString(),
-                false
-            );
-            return new Noop();
+        for (int i = 0; i < orchestras.length; i++) {
+            if (!orchestras[i].play().isOK()) {
+                System.out.println("Song '" + songName + "', track " + i + " failed to play");
+                success = false;
+            }
         }
-        System.out.println("Music loaded successfully, starting playback...");
-        var playStatus = orchestra.play();
-        System.out.println("Play command status: " + playStatus.toString());
-        return this.run(() -> orchestra.play());
+
+        return success;
     }
 }
