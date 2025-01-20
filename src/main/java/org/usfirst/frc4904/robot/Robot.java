@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import javax.swing.RowFilter.ComparisonType;
+
+import org.littletonrobotics.junction.Logger;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 // import java.util.function.BooleanSupplier;
 // import java.util.function.DoubleSupplier;
@@ -75,6 +77,7 @@ public class Robot extends CommandRobotBase {
         );
 
         AdvantageKitLogger.configureDataReceivers();
+        Logger.start();
     }
 
     @Override
