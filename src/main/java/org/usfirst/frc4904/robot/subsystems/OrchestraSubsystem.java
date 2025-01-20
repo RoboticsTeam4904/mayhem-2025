@@ -2,7 +2,9 @@ package org.usfirst.frc4904.robot.subsystems;
 
 import com.ctre.phoenix6.Orchestra;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
@@ -42,7 +44,7 @@ public class OrchestraSubsystem extends SubsystemBase {
 
     public static String PATH = "/home/lvuser/deploy/chirp/";
 
-    private final Orchestra[] orchestras;
+    private final List<Orchestra> orchestras = new ArrayList<>();
     public final String songName;
 
     private OrchestraSubsystem(String name, int tracks, CANTalonFX... motors) {
@@ -57,34 +59,32 @@ public class OrchestraSubsystem extends SubsystemBase {
             );
         }
 
-        orchestras = (Orchestra[]) Stream.of(tracks)
-            .map(track -> {
-                var orchestra = new Orchestra();
+        for (int track = 0; track < tracks; track++) {
+            var orchestra = new Orchestra();
 
-                String path = PATH + name + "_" + track + ".chrp";
-                if (!orchestra.loadMusic(path).isOK()) {
-                    System.out.printf(
-                        "Failed to load song '%s', track %d. Make sure the file '%s' exists.%n",
-                        path,
-                        track,
-                        path
-                    );
-                }
+            String path = PATH + name + "_" + track + ".chrp";
+            if (!orchestra.loadMusic(path).isOK()) {
+                System.out.printf(
+                    "Failed to load song '%s', track %d. Make sure the file '%s' exists.%n",
+                    path,
+                    track,
+                    path
+                );
+            }
 
-                for (int i = track; i < motors.length; i += tracks) {
-                    orchestra.addInstrument(motors[i], 0);
-                }
+            for (int i = track; i < motors.length; i += tracks) {
+                orchestra.addInstrument(motors[i], 0);
+            }
 
-                return orchestra;
-            })
-            .toArray();
+            orchestras.add(orchestra);
+        }
     }
 
     public boolean play() {
         boolean success = true;
 
-        for (int i = 0; i < orchestras.length; i++) {
-            if (!orchestras[i].play().isOK()) {
+        for (int i = 0; i < orchestras.size(); i++) {
+            if (!orchestras.get(i).play().isOK()) {
                 System.out.println("Song '" + songName + "', track " + i + " failed to play");
                 success = false;
             }
