@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+import org.usfirst.frc4904.robot.RobotMap;
 
 /** Orchestra™ */
 public class OrchestraSubsystem extends SubsystemBase {
@@ -39,7 +40,7 @@ public class OrchestraSubsystem extends SubsystemBase {
 
         System.out.println("going through with play" + name);
 
-        return orchestra.c_play();
+        return orchestra.c_play(RobotMap.Component.FLdrive,RobotMap.Component.FRdrive);
     }
 
     Orchestra orchestra = new Orchestra();
@@ -69,11 +70,16 @@ public class OrchestraSubsystem extends SubsystemBase {
 
         System.out.println("Adding " + motors.length + " instruments...");
         for (int i = 0; i < motors.length; i++) {
-            orchestra.addInstrument(motors[i], i % tracks);
+            System.out.println(i);
+            System.out.println(i%tracks);
+            orchestra.addInstrument(motors[i]);
         }
+        // orchestra.addInstrument(RobotMap.Component.FRdrive,1);
+        // orchestra.addInstrument(RobotMap.Component.FLdrive,1);
 
-        boolean loadSuccess = orchestra.loadMusic(file);
-        if (!loadSuccess) {
+
+        var loadSuccess = orchestra.loadMusic(file);
+        if (!loadSuccess.isOK()) {
             DriverStation.reportError(
                 "Failed to load music file: " +
                 file +
@@ -85,9 +91,12 @@ public class OrchestraSubsystem extends SubsystemBase {
         }
     }
 
-    public Command c_play() {
+    public Command c_play(CANTalonFX motor1, CANTalonFX motor2) {
+        // orchestra.addInstrument(motor1,1);
+        // orchestra.addInstrument(motor2,2);
         System.out.println("Attempting to play music...");
-        String musicFile = "deploy/chirp/delfino.chrp";
+        String musicFile = "home/lvuser/deploy/chirp/delfinoAttempt2.chrp";
+
         var loadStatus = orchestra.loadMusic(musicFile);
         if (!loadStatus.isOK()) {
             DriverStation.reportError(

@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import com.ctre.phoenix6.configs.AudioConfigs;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 
 // import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
@@ -58,7 +59,8 @@ public class Robot extends CommandRobotBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+    }
 
     @Override
     public void teleopInitialize() {
