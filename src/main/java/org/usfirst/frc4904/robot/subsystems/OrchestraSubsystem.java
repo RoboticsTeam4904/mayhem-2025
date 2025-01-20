@@ -75,7 +75,7 @@ public class OrchestraSubsystem extends SubsystemBase {
 
     public Command c_play() {
         System.out.println("trying to play");
-        System.out.println(orchestra.loadMusic("deploy/delfino.chrp"));
+        System.out.println(orchestra.loadMusic("deploy/chirp/delfino.chrp"));
         return this.run(() -> orchestra.play());
     }
 }
