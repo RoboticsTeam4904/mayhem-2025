@@ -91,12 +91,17 @@ public class OrchestraSubsystem extends SubsystemBase {
         var loadStatus = orchestra.loadMusic(musicFile);
         if (!loadStatus.isOK()) {
             DriverStation.reportError(
-                "Failed to reload music file: " + musicFile + " during play attempt.",
+                "Failed to reload music file: " +
+                musicFile +
+                " during play attempt. Status: " +
+                loadStatus.toString(),
                 false
             );
             return new Noop();
         }
-        System.out.println("Playing music...");
+        System.out.println("Music loaded successfully, starting playback...");
+        var playStatus = orchestra.play();
+        System.out.println("Play command status: " + playStatus.toString());
         return this.run(() -> orchestra.play());
     }
 }
