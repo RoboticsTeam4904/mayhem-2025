@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+
 /** Orchestra™ */
 public class OrchestraSubsystem extends SubsystemBase {
 
@@ -74,7 +75,7 @@ public class OrchestraSubsystem extends SubsystemBase {
 
     public Command c_play() {
         System.out.println("trying to play");
-        System.out.println(orchestra.loadMusic("../chirp/delfino.chrp"));
+        System.out.println(orchestra.loadMusic("deploy/delfino.chrp"));
         return this.run(() -> orchestra.play());
     }
 }
