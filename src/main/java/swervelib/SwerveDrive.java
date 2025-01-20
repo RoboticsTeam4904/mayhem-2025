@@ -58,6 +58,7 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import org.usfirst.frc4904.robot.AdvantageKitLogger;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
@@ -734,6 +735,12 @@ public class SwerveDrive {
         double maxModuleSpeedMPS = getMaximumModuleDriveVelocity().in(MetersPerSecond);
         desiredStates = kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates));
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxModuleSpeedMPS);
+
+        AdvantageKitLogger.updateSwerveModuleStates(
+            desiredStates,
+            getStates(),
+            getYaw().getDegrees()
+        );
 
         // Sets states
         for (SwerveModule module : swerveModules) {

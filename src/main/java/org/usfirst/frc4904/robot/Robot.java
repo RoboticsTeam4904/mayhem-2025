@@ -8,13 +8,13 @@ package org.usfirst.frc4904.robot;
 
 import static org.usfirst.frc4904.robot.Utils.nameCommand;
 
+import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import com.ctre.phoenix6.configs.AudioConfigs;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 
 // import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
@@ -59,8 +59,7 @@ public class Robot extends CommandRobotBase {
     }
 
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     @Override
     public void teleopInitialize() {
@@ -74,14 +73,13 @@ public class Robot extends CommandRobotBase {
                 driver::getTurnSpeed
             )
         );
+
+        AdvantageKitLogger.configureDataReceivers();
     }
 
     @Override
     public void teleopExecute() {
-        SmartDashboard.putBoolean(
-            "button",
-            RobotMap.HumanInput.Driver.xbox.x().getAsBoolean()
-        );
+        SmartDashboard.putBoolean("button", RobotMap.HumanInput.Driver.xbox.x().getAsBoolean());
         SmartDashboard.putNumber(
             "max angular velocity",
             RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
