@@ -32,7 +32,9 @@ public class OrchestraSubsystem extends SubsystemBase {
      * @return Whether the song was successfully played.
      */
     public static boolean playSong(String name) {
-        OrchestraSubsystem orchestra = songs.get(name);
+        stopAll();
+
+        var orchestra = songs.get(name);
 
         if (orchestra == null) {
             System.out.println("Song '" + name + "' does not exist");
@@ -42,10 +44,43 @@ public class OrchestraSubsystem extends SubsystemBase {
         return orchestra.play();
     }
 
+    /**
+     * Stop a song.
+     * @param name The name of the song to stop.
+     * @return Whether the song was successfully stopped.
+     */
+    public static boolean stopSong(String name) {
+        var orchestra = songs.get(name);
+
+        if (orchestra == null) {
+            System.out.println("Song '" + name + "' does not exist");
+            return false;
+        }
+
+        return orchestra.stop();
+    }
+
+    /**
+     * Stop all songs.
+     * @return Whether all songs were successfully stopped.
+     */
+    public static boolean stopAll() {
+        boolean success = true;
+
+        for (var song : songs.values()) {
+            if (song.playing && !song.stop()) {
+                success = false;
+            }
+        }
+
+        return success;
+    }
+
     public static String PATH = "/home/lvuser/deploy/chirp/";
 
     private final List<Orchestra> orchestras = new ArrayList<>();
     public final String songName;
+    public boolean playing = false;
 
     private OrchestraSubsystem(String name, int tracks, CANTalonFX... motors) {
         songName = name;
@@ -59,6 +94,8 @@ public class OrchestraSubsystem extends SubsystemBase {
             );
         }
 
+        // create a separate instance of Orchestra for each track because we can't
+        // figure out how to put multiple tracks into one .chrp file :(
         for (int track = 0; track < tracks; track++) {
             var orchestra = new Orchestra();
 
@@ -81,11 +118,30 @@ public class OrchestraSubsystem extends SubsystemBase {
     }
 
     public boolean play() {
+        playing = true;
+
         boolean success = true;
 
         for (int i = 0; i < orchestras.size(); i++) {
             if (!orchestras.get(i).play().isOK()) {
-                System.out.println("Song '" + songName + "', track " + i + " failed to play");
+                System.out.println("Song '" + songName + "', track " + i + " failed to play.");
+                success = false;
+            }
+        }
+
+        return success;
+    }
+
+    public boolean stop() {
+        if (!this.playing) return false;
+
+        playing = false;
+
+        boolean success = true;
+
+        for (int i = 0; i < orchestras.size(); i++) {
+            if (!orchestras.get(i).stop().isOK()) {
+                System.out.println("Song '" + songName + "', track " + i + " failed to stop.");
                 success = false;
             }
         }
