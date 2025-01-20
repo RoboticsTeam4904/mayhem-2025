@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
-
 /** Orchestra™ */
 public class OrchestraSubsystem extends SubsystemBase {
 
@@ -30,10 +29,14 @@ public class OrchestraSubsystem extends SubsystemBase {
     public static Command c_playSong(String name) {
         OrchestraSubsystem orchestra = orchestras.get(name);
 
+        System.out.println("tried play" + name);
+
         if (orchestra == null) {
-            DriverStation.reportWarning("Song '" + name + "' does not exist", false);
+            System.out.println("Song '" + name + "' does not exist");
             return new Noop();
         }
+
+        System.out.println("going through with play" + name);
 
         return orchestra.c_play();
     }
@@ -50,26 +53,28 @@ public class OrchestraSubsystem extends SubsystemBase {
      *               There should be at least as many motors as there are tracks in the song.
      */
     public OrchestraSubsystem(String file, int tracks, CANTalonFX... motors) {
+        System.out.println("I am inside your walls");
         if (motors.length < tracks) {
-            DriverStation.reportWarning(
+            System.out.println(
                 "Not enough motors passed to OrchestraSubsystem to play all tracks of the song '" +
                 file +
                 "'. (Got: " +
                 motors.length +
                 ", Recommended: " +
                 tracks +
-                ")",
-                false
+                ")"
             );
         }
 
         for (int i = 0; i < motors.length; i++) {
             orchestra.addInstrument(motors[i], i % tracks);
         }
-        orchestra.loadMusic(file);
+        System.out.println(orchestra.loadMusic(file));
     }
 
     public Command c_play() {
+        System.out.println("trying to play");
+        System.out.println(orchestra.loadMusic("../chirp/delfino.chrp"));
         return this.run(() -> orchestra.play());
     }
 }

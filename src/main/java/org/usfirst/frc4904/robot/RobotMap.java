@@ -42,7 +42,7 @@ public class RobotMap {
         public static class HumanInput {
 
             public static final int xboxPort = 0;
-            public static final int joystick = 1;
+            public static final int joystick = 2;
         }
 
         // 2023 robot constants // TODO: update ports for swerve
@@ -218,6 +218,8 @@ public class RobotMap {
         Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
         Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
         // Component.navx = new AHRS(SerialPort.Port.kMXP);
+        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
+        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
         Component.elevator = new MultiMotorSubsystem(
             new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
             new double[] { 1, -1 },
@@ -228,7 +230,7 @@ public class RobotMap {
             Port.HumanInput.xboxPort,
             0.01
         );
-        // HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+        HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {
         // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
@@ -251,10 +253,10 @@ public class RobotMap {
         // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
         Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
-
+        System.out.println("a");
         OrchestraSubsystem.addSong(
             "delfino",
-            new OrchestraSubsystem("delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
+            new OrchestraSubsystem("chirp/delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
         );
         // // Component.backRightWheelTalon.setSafetyEnabled(false);
         // // Component.frontRightWheelTalon.setSafetyEnabled(false);
