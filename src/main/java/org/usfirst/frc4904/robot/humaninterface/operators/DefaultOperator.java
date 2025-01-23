@@ -39,6 +39,15 @@ public class DefaultOperator extends Operator {
             RobotMap.Component.FRdrive
         );
         joystick.button8.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
+        OrchestraSubsystem.loadSong(
+            "coconutMall",
+            4,
+            RobotMap.Component.FLdrive,
+            RobotMap.Component.FRdrive,
+            RobotMap.Component.BLdrive,
+            RobotMap.Component.BRdrive
+        );
+        joystick.button9.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
