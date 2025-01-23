@@ -1,10 +1,8 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
-import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,24 +26,24 @@ public class DefaultOperator extends Operator {
         OrchestraSubsystem.loadSong(
             "delfino",
             2,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive
         );
         joystick.button7.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("delfino")));
         OrchestraSubsystem.loadSong(
             "circus",
             2,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive
         );
         joystick.button8.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
         OrchestraSubsystem.loadSong(
             "coconutNyoom",
             4,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive,
-            RobotMap.Component.BLdrive,
-            RobotMap.Component.BRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive,
+            RobotMap.Component.blDrive,
+            RobotMap.Component.brDrive
         );
         joystick.button9.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("coconutNyoom")));
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
