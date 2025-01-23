@@ -1,10 +1,8 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
-import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,8 +26,8 @@ public class DefaultOperator extends Operator {
         OrchestraSubsystem.loadSong(
             "delfino",
             2,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive
         );
         joystick.button7.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("delfino")));
         OrchestraSubsystem.loadSong(
