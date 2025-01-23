@@ -33,17 +33,17 @@ public class DefaultOperator extends Operator {
         OrchestraSubsystem.loadSong(
             "circus",
             2,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive
         );
         joystick.button8.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
         OrchestraSubsystem.loadSong(
             "coconutMall",
             4,
-            RobotMap.Component.FLdrive,
-            RobotMap.Component.FRdrive,
-            RobotMap.Component.BLdrive,
-            RobotMap.Component.BRdrive
+            RobotMap.Component.flDrive,
+            RobotMap.Component.frDrive,
+            RobotMap.Component.blDrive,
+            RobotMap.Component.brDrive
         );
         joystick.button9.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
