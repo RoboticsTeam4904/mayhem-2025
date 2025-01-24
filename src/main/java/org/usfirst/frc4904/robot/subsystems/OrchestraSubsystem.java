@@ -1,11 +1,12 @@
 package org.usfirst.frc4904.robot.subsystems;
 
 import com.ctre.phoenix6.Orchestra;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
 /** Orchestra™ */
@@ -21,9 +22,15 @@ public class OrchestraSubsystem extends SubsystemBase {
      * @param name The name of the song to load.
      * @param tracks The number of tracks the song has.
      * @param motors The motors that will be used to play the song. There should be at least as many motors as there are tracks.
+     *               Motors will be distributed as evenly as possible between the tracks, filling all tracks first, then going
+     *               back to add multiple motors to the same track (you can use nulls to skip over tracks when assigning motors).
      */
     public static void loadSong(String name, int tracks, CANTalonFX... motors) {
-        songs.put(name, new OrchestraSubsystem(name, tracks, motors));
+        if (songs.get(name) != null) {
+            System.out.println("Song '" + name + "' already exists");
+        } else {
+            songs.put(name, new OrchestraSubsystem(name, tracks, motors));
+        }
     }
 
     /**
@@ -76,6 +83,16 @@ public class OrchestraSubsystem extends SubsystemBase {
         return success;
     }
 
+    /**
+     * Loads a song and then returns a command to play it.
+     * See {@link OrchestraSubsystem#loadSong(String, int, CANTalonFX...)}.
+     * @return A {@link Command} to play the song.
+     */
+    public static Command c_loadAndPlaySong(String name, int tracks, CANTalonFX... motors) {
+        loadSong(name, tracks, motors);
+        return new InstantCommand(() -> playSong(name));
+    }
+
     public static String PATH = "/home/lvuser/deploy/chirp/";
 
     private final List<Orchestra> orchestras = new ArrayList<>();
@@ -110,7 +127,8 @@ public class OrchestraSubsystem extends SubsystemBase {
             }
 
             for (int i = track; i < motors.length; i += tracks) {
-                orchestra.addInstrument(motors[i], 0);
+                CANTalonFX motor = motors[i];
+                if (motor != null) orchestra.addInstrument(motor, 0);
             }
 
             orchestras.add(orchestra);

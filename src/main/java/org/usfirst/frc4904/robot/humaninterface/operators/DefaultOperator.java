@@ -23,29 +23,32 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
-        OrchestraSubsystem.loadSong(
-            "delfino",
-            2,
-            RobotMap.Component.flDrive,
-            RobotMap.Component.frDrive
+        joystick.button7.onTrue(
+            OrchestraSubsystem.c_loadAndPlaySong(
+                "delfino",
+                2,
+                RobotMap.Component.flDrive,
+                RobotMap.Component.frDrive
+            )
         );
-        joystick.button7.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("delfino")));
-        OrchestraSubsystem.loadSong(
-            "circus",
-            2,
-            RobotMap.Component.flDrive,
-            RobotMap.Component.frDrive
+        joystick.button8.onTrue(
+            OrchestraSubsystem.c_loadAndPlaySong(
+                "circus",
+                2,
+                RobotMap.Component.flDrive,
+                RobotMap.Component.frDrive
+            )
         );
-        joystick.button8.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
-        OrchestraSubsystem.loadSong(
-            "coconutMall",
-            4,
-            RobotMap.Component.flDrive,
-            RobotMap.Component.frDrive,
-            RobotMap.Component.blDrive,
-            RobotMap.Component.brDrive
+        joystick.button9.onTrue(
+            OrchestraSubsystem.c_loadAndPlaySong(
+                "coconutMall",
+                4,
+                RobotMap.Component.flDrive,
+                RobotMap.Component.frDrive,
+                RobotMap.Component.blDrive,
+                RobotMap.Component.brDrive
+            )
         );
-        joystick.button9.onTrue(new InstantCommand(() -> OrchestraSubsystem.playSong("circus")));
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
         // manual extension and retraction
         // joystick.button3.onTrue(RobotMap.Component.arm.armExtensionSubsystem.c_controlVelocity(() -> -0.45));
