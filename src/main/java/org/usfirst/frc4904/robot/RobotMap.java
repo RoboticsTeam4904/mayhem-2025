@@ -19,6 +19,11 @@ import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
+import com.studica.frc.AHRS.NavXComType;
+
+
 
 // import org.usfirst.frc4904.standard.LogKitten;
 
@@ -143,6 +148,7 @@ public class RobotMap {
         public static DutyCycleEncoder brTurnEncoder;
 
         public static AHRS navx;
+        public static SPI serialPort;
 
         // public static RobotUDP robotUDP;
         //Subsystems
@@ -207,7 +213,7 @@ public class RobotMap {
 
         Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
         Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
-        // Component.navx = new AHRS(SerialPort.Port.kMXP);
+        Component.navx = new AHRS(NavXComType.kMXP_SPI);
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
         Component.elevator = new MultiMotorSubsystem(

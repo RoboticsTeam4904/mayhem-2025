@@ -33,7 +33,7 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
 
     public double getX() { //left is xy, right is turn
         double raw = RobotMap.HumanInput.Driver.xbox.getLeftX();
-        return scaleGain(raw, SPEED_EXP);
+        return scaleGain(-raw, SPEED_EXP);
     }
 
     public double getY() {

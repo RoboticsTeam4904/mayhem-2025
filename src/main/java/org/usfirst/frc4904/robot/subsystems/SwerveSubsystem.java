@@ -243,7 +243,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier translationY,
         DoubleSupplier rotation
     ) {
-        // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
+        swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
         return run(() -> {
             // Make the robot move
             driveFieldOriented(
@@ -295,7 +295,7 @@ public class SwerveSubsystem extends SubsystemBase {
      *
      * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
      *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
-     *                      torwards port (left).  In field-relative mode, positive x is away from the alliance wall
+     *                      torwards port (left).  In field-relative m ode, positive x is away from the alliance wall
      *                      (field North) and positive y is torwards the left wall when looking through the driver station
      *                      glass (field West).
      * @param rotation      Robot angular rate, in radians per second. CCW positive.  Unaffected by field/robot

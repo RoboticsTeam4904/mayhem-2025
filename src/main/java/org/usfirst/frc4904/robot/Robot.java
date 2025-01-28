@@ -111,6 +111,8 @@ public class Robot extends CommandRobotBase {
 
         // //navx gyro readings
         // SmartDashboard.putNumber("navx angle", RobotMap.Component.navx.getAngle());
+        // SmartDashboard.putBoolean("navx calibrating", RobotMap.Component.navx.isCalibrating());
+        // SmartDashboard.putBoolean("navx connected", RobotMap.Component.navx.isConnected());
     }
 
     @Override
