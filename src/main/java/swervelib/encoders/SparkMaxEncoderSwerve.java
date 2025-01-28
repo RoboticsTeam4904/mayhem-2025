@@ -25,10 +25,13 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder {
      * An {@link Alert} for if there is a failure configuring the encoder.
      */
     private Alert failureConfiguring;
+
     /**
      * An {@link Alert} for if there is a failure configuring the encoder offset.
      */
+    @SuppressWarnings("unused")
     private Alert offsetFailure;
+
     /**
      * {@link SparkMaxBrushedMotorSwerve} or {@link SparkMaxSwerve} instance.
      */
@@ -69,6 +72,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder {
      *
      * @param config Lambda supplier returning the error state.
      */
+    @SuppressWarnings("unused")
     private void configureSparkMax(Supplier<REVLibError> config) {
         for (int i = 0; i < maximumRetries; i++) {
             if (config.get() == REVLibError.kOk) {

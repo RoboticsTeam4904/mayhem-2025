@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import javax.swing.RowFilter.ComparisonType;
-
 import org.littletonrobotics.junction.Logger;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 // import java.util.function.BooleanSupplier;
@@ -45,6 +44,7 @@ import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
+@SuppressWarnings("unused") //stop yellow text from existing
 public class Robot extends CommandRobotBase {
 
     private final Driver driver = new SwerveGain();

@@ -4,6 +4,7 @@ package org.usfirst.frc4904.robot;
 //import com.revrobotics.CANSparkMax.IdleMode; //broken
 //imports for rev robotics neo 550s
 import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -12,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
 import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
@@ -19,11 +21,6 @@ import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
-import com.studica.frc.AHRS.NavXComType;
-
-
 
 // import org.usfirst.frc4904.standard.LogKitten;
 
