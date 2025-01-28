@@ -7,6 +7,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 //imports for rev robotics neo 550s
 import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,16 +22,13 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import java.io.File;
-import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
-import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
-import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 // import org.usfirst.frc4904.standard.LogKitten;
 
-//import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
+// import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 //import org.usfirst.frc4904.standard.subsystems.motor.SparkMaxMotorSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -56,10 +55,6 @@ public class RobotMap {
             public static final int BACK_LEFT_TURN = 7;
             public static final int BACK_RIGHT_DRIVE = 4;
             public static final int BACK_RIGHT_TURN = 8;
-            public static final int RAMP = -1;
-            public static final int INTAKE = -1;
-            public static final int ELEVATOR_MOTOR_ONE = -1;
-            public static final int ELEVATOR_MOTOR_TWO = -1;
         }
 
         public static class PWM {
@@ -157,9 +152,6 @@ public class RobotMap {
         // public static RobotUDP robotUDP;
         //Subsystems
         public static SwerveSubsystem chassis;
-        public static SingleMotorSubsystem ramp;
-        public static SingleMotorSubsystem intake;
-        public static MultiMotorSubsystem elevator;
 
         //Motor time
         public static CANTalonFX rampMotor;
@@ -196,14 +188,8 @@ public class RobotMap {
         public static class Driver {
 
             public static CustomCommandXbox xbox;
-            public static CustomCommandJoystick xyJoystick;
-            public static CustomCommandJoystick turnJoystick;
         }
 
-        public static class Operator {
-
-            public static CustomCommandJoystick joystick;
-        }
     }
 
     public RobotMap() {
@@ -213,29 +199,9 @@ public class RobotMap {
             0.0473,
             4.5
         );
-        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
-        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
-        Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
-        Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
-        // Component.navx = new AHRS(SerialPort.Port.kMXP);
+        Component.navx = new AHRS(NavXComType.kMXP_SPI);
 
-        HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
-            Port.HumanInput.xyJoystickPort,
-            0.01
-        );
-        HumanInput.Driver.turnJoystick = new CustomCommandJoystick(
-            Port.HumanInput.zJoystickPort,
-            0.01
-        );
-        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
-        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
-        Component.elevator = new MultiMotorSubsystem(
-            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
-            new double[] { 1, -1 },
-            1
-        );
-        HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
         // // // UDP things
         // // try {
         // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
@@ -259,14 +225,10 @@ public class RobotMap {
         Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
         // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
 
-        OrchestraSubsystem.addSong(
-            "delfino",
-            new OrchestraSubsystem("delfino.chrp", 2, Component.FLdrive, Component.FRdrive)
-        );
-        // // Component.backRightWheelTalon.setSafetyEnabled(false);
-        // // Component.frontRightWheelTalon.setSafetyEnabled(false);
-        // // Component.backLeftWheelTalon.setSafetyEnabled(false);
-        // // Component.frontLeftWheelTalon.setSafetyEnabled(false);
+        // Component.backRightWheelTalon.setSafetyEnabled(false);
+        // Component.frontRightWheelTalon.setSafetyEnabled(false);
+        // Component.backLeftWheelTalon.setSafetyEnabled(false);
+        // Component.frontLeftWheelTalon.setSafetyEnabled(false);
 
         // //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
         // //FR is ++, FL is +-, BR is -+, BL is --
@@ -291,7 +253,7 @@ public class RobotMap {
         // Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR, "BRmodule");
         // SwerveModule[] modules = {Component.FLmodule, Component.FRmodule, Component.BLmodule, Component.BRmodule};
 
-        // //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
+        //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
         // Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));
 
         // // Autonomous.autonCommand = Component.chassis.c_buildPathPlannerAuto(

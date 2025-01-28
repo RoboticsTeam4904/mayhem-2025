@@ -19,7 +19,7 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
     }
 
     public void bindCommands() {
-        RobotMap.HumanInput.Driver.turnJoystick.button1.onTrue(
+        RobotMap.HumanInput.Driver.xbox.b().onTrue(
             new InstantCommand(() -> {
                 RobotMap.Component.chassis.brickMode();
             })
@@ -27,25 +27,25 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
     }
 
     public double getX() {
-        double raw = RobotMap.HumanInput.Driver.xyJoystick.getX();
+        double raw = RobotMap.HumanInput.Driver.xbox.getLeftX();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getY() {
-        double raw = RobotMap.HumanInput.Driver.xyJoystick.getY();
+        double raw = RobotMap.HumanInput.Driver.xbox.getLeftY();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getTurnSpeed() {
-        double raw = RobotMap.HumanInput.Driver.turnJoystick.getX();
+        double raw = RobotMap.HumanInput.Driver.xbox.getRightX();
         return scaleGain(raw, TURN_EXP);
     }
 
     public boolean getButton1Pressed() {
-        RobotMap.HumanInput.Driver.turnJoystick.button1.onTrue(
+        RobotMap.HumanInput.Driver.xbox.b().onTrue(
             new InstantCommand(() -> SwerveGain.button1 = true)
         );
-        RobotMap.HumanInput.Driver.turnJoystick.button1.onFalse(
+        RobotMap.HumanInput.Driver.xbox.b().onFalse(
             new InstantCommand(() -> SwerveGain.button1 = false)
         );
         return SwerveGain.button1;

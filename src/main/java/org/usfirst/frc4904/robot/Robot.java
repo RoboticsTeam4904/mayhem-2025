@@ -35,17 +35,13 @@ import org.usfirst.frc4904.robot.RobotMap.Component;
 //import java.util.function.Supplier;
 
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
-import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
-//import org.usfirst.frc4904.standard.CommandRobotBase;
 // import org.usfirst.frc4904.standard.custom.CommandSendableChooser;
 import org.usfirst.frc4904.standard.humaninput.Driver;
-import org.usfirst.frc4904.standard.humaninput.Operator;
 
 public class Robot extends CommandRobotBase {
 
     private final Driver driver = new SwerveGain();
-    private final Operator operator = new DefaultOperator();
     private final RobotMap map = new RobotMap();
 
     protected double scaleGain(double input, double gain, double exp) {
@@ -63,7 +59,6 @@ public class Robot extends CommandRobotBase {
     @Override
     public void teleopInitialize() {
         driver.bindCommands();
-        operator.bindCommands();
 
         RobotMap.Component.chassis.setDefaultCommand(
             RobotMap.Component.chassis.driveCommand(
@@ -76,10 +71,6 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopExecute() {
-        SmartDashboard.putBoolean(
-            "button",
-            RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean()
-        );
         SmartDashboard.putNumber(
             "max angular velocity",
             RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
