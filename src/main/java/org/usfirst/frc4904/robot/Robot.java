@@ -70,8 +70,8 @@ public class Robot extends CommandRobotBase {
 
         RobotMap.Component.chassis.setDefaultCommand(
             RobotMap.Component.chassis.driveCommand(
-                driver::getX,
                 driver::getY,
+                driver::getX,
                 driver::getTurnSpeed
             )
         );

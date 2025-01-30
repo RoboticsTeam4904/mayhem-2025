@@ -1,6 +1,6 @@
 {
   "imu": {
-    "type": "navx_i2c",
+    "type": "navx",
     "id": null,
     "canbus": null
   },
