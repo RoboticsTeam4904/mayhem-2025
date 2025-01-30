@@ -40,6 +40,7 @@ public class RobotMap {
         // 2023 robot constants // TODO: update ports for swerve
         public static class CANMotor {
 
+            //MOTOR TIME
             public static final int FRONT_LEFT_DRIVE = 1;
             public static final int FRONT_LEFT_TURN = 5;
             public static final int FRONT_RIGHT_DRIVE = 2;
