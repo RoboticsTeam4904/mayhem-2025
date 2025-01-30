@@ -68,7 +68,6 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder {
      *
      * @param config Lambda supplier returning the error state.
      */
-    @SuppressWarnings("unused")
     private void configureSparkMax(Supplier<REVLibError> config) {
         for (int i = 0; i < maximumRetries; i++) {
             if (config.get() == REVLibError.kOk) {

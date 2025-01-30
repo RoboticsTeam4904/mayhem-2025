@@ -4,7 +4,9 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.encoders.ThriftyNovaEncoderSwerve;
 import swervelib.motors.SwerveMotor;
+import swervelib.motors.ThriftyNovaSwerve;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
@@ -85,7 +87,10 @@ public class ModuleJson {
             );
         } else if (physicalCharacteristics.conversionFactor.works() && !conversionFactors.works()) {
             conversionFactors = physicalCharacteristics.conversionFactor;
-        } else if (physicalCharacteristics.conversionFactor.works()) { // If both are defined, override 0 with the physical characterstics input.
+        } else if (
+            physicalCharacteristics.conversionFactor.works()
+        ) // If both are defined, override 0 with the physical characterstics input.
+        {
             conversionFactors.angle = conversionFactors.isAngleEmpty()
                 ? physicalCharacteristics.conversionFactor.angle
                 : conversionFactors.angle;
@@ -106,6 +111,11 @@ public class ModuleJson {
             absEncoder != null &&
             (absEncoder instanceof SparkMaxEncoderSwerve &&
                 angleMotor.getMotor() instanceof SparkMax)
+        ) {
+            angleMotor.setAbsoluteEncoder(absEncoder);
+        } else if (
+            (absEncoder instanceof ThriftyNovaEncoderSwerve &&
+                angleMotor instanceof ThriftyNovaSwerve)
         ) {
             angleMotor.setAbsoluteEncoder(absEncoder);
         }

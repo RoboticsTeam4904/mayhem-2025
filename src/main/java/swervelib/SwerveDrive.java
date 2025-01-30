@@ -94,7 +94,7 @@ public class SwerveDrive {
     /**
      * Swerve modules.
      */
-    public final SwerveModule[] swerveModules;
+    private final SwerveModule[] swerveModules;
     /**
      * WPILib {@link Notifier} to keep odometry up to date.
      */
