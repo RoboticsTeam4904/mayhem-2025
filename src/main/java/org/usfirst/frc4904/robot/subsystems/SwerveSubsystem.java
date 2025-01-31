@@ -273,18 +273,12 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier angularRotationX
     ) {
         return run(() -> {
-            // Make the robot move
-            swerveDrive.drive(
-                new Translation2d(
-                    Math.pow(translationX.getAsDouble(), 1) *
-                    swerveDrive.getMaximumChassisVelocity(),
-                    Math.pow(translationY.getAsDouble(), 1) *
-                    swerveDrive.getMaximumChassisVelocity()
-                ),
-                Math.pow(angularRotationX.getAsDouble(), 1) *
-                swerveDrive.getMaximumChassisAngularVelocity(),
-                true,
-                false
+            swerveDrive.driveFieldOriented(
+                new ChassisSpeeds(
+                    Math.pow(translationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(translationY.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(angularRotationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisAngularVelocity()
+                    )
             );
         });
     }
