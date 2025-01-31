@@ -7,9 +7,11 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
-    public static double UP_VOLTAGE = 1;
-    public static double DOWN_VOLTAGE = 1;
+    // TODO maybe remove once feedforward is added
+    public static final double UP_VOLTAGE = 1;
+    public static final double DOWN_VOLTAGE = 1;
 
+    // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
         INTAKE,
         OUTTAKE,
@@ -24,6 +26,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             UP_VOLTAGE,
             DOWN_VOLTAGE
         );
+        // TODO change (obviously)
         positions.put(Position.INTAKE, 0.0);
         positions.put(Position.OUTTAKE, 4.0);
     }
