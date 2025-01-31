@@ -15,7 +15,8 @@ public class MultiMotorSubsystem extends SubsystemBase {
 
     /**
      * Control multiple motors with one subsystem. For example, to have two motors where the second one is inverted, use:
-     * <code>new MultiMotorSubsystem(new CANTalonFX[]{motor1, motor2}, new int[]{1, -1}, voltage)</code>
+     * <p>
+     * {@code new MultiMotorSubsystem(new CANTalonFX[]{motor1, motor2}, new int[]{1, -1}, voltage)}
      *
      * @param motors the motors that the subsystem controls
      * @param relativeVoltages multiplied by forward/backwardVoltage for each motor - use to invert some motors, for example
@@ -27,7 +28,8 @@ public class MultiMotorSubsystem extends SubsystemBase {
 
     /**
      * Control multiple motors with one subsystem. For example, to have two motors where the second one is inverted, use:
-     * <code>new MultiMotorSubsystem(new CANTalonFX[]{motor1, motor2}, new int[]{1, -1}, voltage)</code>
+     * <p>
+     * {@code new MultiMotorSubsystem(new CANTalonFX[]{motor1, motor2}, new int[]{1, -1}, voltage)}
      *
      * @param motors the motors that the subsystem controls
      * @param relativeVoltages multiplied by forward/backwardVoltage for each motor - use to invert some motors, for example

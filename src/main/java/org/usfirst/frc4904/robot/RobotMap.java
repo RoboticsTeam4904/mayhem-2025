@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
-import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -150,7 +150,7 @@ public class RobotMap {
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
-        public static MultiMotorSubsystem elevator;
+        public static ElevatorSubsystem elevator;
 
         //Motor time
         public static CANTalonFX rampMotor;
@@ -196,6 +196,8 @@ public class RobotMap {
     }
 
     public RobotMap() {
+        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
@@ -203,22 +205,23 @@ public class RobotMap {
             4.5
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
         Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
         Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
-        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
-        Component.elevator = new MultiMotorSubsystem(
-            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
-            new double[] { 1, -1 },
-            1
+        Component.elevator = new ElevatorSubsystem(
+            Component.elevatorMotorOne,
+            Component.elevatorMotorTwo
         );
 
         HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+
         // // UDP things
         // try {
         //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
