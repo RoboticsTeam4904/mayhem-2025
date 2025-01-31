@@ -1,8 +1,5 @@
 package org.usfirst.frc4904.robot;
 
-//import com.ctre.phoenix.motorcontrol.InvertType; //broken
-//import com.revrobotics.CANSparkMax.IdleMode; //broken
-//imports for rev robotics neo 550s
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -222,13 +219,13 @@ public class RobotMap {
 
         HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
-        // // // UDP things
-        // // try {
-        // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
-        // // } catch (IOException ex) {
-        // //     LogKitten.f("Failed to initialize UDP subsystem");
-        // //     LogKitten.ex(ex);
-        // // }
+        // // UDP things
+        // try {
+        //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
+        // } catch (IOException ex) {
+        //     LogKitten.f("Failed to initialize UDP subsystem");
+        //     LogKitten.ex(ex);
+        // }
 
         // /***********************
         //  * Chassis Subsystem
