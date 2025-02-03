@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
-import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -150,7 +150,7 @@ public class RobotMap {
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
-        public static ElevatorSubsystem elevator;
+        public static MultiMotorSubsystem elevator;
 
         //Motor time
         public static CANTalonFX rampMotor;
@@ -214,9 +214,10 @@ public class RobotMap {
 
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
-        Component.elevator = new ElevatorSubsystem(
-            Component.elevatorMotorOne,
-            Component.elevatorMotorTwo
+        Component.elevator = new MultiMotorSubsystem(
+            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
+            new double[] { 1, -1 },
+            1
         );
 
         HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
