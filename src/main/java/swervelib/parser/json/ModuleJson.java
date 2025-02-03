@@ -85,9 +85,7 @@ public class ModuleJson {
             );
         } else if (physicalCharacteristics.conversionFactor.works() && !conversionFactors.works()) {
             conversionFactors = physicalCharacteristics.conversionFactor;
-        } else if (
-            physicalCharacteristics.conversionFactor.works()
-        ) { // If both are defined, override 0 with the physical characterstics input.
+        } else if (physicalCharacteristics.conversionFactor.works()) { // If both are defined, override 0 with the physical characterstics input.
             conversionFactors.angle = conversionFactors.isAngleEmpty()
                 ? physicalCharacteristics.conversionFactor.angle
                 : conversionFactors.angle;

@@ -214,7 +214,7 @@ public class RobotMap {
         Component.navx = new AHRS(NavXComType.kMXP_SPI);
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
-        //TODO: make it so that elevator isn't a multimotor subsystem, 
+        //TODO: make it so that elevator isn't a multimotor subsystem,
         //so that we combine it with the pid stuff so we have updown and smackable
         Component.elevator = new MultiMotorSubsystem(
             new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
