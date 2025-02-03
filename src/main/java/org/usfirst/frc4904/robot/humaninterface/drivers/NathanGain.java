@@ -92,10 +92,8 @@ public class NathanGain extends Driver {
 
         return NathanGain.isFlippy ? -turnSpeed : turnSpeed;
     }
-
     // @Override
     // public double getRotation() {
-    //     return 0; 
+    //     return 0;
     // }
 }
-

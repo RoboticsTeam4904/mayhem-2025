@@ -275,10 +275,13 @@ public class SwerveSubsystem extends SubsystemBase {
         return run(() -> {
             swerveDrive.driveFieldOriented(
                 new ChassisSpeeds(
-                    Math.pow(translationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
-                    Math.pow(translationY.getAsDouble(), 1) * swerveDrive.getMaximumChassisVelocity(),
-                    Math.pow(angularRotationX.getAsDouble(), 1) * swerveDrive.getMaximumChassisAngularVelocity()
-                    )
+                    Math.pow(translationX.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(translationY.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(angularRotationX.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisAngularVelocity()
+                )
             );
         });
     }
