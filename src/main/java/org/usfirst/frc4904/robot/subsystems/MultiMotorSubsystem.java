@@ -50,23 +50,25 @@ public class MultiMotorSubsystem extends SubsystemBase {
         }
     }
 
-    public Command c_setVoltage(double voltage) {
-        return this.run(() -> {
-                for (int i = 0; i < motors.length; i++) {
-                    motors[i].setVoltage(voltage * relativeVoltages[i]);
-                }
-            });
+    public void setVoltage(double voltage) {
+        for (int i = 0; i < motors.length; i++) {
+            motors[i].setVoltage(voltage * relativeVoltages[i]);
+        }
+    }
+
+    public Command c_holdVoltage(double voltage) {
+        return this.run(() -> setVoltage(voltage));
     }
 
     public Command c_forward() {
-        return this.c_setVoltage(forwardVoltage);
+        return this.c_holdVoltage(forwardVoltage);
     }
 
     public Command c_backward() {
-        return this.c_setVoltage(-backwardVoltage);
+        return this.c_holdVoltage(-backwardVoltage);
     }
 
     public Command c_stop() {
-        return this.c_setVoltage(0);
+        return this.c_holdVoltage(0);
     }
 }
