@@ -1,8 +1,5 @@
 package org.usfirst.frc4904.robot;
 
-//import com.ctre.phoenix.motorcontrol.InvertType; //broken
-//import com.revrobotics.CANSparkMax.IdleMode; //broken
-//imports for rev robotics neo 550s
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -200,6 +197,8 @@ public class RobotMap {
     }
 
     public RobotMap() {
+        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
@@ -207,12 +206,13 @@ public class RobotMap {
             4.5
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+
         Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
         Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
         Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
-        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
         // TODO pass encoder as 3rd arg
@@ -224,13 +224,14 @@ public class RobotMap {
 
         HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
-        // // // UDP things
-        // // try {
-        // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
-        // // } catch (IOException ex) {
-        // //     LogKitten.f("Failed to initialize UDP subsystem");
-        // //     LogKitten.ex(ex);
-        // // }
+
+        // // UDP things
+        // try {
+        //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
+        // } catch (IOException ex) {
+        //     LogKitten.f("Failed to initialize UDP subsystem");
+        //     LogKitten.ex(ex);
+        // }
 
         // /***********************
         //  * Chassis Subsystem
