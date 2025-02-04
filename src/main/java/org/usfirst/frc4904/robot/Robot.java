@@ -35,14 +35,10 @@ public class Robot extends CommandRobotBase {
     public void teleopInitialize() {
         driver.bindCommands();
         operator.bindCommands();
-        RobotMap.Component./*elevatorsubsystem*/.ElevatorEncoder.reset;
+        Component.elevator.encoder.reset();
 
-        RobotMap.Component.chassis.setDefaultCommand(
-            RobotMap.Component.chassis.driveCommand(
-                driver::getY,
-                driver::getX,
-                driver::getTurnSpeed
-            )
+        Component.chassis.setDefaultCommand(
+            Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
     }
 
