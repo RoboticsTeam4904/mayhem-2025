@@ -19,44 +19,36 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
     }
 
     public void bindCommands() {
-        RobotMap.HumanInput.Driver.xbox
-            .b()
-            .onTrue(
-                new InstantCommand(() -> {
-                    RobotMap.Component.chassis.brickMode();
-                })
-            );
-        RobotMap.HumanInput.Driver.xbox
-            .y()
-            .onTrue(
-                new InstantCommand(() -> {
-                    RobotMap.Component.chassis.zeroGyro();
-                })
-            );
+        RobotMap.HumanInput.Driver.turnJoystick.button1.onTrue(
+            new InstantCommand(() -> {
+                RobotMap.Component.chassis.brickMode();
+            })
+        );
     }
 
-    public double getX() { //left is xy, right is turn
-        double raw = RobotMap.HumanInput.Driver.xbox.getLeftX();
+    public double getX() {
+        double raw = RobotMap.HumanInput.Driver.xyJoystick.getX();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getY() {
-        double raw = RobotMap.HumanInput.Driver.xbox.getLeftY();
+        double raw = RobotMap.HumanInput.Driver.xyJoystick.getY();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getTurnSpeed() {
-        double raw = RobotMap.HumanInput.Driver.xbox.getRightX();
+        double raw = RobotMap.HumanInput.Driver.turnJoystick.getX();
         return scaleGain(raw, TURN_EXP);
     }
 
     public boolean getButton1Pressed() {
-        RobotMap.HumanInput.Driver.xbox
-            .x()
-            .onTrue(new InstantCommand(() -> SwerveGain.button1 = true));
-        RobotMap.HumanInput.Driver.xbox
-            .x()
-            .onFalse(new InstantCommand(() -> SwerveGain.button1 = false));
+        RobotMap.HumanInput.Driver.turnJoystick.button1.onTrue(
+            new InstantCommand(() -> SwerveGain.button1 = true)
+        );
+        RobotMap.HumanInput.Driver.turnJoystick.button1.onFalse(
+            new InstantCommand(() -> SwerveGain.button1 = false)
+        );
+
         return SwerveGain.button1;
     }
 }

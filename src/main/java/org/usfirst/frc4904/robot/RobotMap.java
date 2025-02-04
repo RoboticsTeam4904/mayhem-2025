@@ -31,7 +31,9 @@ public class RobotMap {
 
         public static class HumanInput {
 
-            public static final int xboxPort = 0;
+            public static final int xyJoystickPort = 0;
+            public static final int zJoystickPort = 1;
+
             public static final int joystick = 2;
         }
 
@@ -184,6 +186,8 @@ public class RobotMap {
         public static class Driver {
 
             public static CustomCommandXbox xbox;
+            public static CustomCommandJoystick xyJoystick;
+            public static CustomCommandJoystick turnJoystick;
         }
 
         public static class Operator {
@@ -218,16 +222,21 @@ public class RobotMap {
             null
         );
 
-        HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
-        HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+        HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
+            Port.HumanInput.xyJoystickPort,
+            0.01
+        );
+        HumanInput.Driver.turnJoystick = new CustomCommandJoystick(
+            Port.HumanInput.zJoystickPort,
+            0.01
+        );
+        Component.elevator = new MultiMotorSubsystem(
+            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
+            new double[] { 1, -1 },
+            1
+        );
 
-        // // UDP things
-        // try {
-        //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
-        // } catch (IOException ex) {
-        //     LogKitten.f("Failed to initialize UDP subsystem");
-        //     LogKitten.ex(ex);
-        // }
+        HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
 
         // /***********************
         //  * Chassis Subsystem
