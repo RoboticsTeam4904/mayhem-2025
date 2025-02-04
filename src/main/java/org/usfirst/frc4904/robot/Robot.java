@@ -34,8 +34,8 @@ public class Robot extends CommandRobotBase {
     @Override
     public void teleopInitialize() {
         driver.bindCommands();
-        operator.bindCommands();
-        Component.elevator.encoder.reset();
+        // operator.bindCommands();
+        //Component.elevator.encoder.reset();
 
         Component.chassis.setDefaultCommand(
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)

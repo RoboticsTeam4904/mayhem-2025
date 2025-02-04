@@ -207,20 +207,20 @@ public class RobotMap {
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
 
-        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
-        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
+        // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
+        // Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
-        Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
-        Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
+        // Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
+        // Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
 
-        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
-        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
+        // Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
+        // Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
         // TODO pass encoder as 3rd arg
-        Component.elevator = new ElevatorSubsystem(
-            Component.elevatorMotorOne,
-            Component.elevatorMotorTwo,
-            null
-        );
+        // Component.elevator = new ElevatorSubsystem(
+        //     Component.elevatorMotorOne,
+        //     Component.elevatorMotorTwo,
+        //     null
+        // );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
@@ -229,11 +229,6 @@ public class RobotMap {
         HumanInput.Driver.turnJoystick = new CustomCommandJoystick(
             Port.HumanInput.zJoystickPort,
             0.01
-        );
-        Component.elevator = new MultiMotorSubsystem(
-            new CANTalonFX[] { Component.elevatorMotorOne, Component.elevatorMotorTwo },
-            new double[] { 1, -1 },
-            1
         );
 
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
