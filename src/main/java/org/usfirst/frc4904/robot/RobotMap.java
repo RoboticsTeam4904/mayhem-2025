@@ -215,11 +215,10 @@ public class RobotMap {
         Component.navx = new AHRS(NavXComType.kMXP_SPI);
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
-        // TODO pass encoders as 3rd and 4th arg
+        // TODO pass encoder as 3rd arg
         Component.elevator = new ElevatorSubsystem(
             Component.elevatorMotorOne,
             Component.elevatorMotorTwo,
-            null,
             null
         );
 

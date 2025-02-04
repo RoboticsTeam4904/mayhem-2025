@@ -1,20 +1,12 @@
 package org.usfirst.frc4904.robot.subsystems;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import org.usfirst.frc4904.robot.Utils;
-import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
@@ -33,8 +25,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double kD = 0;
 
     public final ArmFeedforward feedforward; // TODO not an arm anymore
-    public final Encoder encoder1;
-    public final Encoder encoder2;
+    public final Encoder encoder;
 
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
@@ -45,22 +36,15 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static HashMap<Position, Double> positions = new HashMap<>();
 
     // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
-    public ElevatorSubsystem(
-        CANTalonFX motor1,
-        CANTalonFX motor2,
-        Encoder encoder1,
-        Encoder encoder2
-    ) {
+    public ElevatorSubsystem(CANTalonFX motor1, CANTalonFX motor2, Encoder encoder) {
         super(
             new CANTalonFX[] { motor1, motor2 },
             new double[] { 1, -1 },
             0 // if we ever want to have up/down commands that use a set voltage in addition to PID, put that voltage here
         );
         this.feedforward = new ArmFeedforward(kG, kS, kV, kA);
-        this.encoder1 = encoder1;
-        this.encoder2 = encoder2;
-        encoder1.setDistancePerPulse(5);
-        encoder2.setDistancePerPulse(5);
+        this.encoder = encoder;
+        encoder.setDistancePerPulse(5);
 
         // TODO change (obviously)
         positions.put(Position.INTAKE, 0.0);
@@ -68,13 +52,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public double GetDistance() {
-        double d1 = encoder1.getDistance();
-        double d2 = encoder2.getDistance();
-
-        // TODO check if they are way off of each other and complain or something idk
-
-        // TODO is average correct? or does it need to be a different operation to account for the fact that the motors spin in opposing directions
-        return (d1 + d2) / 2;
+        return encoder.getDistance();
     }
 
     public Command c_controlAngularVelocity(DoubleSupplier degPerSecDealer) {
