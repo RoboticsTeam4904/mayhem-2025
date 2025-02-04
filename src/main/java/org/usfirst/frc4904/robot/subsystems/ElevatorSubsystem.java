@@ -1,12 +1,19 @@
 package org.usfirst.frc4904.robot.subsystems;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.usfirst.frc4904.robot.Utils;
+import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
@@ -24,7 +31,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double kI = 0.03;
     public static final double kD = 0;
 
-    public final ArmFeedforward feedforward; // TODO not an arm anymore
+    public final double MAX_VEL = 1;
+    public final double MAX_ACCEL = 1;
+
+    public final ElevatorFeedforward feedforward;
     public final Encoder encoder;
 
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
@@ -42,114 +52,106 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             new double[] { 1, -1 },
             0 // if we ever want to have up/down commands that use a set voltage in addition to PID, put that voltage here
         );
-        this.feedforward = new ArmFeedforward(kG, kS, kV, kA);
+        this.feedforward = new ElevatorFeedforward(kG, kS, kV, kA);
         this.encoder = encoder;
+
+        // TODO what even is this
         encoder.setDistancePerPulse(5);
 
         // TODO change (obviously)
         positions.put(Position.INTAKE, 0.0);
         positions.put(Position.OUTTAKE, 4.0);
+
+        for (var pos : Position.values()) {
+            if (positions.get(pos) == null) {
+                System.err.println(
+                    "ElevatorSubsystem.Position." +
+                    pos.name() +
+                    " is not defined in 'positions' map"
+                );
+            }
+        }
     }
 
-    // public double GetDistance() {
-    //     return encoder.getDistance();
-    // }
+    public double getDistance() {
+        return encoder.getDistance();
+    }
 
-    // public Command c_controlAngularVelocity(DoubleSupplier degPerSecDealer) {
-    //     // TODO
-    //     // var cmd = this.run(() -> {
-    //     //     var ff = this.feedforward.calculate(
-    //     //         Units.degreesToRadians(getCurrentAngleDegrees()),
-    //     //         Units.degreesToRadians(degPerSecDealer.getAsDouble())
-    //     //     );
-    //     //     SmartDashboard.putNumber("feedforward", ff);
-    //     //     this.setVoltage(ff);
-    //     // });
-    //     // cmd.setName("arm - c_controlAngularVelocity");
-    //     //
-    //     // return cmd;
-    // }
+    public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
+        var cmd =
+            this.run(() -> {
+                    var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
+                    SmartDashboard.putNumber("feedforward", ff);
+                    this.setVoltage(ff);
+                });
+        cmd.setName("elevator - c_controlVelocity");
 
-    // public Command c_gotoPosition(Position pos) {
-    //     return c_gotoPosition(pos, null);
-    // }
+        return cmd;
+    }
 
-    // public Command c_gotoPosition(Position pos, Supplier<Command> onArrivalCommandDealer) {
-    //     Double height = positions.get(pos);
+    public Command c_gotoPosition(Position pos) {
+        return c_gotoPosition(pos, null);
+    }
 
-    //     if (height == null) {
-    //         System.err.println(
-    //             "ElevatorSubsystem.Position." + pos.name() + " is not defined in 'positions' map"
-    //         );
-    //         return new Noop();
-    //     }
+    public Command c_gotoPosition(Position pos, Supplier<Command> onArrivalCommandDealer) {
+        Double height = positions.get(pos);
 
-    //     return c_gotoHeight(height, onArrivalCommandDealer);
-    // }
+        if (height == null) return new Noop(); // not good
 
-    // public Command c_gotoHeight(double height, Supplier<Command> onArrivalCommandDealer) {
-    //     // TODO
-    //     // ezControl controller = new ezControl(
-    //     //     kP, kI, kD,
-    //     //     (position, velocityDegPerSec) -> {
-    //     //         double ff = this.feedforward.calculate(
-    //     //             Units.degreesToRadians(getCurrentAngleDegrees()),
-    //     //             Units.degreesToRadians(velocityDegPerSec)
-    //     //         );
-    //     //         SmartDashboard.putNumber("Intended voltage", maxAccelDegPerSecSquare);
-    //     //         return ff;
-    //     //     }
-    //     // );
-    //     //
-    //     // TrapezoidProfile profile = new TrapezoidProfile(
-    //     //     new TrapezoidProfile.Constraints(maxVelDegPerSec, maxAccelDegPerSecSquare)
-    //     // );
-    //     //
-    //     // var cmd = getEzMotion(
-    //     //     controller,
-    //     //     profile,
-    //     //     new TrapezoidProfile.State(degreesFromHorizontal, 0),
-    //     //     new TrapezoidProfile.State(getCurrentAngleDegrees(), 0)
-    //     // );
-    //     //
-    //     // return onArrivalCommandDealer == null
-    //     //     ? cmd
-    //     //     : Utils.nameCommand(
-    //     //         "pivot w/ onArrival: " + cmd.getName(),
-    //     //         new ParallelCommandGroup(
-    //     //             cmd,
-    //     //             new SequentialCommandGroup(
-    //     //                 new WaitCommand(profile.totalTime()),
-    //     //                 new CreateAndDisown("arm pivot", onArrivalCommandDealer)
-    //     //             )
-    //     //         )
-    //     //     );
-    // }
+        return c_gotoHeight(height, onArrivalCommandDealer);
+    }
 
-    // private ezMotion getEzMotion(
-    //     ezControl controller,
-    //     TrapezoidProfile profile,
-    //     TrapezoidProfile.State current,
-    //     TrapezoidProfile.State goal
-    // ) {
-    //     // TODO
-    //     // var cmd = new ezMotion(
-    //     //     controller,
-    //     //     this::getCurrentAngleDegrees,
-    //     //     (double volts) -> {
-    //     //         SmartDashboard.putNumber("Arm Volts", volts);
-    //     //         this.setVoltage(volts);
-    //     //     },
-    //     //     (double t) -> {
-    //     //         TrapezoidProfile.State result = profile.calculate(t, current, goal);
-    //     //
-    //     //         SmartDashboard.putNumber("deg setpoint", result.velocity);
-    //     //         return new Pair<>(result.position, result.velocity);
-    //     //     },
-    //     //     this
-    //     // );
-    //     // cmd.setName("arm - c_holdRotation");
-    //     //
-    //     // return cmd;
-    // }
+    public Command c_gotoHeight(double height, Supplier<Command> onArrivalCommandDealer) {
+        ezControl controller = new ezControl(kP, kI, kD, (position, velocityMetersPerSec) ->
+            this.feedforward.calculate(velocityMetersPerSec)
+        );
+
+        TrapezoidProfile profile = new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
+        );
+
+        var cmd = getEzMotion(
+            controller,
+            profile,
+            new TrapezoidProfile.State(getDistance(), 0), // TODO ???
+            new TrapezoidProfile.State(height, 0)
+        );
+        cmd.setName("elevator - c_gotoHeight");
+
+        return onArrivalCommandDealer == null
+            ? cmd
+            : Utils.nameCommand(
+                "move elevator w/ onArrival: " + cmd.getName(),
+                new ParallelCommandGroup(
+                    cmd,
+                    new SequentialCommandGroup(
+                        new WaitCommand(profile.totalTime()),
+                        new CreateAndDisown("elevator move", onArrivalCommandDealer)
+                    )
+                )
+            );
+    }
+
+    private ezMotion getEzMotion(
+        ezControl controller,
+        TrapezoidProfile profile,
+        TrapezoidProfile.State current,
+        TrapezoidProfile.State goal
+    ) {
+        return new ezMotion(
+            controller,
+            this::getDistance,
+            (double volts) -> {
+                SmartDashboard.putNumber("Elevator volts", volts);
+                this.setVoltage(volts);
+            },
+            (double t) -> {
+                TrapezoidProfile.State result = profile.calculate(t, current, goal);
+
+                SmartDashboard.putNumber("deg setpoint", result.velocity);
+                return new Pair<>(result.position, result.velocity);
+            },
+            this
+        );
+    }
 }
