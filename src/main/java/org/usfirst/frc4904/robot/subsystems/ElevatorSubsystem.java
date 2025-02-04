@@ -34,6 +34,9 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public final double MAX_VEL = 1;
     public final double MAX_ACCEL = 1;
 
+    public final double MIN_HEIGHT = 0;
+    public final double MAX_HEIGHT = 5;
+
     public final ElevatorFeedforward feedforward;
     public final Encoder encoder;
 
@@ -78,6 +81,13 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
+        if (
+            (this.getDistance() > MAX_HEIGHT && metersPerSecDealer.getAsDouble() > 0) ||
+            (this.getDistance() < MIN_HEIGHT && metersPerSecDealer.getAsDouble() < 0)
+        ) {
+            return this.c_stop();
+        }
+
         var cmd =
             this.run(() -> {
                     var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
