@@ -20,6 +20,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
@@ -212,10 +213,10 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier headingX,
         DoubleSupplier headingY
     ) {
-        // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
+        swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
         return run(() -> {
-            double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-            double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
+            double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth control out
+            double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth control out
             // Make the robot move
             driveFieldOriented(
                 swerveDrive.swerveController.getTargetSpeeds(
@@ -243,7 +244,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier translationY,
         DoubleSupplier rotation
     ) {
-        // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
+        swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
         return run(() -> {
             // Make the robot move
             driveFieldOriented(
@@ -272,18 +273,15 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier angularRotationX
     ) {
         return run(() -> {
-            // Make the robot move
-            swerveDrive.drive(
-                new Translation2d(
+            swerveDrive.driveFieldOriented(
+                new ChassisSpeeds(
                     Math.pow(translationX.getAsDouble(), 1) *
                     swerveDrive.getMaximumChassisVelocity(),
                     Math.pow(translationY.getAsDouble(), 1) *
-                    swerveDrive.getMaximumChassisVelocity()
-                ),
-                Math.pow(angularRotationX.getAsDouble(), 1) *
-                swerveDrive.getMaximumChassisAngularVelocity(),
-                true,
-                false
+                    swerveDrive.getMaximumChassisVelocity(),
+                    Math.pow(angularRotationX.getAsDouble(), 1) *
+                    swerveDrive.getMaximumChassisAngularVelocity()
+                )
             );
         });
     }
@@ -295,7 +293,7 @@ public class SwerveSubsystem extends SubsystemBase {
      *
      * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
      *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
-     *                      torwards port (left).  In field-relative mode, positive x is away from the alliance wall
+     *                      torwards port (left).  In field-relative m ode, positive x is away from the alliance wall
      *                      (field North) and positive y is torwards the left wall when looking through the driver station
      *                      glass (field West).
      * @param rotation      Robot angular rate, in radians per second. CCW positive.  Unaffected by field/robot

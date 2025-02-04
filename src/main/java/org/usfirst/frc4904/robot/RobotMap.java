@@ -1,36 +1,29 @@
 package org.usfirst.frc4904.robot;
 
-import com.ctre.phoenix6.signals.NeutralModeValue;
-//import com.ctre.phoenix.motorcontrol.InvertType; //broken
-//import com.revrobotics.CANSparkMax.IdleMode; //broken
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-//imports for rev robotics neo 550s
-import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
+import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+
 // import org.usfirst.frc4904.standard.LogKitten;
 
 // import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 //import org.usfirst.frc4904.standard.subsystems.motor.SparkMaxMotorSubsystem;
-import swervelib.SwerveDrive;
-import swervelib.parser.SwerveParser;
 
 public class RobotMap {
 
@@ -38,14 +31,14 @@ public class RobotMap {
 
         public static class HumanInput {
 
-            public static final int xyJoystickPort = 0;
-            public static final int zJoystickPort = 1;
+            public static final int xboxPort = 0;
             public static final int joystick = 2;
         }
 
         // 2023 robot constants // TODO: update ports for swerve
         public static class CANMotor {
 
+            //MOTOR TIME
             public static final int FRONT_LEFT_DRIVE = 1;
             public static final int FRONT_LEFT_TURN = 5;
             public static final int FRONT_RIGHT_DRIVE = 2;
@@ -131,26 +124,30 @@ public class RobotMap {
     public static class Component {
 
         //TODO: turn motors are NOT falcons and so can't use cantalons
-        public static CANTalonFX FLdrive;
-        // public static CustomCANSparkMax FLturn;
-        public static CANTalonFX FRdrive;
-        // public static CustomCANSparkMax FRturn;
-        public static CANTalonFX BLdrive;
-        // public static CustomCANSparkMax BLturn;
-        public static CANTalonFX BRdrive;
-        // public static CustomCANSparkMax BRturn;
+        public static CANTalonFX flDrive;
+        // public static CustomCANSparkMax flTurn;
+        public static CANTalonFX frDrive;
+        // public static CustomCANSparkMax frTurn;
+        public static CANTalonFX blDrive;
+        // public static CustomCANSparkMax blTurn;
+        public static CANTalonFX brDrive;
+        // public static CustomCANSparkMax brTurn;
 
         //encoders are dutycycle encoders, not standard can encoders
-        public static DutyCycleEncoder FLturnEncoder;
-        public static DutyCycleEncoder FRturnEncoder;
-        public static DutyCycleEncoder BLturnEncoder;
-        public static DutyCycleEncoder BRturnEncoder;
+        public static DutyCycleEncoder flTurnEncoder;
+        public static DutyCycleEncoder frTurnEncoder;
+        public static DutyCycleEncoder blTurnEncoder;
+        public static DutyCycleEncoder brTurnEncoder;
 
         public static AHRS navx;
+        public static SPI serialPort;
 
         // public static RobotUDP robotUDP;
         //Subsystems
         public static SwerveSubsystem chassis;
+        public static SingleMotorSubsystem ramp;
+        public static SingleMotorSubsystem intake;
+        public static ElevatorSubsystem elevator;
 
         //Motor time
         public static CANTalonFX rampMotor;
@@ -188,25 +185,49 @@ public class RobotMap {
 
             public static CustomCommandXbox xbox;
         }
+
+        public static class Operator {
+
+            public static CustomCommandJoystick joystick;
+        }
     }
 
     public RobotMap() {
+        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+
         Component.chassis = new SwerveSubsystem(
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
             0.0473,
             4.5
         );
+        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
 
-        Component.navx = new AHRS(NavXComType.kMXP_SPI);
+        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
+        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
-        // // // UDP things
-        // // try {
-        // //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
-        // // } catch (IOException ex) {
-        // //     LogKitten.f("Failed to initialize UDP subsystem");
-        // //     LogKitten.ex(ex);
-        // // }
+        Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
+        Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
+
+        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
+        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
+        // TODO pass encoder as 3rd arg
+        Component.elevator = new ElevatorSubsystem(
+            Component.elevatorMotorOne,
+            Component.elevatorMotorTwo,
+            null
+        );
+
+        HumanInput.Driver.xbox = new CustomCommandXbox(Port.HumanInput.xboxPort, 0.01);
+        HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
+
+        // // UDP things
+        // try {
+        //     Component.robotUDP = new RobotUDP(Port.Network.LOCAL_SOCKET_ADDRESS, Port.Network.LOCALIZATION_ADDRESS);
+        // } catch (IOException ex) {
+        //     LogKitten.f("Failed to initialize UDP subsystem");
+        //     LogKitten.ex(ex);
+        // }
 
         // /***********************
         //  * Chassis Subsystem
@@ -214,19 +235,18 @@ public class RobotMap {
 
         // //TODO: fix invert type, talk to anna
 
-        Component.FLdrive = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
-        // Component.FLturn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
-        Component.FRdrive = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
-        // Component.FRturn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
-        Component.BLdrive = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
-        // Component.BLturn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
-        Component.BRdrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
-        // Component.BRturn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
-
-        // Component.backRightWheelTalon.setSafetyEnabled(false);
-        // Component.frontRightWheelTalon.setSafetyEnabled(false);
-        // Component.backLeftWheelTalon.setSafetyEnabled(false);
-        // Component.frontLeftWheelTalon.setSafetyEnabled(false);
+        Component.flDrive = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
+        // Component.flTurn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
+        Component.frDrive = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
+        // Component.frTurn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
+        Component.blDrive = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
+        // Component.blTurn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
+        Component.brDrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
+        // Component.brTurn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
+        // // Component.backRightWheelTalon.setSafetyEnabled(false);
+        // // Component.frontRightWheelTalon.setSafetyEnabled(false);
+        // // Component.backLeftWheelTalon.setSafetyEnabled(false);
+        // // Component.frontLeftWheelTalon.setSafetyEnabled(false);
 
         // //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
         // //FR is ++, FL is +-, BR is -+, BL is --
@@ -236,20 +256,20 @@ public class RobotMap {
         // Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
         // SwerveDriveKinematics kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
 
-        // Component.FLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
-        // Component.FRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
-        // Component.BLturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
-        // Component.BRturnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
-        // Component.FLturnEncoder.setPositionOffset(.45); //TODO: fix offset
-        // Component.FRturnEncoder.setPositionOffset(.037); //TODO: fix offset
-        // Component.BLturnEncoder.setPositionOffset(.7344); //TODO: fix offset
-        // Component.BRturnEncoder.setPositionOffset(.651); //TODO: fix offset
+        // Component.flTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
+        // Component.frTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
+        // Component.blTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
+        // Component.brTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
+        // Component.flTurnEncoder.setPositionOffset(.45); //TODO: fix offset
+        // Component.frTurnEncoder.setPositionOffset(.037); //TODO: fix offset
+        // Component.blTurnEncoder.setPositionOffset(.7344); //TODO: fix offset
+        // Component.brTurnEncoder.setPositionOffset(.651); //TODO: fix offset
 
-        // Component.FLmodule  = new SwerveModule(Component.FLdrive, Component.FLturn, Component.FLturnEncoder, locationFL, "FLmodule");
-        // Component.FRmodule = new SwerveModule(Component.FRdrive, Component.FRturn, Component.FRturnEncoder, locationFR, "FRmodule");
-        // Component.BLmodule   = new SwerveModule(Component.BLdrive, Component.BLturn, Component.BLturnEncoder, locationBL, "BLmodule");
-        // Component.BRmodule  = new SwerveModule(Component.BRdrive, Component.BRturn, Component.BRturnEncoder, locationBR, "BRmodule");
-        // SwerveModule[] modules = {Component.FLmodule, Component.FRmodule, Component.BLmodule, Component.BRmodule};
+        // Component.flModule  = new SwerveModule(Component.FLdrive, Component.flTurn, Component.flTurnEncoder, locationFL, "flModule");
+        // Component.frModule = new SwerveModule(Component.FRdrive, Component.frTurn, Component.frTurnEncoder, locationFR, "frModule");
+        // Component.blModule   = new SwerveModule(Component.BLdrive, Component.blTurn, Component.blTurnEncoder, locationBL, "blModule");
+        // Component.brModule  = new SwerveModule(Component.BRdrive, Component.brTurn, Component.brTurnEncoder, locationBR, "brModule");
+        // SwerveModule[] modules = {Component.flModule, Component.frModule, Component.blModule, Component.brModule};
 
         //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
         // Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));

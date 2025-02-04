@@ -26,9 +26,16 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
                     RobotMap.Component.chassis.brickMode();
                 })
             );
+        RobotMap.HumanInput.Driver.xbox
+            .y()
+            .onTrue(
+                new InstantCommand(() -> {
+                    RobotMap.Component.chassis.zeroGyro();
+                })
+            );
     }
 
-    public double getX() {
+    public double getX() { //left is xy, right is turn
         double raw = RobotMap.HumanInput.Driver.xbox.getLeftX();
         return scaleGain(raw, SPEED_EXP);
     }
@@ -45,10 +52,10 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
 
     public boolean getButton1Pressed() {
         RobotMap.HumanInput.Driver.xbox
-            .b()
+            .x()
             .onTrue(new InstantCommand(() -> SwerveGain.button1 = true));
         RobotMap.HumanInput.Driver.xbox
-            .b()
+            .x()
             .onFalse(new InstantCommand(() -> SwerveGain.button1 = false));
         return SwerveGain.button1;
     }
