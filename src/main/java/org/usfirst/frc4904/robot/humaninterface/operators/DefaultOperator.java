@@ -45,6 +45,7 @@ public class DefaultOperator extends Operator {
                 RobotMap.Component.brDrive
             )
         );
+
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
     }
 }

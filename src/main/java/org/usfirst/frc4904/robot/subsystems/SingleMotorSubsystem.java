@@ -25,21 +25,19 @@ public class SingleMotorSubsystem extends SubsystemBase {
         this.backwardVoltage = backwardVoltage;
     }
 
-    public Command c_setVoltage(double voltage) {
-        return this.run(() -> {
-                this.motor.setVoltage(voltage);
-            });
+    public Command c_holdVoltage(double voltage) {
+        return this.run(() -> this.motor.setVoltage(voltage));
     }
 
     public Command c_forward() {
-        return this.c_setVoltage(this.forwardVoltage);
+        return this.c_holdVoltage(this.forwardVoltage);
     }
 
     public Command c_backward() {
-        return this.c_setVoltage(-this.backwardVoltage);
+        return this.c_holdVoltage(-this.backwardVoltage);
     }
 
     public Command c_stop() {
-        return this.c_setVoltage(0);
+        return this.c_holdVoltage(0);
     }
 }
