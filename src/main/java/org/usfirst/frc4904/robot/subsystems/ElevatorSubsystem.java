@@ -31,11 +31,11 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double kI = 0.03;
     public static final double kD = 0;
 
-    public final double MAX_VEL = 1;
-    public final double MAX_ACCEL = 1;
+    public static final double MAX_VEL = 1;
+    public static final double MAX_ACCEL = 1;
 
-    public final double MIN_HEIGHT = 0;
-    public final double MAX_HEIGHT = 5;
+    public static final double MIN_HEIGHT = 0;
+    public static final double MAX_HEIGHT = 5;
 
     public final ElevatorFeedforward feedforward;
     public final Encoder encoder;
