@@ -89,6 +89,7 @@ public class OrchestraSubsystem extends SubsystemBase {
      * @return A {@link Command} to play the song.
      */
     public static Command c_loadAndPlaySong(String name, int tracks, CANTalonFX... motors) {
+        System.out.println("potato");
         loadSong(name, tracks, motors);
         return new InstantCommand(() -> playSong(name));
     }

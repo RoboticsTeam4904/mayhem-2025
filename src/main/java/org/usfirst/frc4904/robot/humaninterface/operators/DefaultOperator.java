@@ -45,6 +45,16 @@ public class DefaultOperator extends Operator {
                 RobotMap.Component.brDrive
             )
         );
+        joystick.button10.onTrue(
+            OrchestraSubsystem.c_loadAndPlaySong(
+                "PortalRadio",
+                4,
+                RobotMap.Component.flDrive,
+                RobotMap.Component.frDrive,
+                RobotMap.Component.blDrive,
+                RobotMap.Component.brDrive
+            )
+        );
 
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
     }
