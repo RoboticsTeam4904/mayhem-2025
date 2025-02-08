@@ -94,11 +94,12 @@ public class OrchestraSubsystem extends SubsystemBase {
         return new InstantCommand(() -> playSong(name));
     }
 
-    public static String PATH = "/home/lvuser/deploy/chirp/";
+    public static final String PATH = "/home/lvuser/deploy/chirp/";
 
-    private final List<Orchestra> orchestras = new ArrayList<>();
     public final String songName;
     public boolean playing = false;
+
+    private final List<Orchestra> orchestras = new ArrayList<>();
 
     private OrchestraSubsystem(String name, int tracks, CANTalonFX... motors) {
         songName = name;
@@ -119,7 +120,7 @@ public class OrchestraSubsystem extends SubsystemBase {
 
             String path = PATH + name + "_" + track + ".chrp";
             if (!orchestra.loadMusic(path).isOK()) {
-                System.out.printf(
+                System.err.printf(
                     "Failed to load song '%s', track %d. Make sure the file '%s' exists.%n",
                     path,
                     track,
@@ -136,7 +137,7 @@ public class OrchestraSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean play() {
+    private boolean play() {
         playing = true;
 
         boolean success = true;
@@ -151,7 +152,7 @@ public class OrchestraSubsystem extends SubsystemBase {
         return success;
     }
 
-    public boolean stop() {
+    private boolean stop() {
         if (!this.playing) return false;
 
         playing = false;
