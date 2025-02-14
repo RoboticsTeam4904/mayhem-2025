@@ -1,13 +1,12 @@
 package org.usfirst.frc4904.robot.subsystems;
 
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 
+import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 public class MultiMotorSubsystem extends SubsystemBase {
 
-    public final CANTalonFX[] motors;
+    public final SmartMotorController[] motors;
     public final double[] relativeVoltages;
 
     public final double forwardVoltage;
@@ -22,7 +21,7 @@ public class MultiMotorSubsystem extends SubsystemBase {
      * @param relativeVoltages multiplied by forward/backwardVoltage for each motor - use to invert some motors, for example
      * @param voltage voltage when motors are running forwards
      */
-    public MultiMotorSubsystem(CANTalonFX[] motors, double[] relativeVoltages, double voltage) {
+    public MultiMotorSubsystem(SmartMotorController[] motors, double[] relativeVoltages, double voltage) {
         this(motors, relativeVoltages, voltage, voltage);
     }
 
@@ -37,7 +36,7 @@ public class MultiMotorSubsystem extends SubsystemBase {
      * @param backwardVoltage voltage when motors are running backwards - should be POSITIVE (is negated later)
      */
     public MultiMotorSubsystem(
-        CANTalonFX[] motors,
+        SmartMotorController[] motors,
         double[] relativeVoltages,
         double forwardVoltage,
         double backwardVoltage
@@ -47,8 +46,8 @@ public class MultiMotorSubsystem extends SubsystemBase {
         this.forwardVoltage = forwardVoltage;
         this.backwardVoltage = backwardVoltage;
 
-        for (CANTalonFX motor : motors) {
-            motor.setNeutralMode(NeutralModeValue.Brake);
+        for (SmartMotorController motor : motors) {
+            motor.setBrakeOnNeutral();
         }
     }
 

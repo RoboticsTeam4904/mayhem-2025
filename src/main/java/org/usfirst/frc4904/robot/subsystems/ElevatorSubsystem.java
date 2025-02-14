@@ -18,6 +18,7 @@ import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
@@ -49,9 +50,9 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static HashMap<Position, Double> positions = new HashMap<>();
 
     // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
-    public ElevatorSubsystem(CANTalonFX motor1, CANTalonFX motor2, Encoder encoder) {
+    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, Encoder encoder) {
         super(
-            new CANTalonFX[] { motor1, motor2 },
+            new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, -1 },
             0 // if we ever want to have up/down commands that use a set voltage in addition to PID, put that voltage here
         );
