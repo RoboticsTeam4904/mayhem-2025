@@ -17,7 +17,6 @@ import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.commands.Noop;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
-import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 public class ElevatorSubsystem extends MultiMotorSubsystem {
