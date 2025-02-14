@@ -5,23 +5,7 @@ function action { print -P "%B%F{yellow}action%f%b: $1" }
 function info   { print -P "%B%F{blue}info%f%b: $1" }
 function error  { print -P "%B%F{red}error%f%b: $1" }
 
-# pull standard
-function pull_standard {
-  git submodule init
-  git submodule update
-
-  # ensure main branch
-  git -C src/main/java/org/usfirst/frc4904/standard checkout main
-
-  info 'initialized standard'
-}
-
 # add hooks path
-function install_hooks {
-  git config core.hooksPath .git-hooks
+git config core.hooksPath .git-hooks
 
-  info 'installed hooks'
-}
-
-pull_standard
-install_hooks
+info 'installed hooks'
