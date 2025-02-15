@@ -19,6 +19,7 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
+        //Orchestra Music Init
         joystick.button7.onTrue(
             OrchestraSubsystem.c_loadAndPlaySong(
                 "delfino",

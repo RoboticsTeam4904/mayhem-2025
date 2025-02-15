@@ -37,7 +37,7 @@ public class RobotMap {
             public static final int joystick = 2;
         }
 
-        // 2023 robot constants // TODO: update ports for swerve
+        //Port Constants
         public static class CANMotor {
 
             //MOTOR TIME
@@ -68,7 +68,6 @@ public class RobotMap {
 
     public static class Metrics {
 
-        // // 2023-robot constants
         public static class Chassis {
 
             public static final double GEAR_RATIO_DRIVE = 5.1; // 5.1:1 gear ratio
