@@ -69,7 +69,7 @@ public class CustomCAN {
      * Read data as bytebuffer
      *
      * @return ByteBuffer containing CAN message, or null
-     * @throws CANMEssageNotFoundException when no new message is available
+     * @throws CANMessageUnavailableException when no new message is available
      */
     protected byte[] readBuffer() throws CANMessageUnavailableException {
         IntBuffer idBuffer = ByteBuffer.allocateDirect(4).asIntBuffer();

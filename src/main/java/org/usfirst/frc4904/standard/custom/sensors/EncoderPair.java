@@ -29,7 +29,8 @@ public class EncoderPair implements CustomEncoder {
 	 *          that all the encoders will be rotating in the same direction with
 	 *          the same rate (before setDistancePerTick).
 	 *
-	 * @param encoders          The encoders to amalgamate.
+	 * @param encoder1          The first encoder to amalgamate.
+	 * @param encoder2          The second encoder to amalgamate.
 	 * @param distanceTolerance The distance by which the encoders can be different
 	 *                          before isInSync() returns false
 	 * @param rateTolerance     The rate by which the encoders can be different

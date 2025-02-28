@@ -125,14 +125,9 @@ public class Motor extends SubsystemBase implements MotorController {
 	 * give them Subsystem functionality. Can also modify their speed with a
 	 * SpeedModifier for things like scaling or brownout protection.
 	 *
-	 * @param name          The name for the motor.
 	 * @param isInverted    Inverts the direction of all of the MotorControllers.
 	 *                      This does not override the individual inversions of the
 	 *                      motors.
-	 * @param speedModifier A SpeedModifier changes the input to every motor based
-	 *                      on some factor. The default is an IdentityModifier,
-	 *                      which does not affect anything. Can also regulate set
-	 *                      speed to prevent brownouts (if you use AccelerationCap).
 	 * @param motors        The MotorControllers in this subsystem. Can be a single
 	 *                      MotorController or multiple MotorControllers.
 	 */

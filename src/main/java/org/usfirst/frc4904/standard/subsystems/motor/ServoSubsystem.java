@@ -125,7 +125,7 @@ public class ServoSubsystem extends SubsystemBase {
 	 * to full right. (This method is equivalent to the {@link #set(double) set()}
 	 * method.)
 	 *
-	 * @param value Position from 0.0 to 1.0.
+	 * @param position Position from 0.0 to 1.0.
 	 */
 	public void setPosition(double position) {
 		set(position);

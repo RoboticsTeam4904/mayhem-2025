@@ -28,7 +28,7 @@ public class Pigeon2Swerve extends SwerveIMU {
      */
     private final Pigeon2 imu;
     /**
-     * Mutable {@link AngularVelocity} for readings.
+     * Mutable AngularVelocity for readings.
      */
     private final MutAngularVelocity yawVel = new MutAngularVelocity(0, 0, DegreesPerSecond);
 

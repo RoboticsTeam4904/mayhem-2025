@@ -109,7 +109,7 @@ public class SolenoidSubsystem extends SubsystemBase {
     }
 
     /**
-     * @param state Returns the current state of the system
+     * @return Returns the current state of the system
      */
     public SolenoidState getState() {
         return state;

@@ -36,7 +36,6 @@ public class AccelerationCap implements SpeedModifier {
 	 *
 	 * @param pdp             The robot's power distribution panel. This is used to
 	 *                        monitor the battery voltage.
-	 * @param softStopVoltage Voltage to stop increasing motor speed at.
 	 * @param hardStopVoltage Voltage to begin decreasing motor speed at.
 	 */
 	public AccelerationCap(PDP pdp, double hardStopVoltage) {

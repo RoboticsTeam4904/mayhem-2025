@@ -48,7 +48,7 @@ public abstract class CustomNeoPixels extends CustomCAN {
     /**
      * Sets the progress of the pattern. Values are 0 to 32768.
      *
-     * @param progress
+     * @param value
      */
     public void setValue(int value) {
         this.value = value;
