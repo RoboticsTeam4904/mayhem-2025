@@ -63,14 +63,14 @@ public class MultiMotorSubsystem extends SubsystemBase {
     }
 
     public Command c_forward() {
-        return this.c_holdVoltage(forwardVoltage);
+        return c_holdVoltage(forwardVoltage);
     }
 
     public Command c_backward() {
-        return this.c_holdVoltage(-backwardVoltage);
+        return c_holdVoltage(-backwardVoltage);
     }
 
     public Command c_stop() {
-        return this.c_holdVoltage(0);
+        return c_holdVoltage(0);
     }
 }
