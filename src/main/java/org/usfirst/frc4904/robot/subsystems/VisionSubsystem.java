@@ -1,11 +1,10 @@
 package org.usfirst.frc4904.robot.subsystems;
 
+import org.usfirst.frc4904.standard.commands.NoOp;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.usfirst.frc4904.standard.commands.Noop;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,7 +74,7 @@ public class VisionSubsystem extends SubsystemBase {
         if (pose != null) {
             return swerve.driveToPose(pose);
         } else {
-            return new Noop();
+            return new NoOp();
         }
     }
 }
