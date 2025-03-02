@@ -35,7 +35,7 @@ public class VisionSubsystem extends SubsystemBase {
         PhotonPipelineResult result = camera.getLatestResult();
         PhotonTrackedTarget target = result.getBestTarget();
 
-        if (target.getFiducialId() == 14) {
+        if (target.getFiducialId() == 7) {
             Pose2d pose =
                 fieldLayout.getTagPose(target.getFiducialId())
                     .get()
