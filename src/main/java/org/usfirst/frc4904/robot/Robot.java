@@ -164,5 +164,6 @@ public class Robot extends CommandRobotBase {
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
+        RobotMap.Component.vision.updatePos();
     }
 }

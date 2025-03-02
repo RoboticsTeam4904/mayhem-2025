@@ -2,6 +2,7 @@ package org.usfirst.frc4904.robot;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import org.photonvision.PhotonCamera;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -16,6 +17,7 @@ import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
+import org.usfirst.frc4904.robot.subsystems.VisionSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -149,6 +151,7 @@ public class RobotMap {
         public static SingleMotorSubsystem ramp;
         public static SingleMotorSubsystem intake;
         public static ElevatorSubsystem elevator;
+        public static VisionSubsystem vision;
 
         //Motor time
         public static CANTalonFX rampMotor;
@@ -156,6 +159,9 @@ public class RobotMap {
 
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
+
+        //Camera time
+        public static PhotonCamera camera;
     }
 
     public static class NetworkTables {
@@ -205,6 +211,8 @@ public class RobotMap {
             4.5
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+
+        Component.vision = new VisionSubsystem(Component.chassis, Component.camera);
 
         // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         // Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
