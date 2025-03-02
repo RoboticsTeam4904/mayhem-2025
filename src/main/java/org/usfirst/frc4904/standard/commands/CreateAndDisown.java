@@ -44,8 +44,8 @@ public class CreateAndDisown extends Command {
         return true;
     }
 
-    public void end(boolean wasInturrupted) {
-        if (currentActiveCommand != null && wasInturrupted) {
+    public void end(boolean wasInterrupted) {
+        if (currentActiveCommand != null && wasInterrupted) {
             currentActiveCommand.cancel();
             // no need to worry about calling .end() on currentActiveCommand, as if the ending was caused by isFinished() -> true, then the scheduler will deal with calling .end() on the active command.
         }

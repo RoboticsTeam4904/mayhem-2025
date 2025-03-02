@@ -14,7 +14,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.usfirst.frc4904.robot.Utils;
 import org.usfirst.frc4904.standard.commands.CreateAndDisown;
-import org.usfirst.frc4904.standard.commands.Noop;
+import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
@@ -106,7 +106,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public Command c_gotoPosition(Position pos, Supplier<Command> onArrivalCommandDealer) {
         Double height = positions.get(pos);
 
-        if (height == null) return new Noop(); // not good
+        if (height == null) return new NoOp(); // not good
 
         return c_gotoHeight(height, onArrivalCommandDealer);
     }

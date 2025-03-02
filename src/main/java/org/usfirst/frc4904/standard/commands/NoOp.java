@@ -2,11 +2,11 @@ package org.usfirst.frc4904.standard.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Noop extends Command {
+public class NoOp extends Command {
 
-    public Noop() {
+    public NoOp() {
         super();
-        setName("NOOP");
+        setName("NoOp");
     }
 
     @Override

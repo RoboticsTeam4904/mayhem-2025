@@ -14,7 +14,6 @@ public class ezControl implements BiFunction<Double, Double, Double> {
         this.controller = new ezControlMethod(new PIDController(kP, kI, kD), F);
     }
 
-
     public boolean atSetpoint() {
         return this.controller.pid.atSetpoint();
     }
@@ -43,17 +42,17 @@ public class ezControl implements BiFunction<Double, Double, Double> {
         // SmartDashboard.putNumber("setpoint", this.setpoint);
         // SmartDashboard.putNumber("setpoint_dt", this.setpoint_dt);
 
-        double pidout = this.controller.pid.calculate(measurement);
-        // System.out.println(pidout);
+        double pidOut = this.controller.pid.calculate(measurement);
+        // System.out.println(pidOut);
         // SmartDashboard.putNumber("Feedback", measurement);
-        // SmartDashboard.putNumber("PID out", pidout);
-        return pidout + this.controller.F.calculate(this.setpoint, this.setpoint_dt);
+        // SmartDashboard.putNumber("PID out", pidOut);
+        return pidOut + this.controller.F.calculate(this.setpoint, this.setpoint_dt);
     }
 
     // very similar to TrapezoidProfile.State
     @Override
-    public Double apply(Double measurement, Double elapsed_period) {
-        return calculate(measurement, elapsed_period);
+    public Double apply(Double measurement, Double elapsedPeriod) {
+        return calculate(measurement, elapsedPeriod);
     }
 
     // VERY TEMPTED

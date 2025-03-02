@@ -2,15 +2,14 @@ package org.usfirst.frc4904.standard.custom;
 
 /**
  * Class for interfacing with a Teensy running TeensyNeoPixelCAN code.
- *
  */
 public abstract class CustomNeoPixels extends CustomCAN {
 
-    protected byte R;
-    protected byte G;
-    protected byte B;
-    protected int mode;
-    protected int value;
+    protected byte R = 0;
+    protected byte G = 0;
+    protected byte B = 0;
+    protected int mode = 0;
+    protected int value = 0;
 
     /**
      * Constructor ID should be between 0x600 and 0x700.
@@ -20,16 +19,13 @@ public abstract class CustomNeoPixels extends CustomCAN {
      */
     public CustomNeoPixels(String name, int id) {
         super(name, id);
-        R = 0;
-        G = 0;
-        B = 0;
-        mode = 0;
-        value = 0;
     }
 
-    protected final void setMode(int mode) { // People should be forced to overwrite this with a more user friendly mode
+    protected final CustomNeoPixels setMode(int mode) { // People should be forced to overwrite this with a more user friendly mode
         // system
         this.mode = mode;
+
+        return this;
     }
 
     /**
@@ -39,10 +35,12 @@ public abstract class CustomNeoPixels extends CustomCAN {
      * @param G
      * @param B
      */
-    public void setColor(int R, int G, int B) {
+    public CustomNeoPixels setColor(int R, int G, int B) {
         this.R = (byte) R;
         this.G = (byte) G;
         this.B = (byte) B;
+
+        return this;
     }
 
     /**
@@ -50,8 +48,10 @@ public abstract class CustomNeoPixels extends CustomCAN {
      *
      * @param value
      */
-    public void setValue(int value) {
+    public CustomNeoPixels setValue(int value) {
         this.value = value;
+
+        return this;
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.usfirst.frc4904.standard.commands.solenoid;
+package org.usfirst.frc4904.standard.commands;
 
 import java.util.function.BooleanSupplier;
 

@@ -6,9 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /**
  * A SendableChooser for commands. This allows us to put a command choice on the
  * smart dashboard.
- *
  */
-// public class CommandSendableChooser extends SendableChooser<Command> {	// OPTIM: A LOT of stuff in standard takes in Command when it should probably take in Command (unintuitively, Command is actually less basic than Command)
 public class CommandSendableChooser extends SendableChooser<Command> {
 
     /**
