@@ -30,19 +30,19 @@ public class VisionSubsystem extends SubsystemBase {
         INTAKE,
         REEF,
         BARGE,
-        COMPACTOR
+        PROCESSOR
     }
 
     private static final int TAGS_PER_FIELD_SIDE = 11;
     private static final HashMap<TagGroup, int[]> tagIds = new HashMap<>();
 
     static {
-        // -1 means any tag if in first item of array
+        // -1 means any tag (needs to be the first item in the array)
         tagIds.put(TagGroup.ANY, new int[] { -1 });
         tagIds.put(TagGroup.INTAKE, new int[] { 1, 2 });
         tagIds.put(TagGroup.REEF, new int[] { 6, 7, 8, 9, 10, 11 });
         tagIds.put(TagGroup.BARGE, new int[] { 4, 5 });
-        tagIds.put(TagGroup.COMPACTOR, new int[] { 3 });
+        tagIds.put(TagGroup.PROCESSOR, new int[] { 3 });
 
         // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
