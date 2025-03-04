@@ -1,6 +1,11 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.subsystems.OrchestraSubsystem;
 import org.usfirst.frc4904.standard.humaninput.Operator;
@@ -19,9 +24,17 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
-        joystick.button4.onTrue(
-            RobotMap.Component.vision.c_orient()
-        );
+        SequentialCommandGroup command = Commands.runOnce(() -> {
+            Transform2d targetPose = new Transform2d(
+                1.0, 0.0, new Rotation2d(Math.PI)
+            );
+            RobotMap.Component.vision.startPositioning(targetPose);
+        })
+        .andThen(Commands.waitUntil(() -> !RobotMap.Component.vision.isPositioning()));
+
+        command.addRequirements(RobotMap.Component.chassis);
+
+        joystick.button4.onTrue(command);
 
         //Orchestra Music Init
         joystick.button7.onTrue(

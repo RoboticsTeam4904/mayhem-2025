@@ -2,8 +2,13 @@ package org.usfirst.frc4904.robot;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+
+import org.dyn4j.geometry.Transform;
 import org.photonvision.PhotonCamera;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -212,7 +217,12 @@ public class RobotMap {
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
 
-        Component.vision = new VisionSubsystem(Component.chassis, Component.camera);
+        Component.camera = new PhotonCamera("dauntless-camera");
+        Component.vision = new VisionSubsystem(
+            Component.chassis.swerveDrive,
+            Component.camera,
+            new Transform2d(0, 0, Rotation2d.kZero)
+        );
 
         // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         // Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
