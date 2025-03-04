@@ -35,6 +35,19 @@ public class Util {
         return isZero(value, Math.sqrt(Math.ulp(1.0)));
     }
 
+    /**
+     * Clamp a value between a minimum and maximum
+     *
+     * @param value The input value
+     * @param min The minimum allowed value
+     * @param max The maximum allowed value
+     * @return The clamped value
+     */
+    // TODO upgrade java version and use Math.clamp
+    public static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
     public static class Range {
         private final double min;
         private final double max;

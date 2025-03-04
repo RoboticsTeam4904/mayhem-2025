@@ -13,28 +13,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.usfirst.frc4904.standard.Util;
 import swervelib.SwerveDrive;
 
+/** Sponsored by Claude™ 3.7 Sonnet by Anthropic® */
 public class VisionSubsystem extends SubsystemBase {
     private final SwerveDrive swerveDrive;
     private final PhotonCamera photonCamera;
 
     // PID controllers for X, Y positions and rotation
-    private final PIDController xController;
-    private final PIDController yController;
+    private final PIDController positionController;
     private final PIDController rotationController;
 
     // Target pose relative to the AprilTag
     private Transform2d targetPoseRelative;
 
     // Timeout for positioning
-    private final double positioningTimeoutSeconds = 3.0;
+    private final double TIMEOUT_SECONDS = 3.0; // give up if we lose sight of the april tag for this long
     private double startTime = 0;
     private boolean isPositioning = false;
 
     // Tolerance thresholds for positioning
-    private final double positionToleranceMeters = 0.05; // 5cm
-    private final double rotationToleranceDegrees = 2.0; // 2 degrees
+    private final double POS_TOLERANCE_METERS = 0.05; // 5cm
+    private final double ROT_TOLERANCE_DEG = 2.0; // 2 degrees
 
     // Camera mounting position relative to robot center
     private final Transform2d cameraToRobot;
@@ -52,18 +53,16 @@ public class VisionSubsystem extends SubsystemBase {
         this.cameraToRobot = cameraToRobot;
 
         // Initialize PID controllers
-        // Note: Tune these values for your specific robot
-        xController = new PIDController(1.0, 0.0, 0.0);
-        yController = new PIDController(1.0, 0.0, 0.0);
+        // TODO tune maybe
+        positionController = new PIDController(1.0, 0.0, 0.0);
         rotationController = new PIDController(1.0, 0.0, 0.0);
 
         // Make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
 
         // Set tolerances
-        xController.setTolerance(positionToleranceMeters);
-        yController.setTolerance(positionToleranceMeters);
-        rotationController.setTolerance(Math.toRadians(rotationToleranceDegrees));
+        positionController.setTolerance(POS_TOLERANCE_METERS);
+        rotationController.setTolerance(Math.toRadians(ROT_TOLERANCE_DEG));
 
         // Default target is 0,0,0 relative to AprilTag
         targetPoseRelative = new Transform2d(0, 0, new Rotation2d(0));
@@ -92,8 +91,8 @@ public class VisionSubsystem extends SubsystemBase {
                 );
 
                 // Use PID to calculate the needed speeds for X, Y, and rotation
-                double xSpeed = xController.calculate(0, currentToDesired.getX());
-                double ySpeed = yController.calculate(0, currentToDesired.getY());
+                double xSpeed = positionController.calculate(0, currentToDesired.getX());
+                double ySpeed = positionController.calculate(0, currentToDesired.getY());
                 double rotSpeed = rotationController.calculate(0, currentToDesired.getRotation().getRadians());
 
                 // Apply deadbands and clamp values for safety
@@ -105,13 +104,17 @@ public class VisionSubsystem extends SubsystemBase {
                 double maxLinearSpeed = 2.0;  // meters per second
                 double maxRotSpeed = Math.PI; // radians per second
 
-                xSpeed = clamp(xSpeed, -maxLinearSpeed, maxLinearSpeed);
-                ySpeed = clamp(ySpeed, -maxLinearSpeed, maxLinearSpeed);
-                rotSpeed = clamp(rotSpeed, -maxRotSpeed, maxRotSpeed);
+                xSpeed = Util.clamp(xSpeed, -maxLinearSpeed, maxLinearSpeed);
+                ySpeed = Util.clamp(ySpeed, -maxLinearSpeed, maxLinearSpeed);
+                rotSpeed = Util.clamp(rotSpeed, -maxRotSpeed, maxRotSpeed);
 
                 // Convert to field-relative speeds
                 ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, rotSpeed, swerveDrive.getOdometryHeading());
+                    xSpeed,
+                    ySpeed,
+                    rotSpeed,
+                    swerveDrive.getOdometryHeading()
+                );
 
                 // Command the swerve drive
                 swerveDrive.drive(fieldRelativeSpeeds);
@@ -123,12 +126,12 @@ public class VisionSubsystem extends SubsystemBase {
 
                 // Check if we've reached the target position
                 boolean atPosition =
-                    Math.abs(currentToDesired.getX()) < positionToleranceMeters &&
-                    Math.abs(currentToDesired.getY()) < positionToleranceMeters &&
-                    Math.abs(currentToDesired.getRotation().getDegrees()) < rotationToleranceDegrees;
+                    Math.abs(currentToDesired.getX()) < POS_TOLERANCE_METERS &&
+                    Math.abs(currentToDesired.getY()) < POS_TOLERANCE_METERS &&
+                    Math.abs(currentToDesired.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
 
                 // Check if we've timed out
-                boolean timedOut = Timer.getFPGATimestamp() - startTime > positioningTimeoutSeconds;
+                boolean timedOut = Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS;
 
                 if (atPosition || timedOut) {
                     stopPositioning();
@@ -138,7 +141,7 @@ public class VisionSubsystem extends SubsystemBase {
                 swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
                 // If we've lost sight of the AprilTag for too long, stop positioning
-                if (Timer.getFPGATimestamp() - startTime > positioningTimeoutSeconds) {
+                if (Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS) {
                     stopPositioning();
                     SmartDashboard.putString("Positioning Status", "Failed - No AprilTag visible");
                 }
@@ -157,8 +160,7 @@ public class VisionSubsystem extends SubsystemBase {
         this.isPositioning = true;
 
         // Reset PID controllers
-        xController.reset();
-        yController.reset();
+        positionController.reset();
         rotationController.reset();
 
         SmartDashboard.putString("Positioning Status", "In Progress");
@@ -218,38 +220,5 @@ public class VisionSubsystem extends SubsystemBase {
             return 0.0;
         }
         return value;
-    }
-
-    /**
-     * Clamp a value between a minimum and maximum
-     *
-     * @param value The input value
-     * @param min The minimum allowed value
-     * @param max The maximum allowed value
-     * @return The clamped value
-     */
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
-    }
-
-    /**
-     * Set the PID gains for the X controller
-     */
-    public void setXPID(double kP, double kI, double kD) {
-        xController.setPID(kP, kI, kD);
-    }
-
-    /**
-     * Set the PID gains for the Y controller
-     */
-    public void setYPID(double kP, double kI, double kD) {
-        yController.setPID(kP, kI, kD);
-    }
-
-    /**
-     * Set the PID gains for the rotation controller
-     */
-    public void setRotationPID(double kP, double kI, double kD) {
-        rotationController.setPID(kP, kI, kD);
     }
 }
