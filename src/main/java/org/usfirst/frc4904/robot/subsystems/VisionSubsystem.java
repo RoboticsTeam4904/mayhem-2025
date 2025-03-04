@@ -199,7 +199,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Find the best April Tag to target given a list of April Tag IDs
      *
-     * @param tagIds The IDs of the April Tags we want to target
+     * @param tagIds The IDs of the April Tags to target
      * @return The ID of the best April Tag, or null if none were found
      */
     private Integer getBestTargetId(int[] tagIds) {
