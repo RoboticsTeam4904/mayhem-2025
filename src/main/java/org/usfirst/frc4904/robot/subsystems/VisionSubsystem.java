@@ -29,7 +29,6 @@ public class VisionSubsystem extends SubsystemBase {
         ANY,
         INTAKE,
         REEF,
-        // i know we don't need to align to these but i think it's funny
         BARGE,
         COMPACTOR
     }
@@ -38,14 +37,14 @@ public class VisionSubsystem extends SubsystemBase {
     private static final HashMap<TagGroup, int[]> tagIds = new HashMap<>();
 
     static {
-        // -1 means any tag. only works if it is the first item in the array b/c there should never be any other items anyway
+        // -1 means any tag if in first item of array
         tagIds.put(TagGroup.ANY, new int[] { -1 });
         tagIds.put(TagGroup.INTAKE, new int[] { 1, 2 });
         tagIds.put(TagGroup.REEF, new int[] { 6, 7, 8, 9, 10, 11 });
         tagIds.put(TagGroup.BARGE, new int[] { 4, 5 });
         tagIds.put(TagGroup.COMPACTOR, new int[] { 3 });
 
-        // move april tags to other side of board if we are on the blue alliance
+        // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
             for (var ids : tagIds.values()) {
                 for (int i = 0; i < ids.length; i++) {
@@ -58,75 +57,76 @@ public class VisionSubsystem extends SubsystemBase {
     private final SwerveDrive swerveDrive;
     private final PhotonCamera photonCamera;
 
-    // PID controllers for X, Y positions and rotation
+    // pid controllers
     private final PIDController positionController;
     private final PIDController rotationController;
 
-    // Target pose relative to the AprilTag
+    // target pose relative to tag
     private Transform2d targetPoseRelative;
 
-    // Timeout for positioning
-    private final double TIMEOUT_SECONDS = 3.0; // give up if we lose sight of the april tag for this long
+    // timeout for positioning
+    private final double TIMEOUT_SECONDS = 3.0;
     private double startTime = 0;
-    // ids for all of the tags we can align to (e.g. the 6 ids for the different sides of the reef)
-    // only used in the brief time when alignment has been started but no tags are visible to find the best tag
+
+    // ids for all of the possible tags to target
     private int[] targetTagOptions = null;
-    // int if we are aligning, null if we are not
+
+    // int if aligning to a certain tag, null if not
     private Integer targetTagId = null;
 
-    // Tolerance thresholds for positioning
-    private final double POS_TOLERANCE_METERS = 0.05; // 5cm
+    // tolerance thresholds for positioning
+    private final double POS_TOLERANCE_METERS = 0.05; // 5 cm
     private final double ROT_TOLERANCE_DEG = 2.0; // 2 degrees
 
-    // Camera mounting position relative to robot center
-    private final Transform2d cameraToRobot;
+    // camera position relative to robot center
+    private final Transform2d cameraOffset;
 
     /**
-     * Creates a new AprilTagPositioningSubsystem
+     * Creates a new VisionSubsystem
      *
      * @param swerveDrive The YAGSL swerve drive subsystem
      * @param photonCamera The PhotonVision camera
-     * @param cameraToRobot The transform from the camera to the robot center
+     * @param cameraOffset The transform from the camera to the robot center
      */
-    public VisionSubsystem(SwerveDrive swerveDrive, PhotonCamera photonCamera, Transform2d cameraToRobot) {
+    public VisionSubsystem(SwerveDrive swerveDrive, PhotonCamera photonCamera, Transform2d cameraOffset) {
         this.swerveDrive = swerveDrive;
         this.photonCamera = photonCamera;
-        this.cameraToRobot = cameraToRobot;
+        this.cameraOffset = cameraOffset;
 
-        // Initialize PID controllers
-        // TODO tune maybe
-        positionController = new PIDController(1.0, 0.0, 0.0);
+        // initialize pid controllers
+        // TODO tune pid values
+        positionController = new PIDController(100.0, 0.0, 0.0);
         rotationController = new PIDController(1.0, 0.0, 0.0);
 
-        // Make rotation controller continuous
+        // make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
 
-        // Set tolerances
+        // set tolerances
         positionController.setTolerance(POS_TOLERANCE_METERS);
         rotationController.setTolerance(Math.toRadians(ROT_TOLERANCE_DEG));
 
-        // Default target is 0,0,0 relative to AprilTag
-        targetPoseRelative = new Transform2d(0, 0, new Rotation2d(0));
+        // target pose relative to tag
+        // TODO change depending on selection
+        targetPoseRelative = new Transform2d(0, 0, Rotation2d.kZero);
     }
 
     @Override
     public void periodic() {
         if (!this.isPositioning()) return;
 
-        // if we haven't seen any tags that we want to align to yet, try to find one again
-        // once we find a tag, make sure to only align to that one tag and not switch to a different one
         if (targetTagId == null) {
+            // find best tag out of possible and target it
             targetTagId = getBestTargetId(targetTagOptions);
         }
 
-        // Get the latest result from PhotonVision
+        // get latest result from photonvision
         PhotonTrackedTarget target = targetTagId != null ? getTarget(targetTagId) : null;
 
         if (target == null) {
-            // No AprilTags visible, stop movement
+            // stop movement since no tags are visible
             swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
-            // If we've lost sight of the AprilTag for too long, stop positioning
+            // stop positioning if tag has not been seen for long time
             if (Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS) {
                 stopPositioning();
                 SmartDashboard.putString("Positioning Status", "Failed - No AprilTag visible");
@@ -135,59 +135,60 @@ public class VisionSubsystem extends SubsystemBase {
             return;
         }
 
-        // Get the transform from the camera to the target
-        Transform3d cameraToTarget = target.getBestCameraToTarget();
+        // get transform from camera to the target
+        Transform3d targetOff = target.getBestCameraToTarget();
 
-        // Calculate the current position error relative to our desired position
-        Transform2d currentToDesired = calculatePositionError(
+        // calculate position error relative to desired position
+        Transform2d desiredOff = calculatePositionError(
             new Transform2d(
-                cameraToTarget.getX(),
-                cameraToTarget.getY(),
-                cameraToTarget.getRotation().toRotation2d()
+                targetOff.getX(),
+                targetOff.getY(),
+                targetOff.getRotation().toRotation2d()
             )
         );
 
-        // Use PID to calculate the needed speeds for X, Y, and rotation
-        double xSpeed = positionController.calculate(0, currentToDesired.getX());
-        double ySpeed = positionController.calculate(0, currentToDesired.getY());
-        double rotSpeed = rotationController.calculate(0, currentToDesired.getRotation().getRadians());
+        // use pid to calculate needed speeds for x, y, rotation
+        double xSpeed = positionController.calculate(0, desiredOff.getX());
+        double ySpeed = positionController.calculate(0, desiredOff.getY());
+        double rotSpeed = rotationController.calculate(0, desiredOff.getRotation().getRadians());
 
-        // Apply deadbands and clamp values for safety
+        // apply deadbands and clamp values for safety
         xSpeed = applyDeadband(xSpeed, 0.05);
         ySpeed = applyDeadband(ySpeed, 0.05);
         rotSpeed = applyDeadband(rotSpeed, 0.05);
 
-        // Max speeds (adjust based on your robot)
-        double maxLinearSpeed = 2.0;  // meters per second
+        // max speeds
+        // TODO tune speeds
+        double maxLinearSpeed = 15.0;  // meters per second
         double maxRotSpeed = Math.PI; // radians per second
 
         xSpeed = Util.clamp(xSpeed, -maxLinearSpeed, maxLinearSpeed);
         ySpeed = Util.clamp(ySpeed, -maxLinearSpeed, maxLinearSpeed);
         rotSpeed = Util.clamp(rotSpeed, -maxRotSpeed, maxRotSpeed);
 
-        // Convert to field-relative speeds
-        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed,
+        // convert to robot relative speeds
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
             ySpeed,
+            -xSpeed,
             rotSpeed,
             swerveDrive.getOdometryHeading()
         );
 
-        // Command the swerve drive
+        // command swerve drive
         swerveDrive.drive(fieldRelativeSpeeds);
 
-        // Update SmartDashboard with positioning data
-        SmartDashboard.putNumber("Position Error X", currentToDesired.getX());
-        SmartDashboard.putNumber("Position Error Y", currentToDesired.getY());
-        SmartDashboard.putNumber("Rotation Error (deg)", Math.toDegrees(currentToDesired.getRotation().getRadians()));
+        // log positioning data
+        SmartDashboard.putNumber("Position Error X", desiredOff.getX());
+        SmartDashboard.putNumber("Position Error Y", desiredOff.getY());
+        SmartDashboard.putNumber("Rotation Error (deg)", Math.toDegrees(desiredOff.getRotation().getRadians()));
 
-        // Check if we've reached the target position
+        // check if reached target position
         boolean atPosition =
-            Math.abs(currentToDesired.getX()) < POS_TOLERANCE_METERS &&
-            Math.abs(currentToDesired.getY()) < POS_TOLERANCE_METERS &&
-            Math.abs(currentToDesired.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
+            Math.abs(desiredOff.getX()) < POS_TOLERANCE_METERS &&
+            Math.abs(desiredOff.getY()) < POS_TOLERANCE_METERS &&
+            Math.abs(desiredOff.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
 
-        // Check if we've timed out
+        // check if timed out
         boolean timedOut = Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS;
 
         if (atPosition || timedOut) {
@@ -196,22 +197,22 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Find the best april tag to target given a list of april tag IDs
+     * Find the best April Tag to target given a list of April Tag IDs
      *
-     * @param tagIds The IDs of the april tags we want to target
-     * @return The ID of the best april tag, or null if none were found
+     * @param tagIds The IDs of the April Tags we want to target
+     * @return The ID of the best April Tag, or null if none were found
      */
     private Integer getBestTargetId(int[] tagIds) {
         PhotonPipelineResult result = photonCamera.getLatestResult();
 
         if (!result.hasTargets()) return null;
 
-        // -1 represents any, so just return the best result
+        // -1 represents any, so return any best result
         if (tagIds[0] == -1) {
             return result.getTargets().getFirst().fiducialId;
         }
 
-        // find the best tag that matches one of the IDs we are looking for
+        // find best tag in the possible tag options
         for (var target : result.getTargets()) {
             for (int tagId : tagIds) {
                 if (tagId == target.fiducialId) {
@@ -224,10 +225,10 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Get a PhotonVision target for an april tag matching a certain ID
+     * Get a PhotonVision target for an April Tag matching a certain ID
      *
      * @param tagId The ID of the tag to look for
-     * @return A {@link PhotonTrackedTarget} or {@code null} if no april tag was found
+     * @return A {@link PhotonTrackedTarget} or {@code null} if no April Tag was found
      */
     PhotonTrackedTarget getTarget(int tagId) {
         PhotonPipelineResult result = photonCamera.getLatestResult();
@@ -246,7 +247,7 @@ public class VisionSubsystem extends SubsystemBase {
         this.targetPoseRelative = targetPoseRelative;
         this.startTime = Timer.getFPGATimestamp();
 
-        // Reset PID controllers
+        // reset pid controllers
         positionController.reset();
         rotationController.reset();
 
@@ -267,20 +268,20 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Calculate the position error between current position and desired position
      *
-     * @param cameraToTarget The transform from camera to AprilTag
+     * @param targetOff The transform from camera to the tag
      * @return The transform from current position to desired position
      */
-    private Transform2d calculatePositionError(Transform2d cameraToTarget) {
-        // Calculate the transform from robot to AprilTag
+    private Transform2d calculatePositionError(Transform2d targetOff) {
+        // calculate transform from robot to the tag
         Transform2d robotToTarget = new Transform2d(
-            cameraToTarget.getTranslation().plus(cameraToRobot.getTranslation().rotateBy(cameraToTarget.getRotation())),
-            cameraToTarget.getRotation().plus(cameraToRobot.getRotation())
+            targetOff.getTranslation().plus(cameraOffset.getTranslation().rotateBy(targetOff.getRotation())),
+            targetOff.getRotation().plus(cameraOffset.getRotation())
         );
 
-        // Calculate the desired robot to target transform
+        // calculate desired robot to target transform
         Transform2d desiredRobotToTarget = targetPoseRelative;
 
-        // Calculate error (difference between current and desired)
+        // calculate difference between current and desired
         Translation2d translationError = desiredRobotToTarget.getTranslation().minus(robotToTarget.getTranslation());
         Rotation2d rotationError = desiredRobotToTarget.getRotation().minus(robotToTarget.getRotation());
 
@@ -313,29 +314,29 @@ public class VisionSubsystem extends SubsystemBase {
     );
 
     /**
-     * Start aligning to an AprilTag that matches the ID given
+     * Start aligning to an April Tag that matches the ID given
      *
-     * @param targetTagId The ID of the april tag to align to
+     * @param targetTagId The ID of the April Tag to align to
      */
     public Command c_align(int targetTagId) {
         return c_align(new int[] { targetTagId });
     }
 
     /**
-     * Start aligning to an AprilTag that matches the {@link TagGroup} given
+     * Start aligning to an April Tag that matches the {@link TagGroup} given
      *
      * @param targetTagGroup A group of april tags to align to, e.g. {@code TagGroup.REEF}.
-     *                       The robot will align to whatever one PhotonVision considers the best
+     *                       The robot will align to whichever one PhotonVision considers the best
      */
     public Command c_align(TagGroup targetTagGroup) {
         return c_align(tagIds.get(targetTagGroup));
     }
 
     /**
-     * Start aligning to an AprilTag that matches one of the IDs given
+     * Start aligning to an April Tag that matches one of the IDs given
      *
      * @param targetTagIds A list of april tag IDs to align to.
-     *                     The robot will align to whatever one PhotonVision considers the best
+     *                     The robot will align to whichever one PhotonVision considers the best
      */
     public Command c_align(int[] targetTagIds) {
         var command = new SequentialCommandGroup(
