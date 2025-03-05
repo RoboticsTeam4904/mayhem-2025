@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -129,7 +128,7 @@ public class VisionSubsystem extends SubsystemBase {
             // stop positioning if tag has not been seen for long time
             if (Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS) {
                 stopPositioning();
-                SmartDashboard.putString("Positioning Status", "Failed - No AprilTag visible");
+                System.out.println("Positioning Status: Failed - No AprilTag visible");
             }
 
             return;
@@ -159,7 +158,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // max speeds
         // TODO tune speeds
-        double maxLinearSpeed = 15.0;  // meters per second
+        double maxLinearSpeed = 15.0; // meters per second
         double maxRotSpeed = Math.PI; // radians per second
 
         xSpeed = Util.clamp(xSpeed, -maxLinearSpeed, maxLinearSpeed);
@@ -178,9 +177,12 @@ public class VisionSubsystem extends SubsystemBase {
         swerveDrive.drive(fieldRelativeSpeeds);
 
         // log positioning data
-        SmartDashboard.putNumber("Position Error X", desiredOff.getX());
-        SmartDashboard.putNumber("Position Error Y", desiredOff.getY());
-        SmartDashboard.putNumber("Rotation Error (deg)", Math.toDegrees(desiredOff.getRotation().getRadians()));
+        System.out.printf(
+            "Positioning... %s X, %s Y, %sdeg%n",
+            desiredOff.getX(),
+            desiredOff.getY(),
+            Math.toDegrees(desiredOff.getRotation().getRadians())
+        );
 
         // check if reached target position
         boolean atPosition =
@@ -251,7 +253,7 @@ public class VisionSubsystem extends SubsystemBase {
         positionController.reset();
         rotationController.reset();
 
-        SmartDashboard.putString("Positioning Status", "In Progress");
+        System.out.println("Positioning Status: In Progress");
     }
 
     /**
@@ -262,7 +264,7 @@ public class VisionSubsystem extends SubsystemBase {
         targetTagId = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
-        SmartDashboard.putString("Positioning Status", "Completed");
+        System.out.println("Positioning Status: Completed");
     }
 
     /**
