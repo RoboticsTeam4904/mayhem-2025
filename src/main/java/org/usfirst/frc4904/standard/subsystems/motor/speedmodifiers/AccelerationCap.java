@@ -78,8 +78,7 @@ public class AccelerationCap implements SpeedModifier {
 			}
 			return inputSpeed;
 		}
-		if (!new Util.Range(voltage - PDP.PDP_VOLTAGE_PRECISION, voltage + PDP.PDP_VOLTAGE_PRECISION)
-				.contains(newVoltage)) {
+		if (Math.abs(voltage - newVoltage) > PDP.PDP_VOLTAGE_PRECISION) {
 			lastVoltage = voltage;
 			voltage = newVoltage;
 		}

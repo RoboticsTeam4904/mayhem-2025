@@ -1,29 +1,28 @@
 package org.usfirst.frc4904.standard.custom.sensors;
 
 public interface IMU {
-	/**
-	 * Resets the IMU.
-	 */
-	public void reset();
+    /**
+     * Resets the IMU.
+     */
+    void reset();
 
-	/**
-	 * @return Rate of rotation about yaw axis
-	 */
-	public double getRate();
+    /**
+     * @return Rate of rotation about yaw axis
+     */
+    double getRate();
 
-	/**
-	 * @return Current yaw value
-	 */
-	public float getYaw();
+    /**
+     * @return Current yaw value
+     */
+    float getYaw();
 
-	/**
-	 * @return Current pitch value
-	 */
-	public float getPitch();
+    /**
+     * @return Current pitch value
+     */
+    float getPitch();
 
-	/**
-	 * @return Current roll value
-	 */
-	public float getRoll();
-
+    /**
+     * @return Current roll value
+     */
+    float getRoll();
 }

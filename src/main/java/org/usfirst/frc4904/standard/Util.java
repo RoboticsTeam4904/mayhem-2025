@@ -48,16 +48,11 @@ public class Util {
         return Math.max(min, Math.min(max, value));
     }
 
-    public static class Range {
-        private final double min;
-        private final double max;
-
-        public Range(double min, double max) {
+    public record Range(double min, double max) {
+        public Range {
             if (min > max) {
                 throw new BoundaryException("Range min " + min + " greater than max " + max);
             }
-            this.min = min;
-            this.max = max;
         }
 
         public double getRange() {
@@ -68,21 +63,12 @@ public class Util {
             return value >= min && value <= max;
         }
 
-        public double getMin() {
-            return min;
-        }
-
-        public double getMax() {
-            return max;
-        }
-
         public double getCenter() {
             return (min + max) / 2.0;
         }
 
         /**
-         * Scales a value (between -1 and 1) to the range. Example: (new
-         * Range(0,6)).scaleValue(0.5) == 4.5
+         * Scales a value (between -1 and 1) to the range. Example: (new Range(0,6)).scaleValue(0.5) == 4.5
          *
          * @param value between -1 and 1 (will be limited to [-1, 1])
          * @return the scaled value
