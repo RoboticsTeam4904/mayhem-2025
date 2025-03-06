@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -46,6 +47,8 @@ public class VisionSubsystem extends SubsystemBase {
         // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
             for (var ids : tagIds.values()) {
+                if (ids[0] == -1) continue; // skip ANY
+
                 for (int i = 0; i < ids.length; i++) {
                     ids[i] += TAGS_PER_FIELD_SIDE;
                 }
@@ -63,15 +66,22 @@ public class VisionSubsystem extends SubsystemBase {
     // target pose relative to tag
     private Transform2d targetPoseRelative;
 
-    // timeout for positioning
-    private final double TIMEOUT_SECONDS = 3.0;
+    // all timeouts in seconds
+    private final double CANT_SEE_TIMEOUT = 2; // give up if we cant see the april tag for this many seconds
+    private final double TOTAL_TIMEOUT = 5; // always give up after this many seconds
     private double startTime = 0;
+    private double lastSeenTagTime = 0;
 
     // ids for all of the possible tags to target
     private int[] targetTagOptions = null;
 
     // int if aligning to a certain tag, null if not
     private Integer targetTagId = null;
+
+    // max speeds
+    // TODO tune speeds
+    private final double MAX_LINEAR_SPEED = 3; // meters per second
+    private final double MAX_ROT_SPEED = Math.PI; // radians per second
 
     // tolerance thresholds for positioning
     private final double POS_TOLERANCE_METERS = 0.05; // 5 cm
@@ -95,7 +105,7 @@ public class VisionSubsystem extends SubsystemBase {
         // initialize pid controllers
         // TODO tune pid values
         positionController = new PIDController(100.0, 0.0, 0.0);
-        rotationController = new PIDController(1.0, 0.0, 0.0);
+        rotationController = new PIDController(10.0, 0.0, 0.0);
 
         // make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
@@ -106,12 +116,14 @@ public class VisionSubsystem extends SubsystemBase {
 
         // target pose relative to tag
         // TODO change depending on selection
-        targetPoseRelative = new Transform2d(0, 0, Rotation2d.kZero);
+        targetPoseRelative = new Transform2d(0, 0.3, Rotation2d.kZero);
     }
 
     @Override
     public void periodic() {
         if (!this.isPositioning()) return;
+
+        double currentTime = Timer.getFPGATimestamp();
 
         if (targetTagId == null) {
             // find best tag out of possible and target it
@@ -123,15 +135,18 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (target == null) {
             // stop movement since no tags are visible
+            // TODO keep moving towards last seen pos
             swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
-            // stop positioning if tag has not been seen for long time
-            if (Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS) {
-                stopPositioning();
-                System.out.println("Positioning Status: Failed - No AprilTag visible");
+            // stop positioning if tag has not been seen for a while
+            double timeElapsed = currentTime - lastSeenTagTime;
+            if (timeElapsed > CANT_SEE_TIMEOUT) {
+                stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds");
             }
 
             return;
+        } else {
+            lastSeenTagTime = currentTime;
         }
 
         // get transform from camera to the target
@@ -151,19 +166,9 @@ public class VisionSubsystem extends SubsystemBase {
         double ySpeed = positionController.calculate(0, desiredOff.getY());
         double rotSpeed = rotationController.calculate(0, desiredOff.getRotation().getRadians());
 
-        // apply deadbands and clamp values for safety
-        xSpeed = applyDeadband(xSpeed, 0.05);
-        ySpeed = applyDeadband(ySpeed, 0.05);
-        rotSpeed = applyDeadband(rotSpeed, 0.05);
-
-        // max speeds
-        // TODO tune speeds
-        double maxLinearSpeed = 15.0; // meters per second
-        double maxRotSpeed = Math.PI; // radians per second
-
-        xSpeed = Util.clamp(xSpeed, -maxLinearSpeed, maxLinearSpeed);
-        ySpeed = Util.clamp(ySpeed, -maxLinearSpeed, maxLinearSpeed);
-        rotSpeed = Util.clamp(rotSpeed, -maxRotSpeed, maxRotSpeed);
+        xSpeed = Util.clamp(xSpeed, -MAX_LINEAR_SPEED, MAX_LINEAR_SPEED);
+        ySpeed = Util.clamp(ySpeed, -MAX_LINEAR_SPEED, MAX_LINEAR_SPEED);
+        rotSpeed = Util.clamp(rotSpeed, -MAX_ROT_SPEED, MAX_ROT_SPEED);
 
         // convert to robot relative speeds
         ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -178,23 +183,26 @@ public class VisionSubsystem extends SubsystemBase {
 
         // log positioning data
         System.out.printf(
-            "Positioning... %s X, %s Y, %sdeg%n",
-            desiredOff.getX(),
-            desiredOff.getY(),
-            Math.toDegrees(desiredOff.getRotation().getRadians())
+            "Positioning to april tag %s... %s X, %s Y, %sdeg%n",
+            targetTagId,
+            Math.round(desiredOff.getX() * 1000) / 1000,
+            Math.round(desiredOff.getY() * 1000) / 1000,
+            desiredOff.getRotation().getDegrees()
         );
 
         // check if reached target position
         boolean atPosition =
-            Math.abs(desiredOff.getX()) < POS_TOLERANCE_METERS &&
-            Math.abs(desiredOff.getY()) < POS_TOLERANCE_METERS &&
+            Math.hypot(desiredOff.getX(), desiredOff.getY()) < POS_TOLERANCE_METERS &&
             Math.abs(desiredOff.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
 
-        // check if timed out
-        boolean timedOut = Timer.getFPGATimestamp() - startTime > TIMEOUT_SECONDS;
-
-        if (atPosition || timedOut) {
-            stopPositioning();
+        if (atPosition) {
+            stopPositioning("Success");
+        } else {
+            // give up if too much time has passed
+            double timeElapsed = currentTime - startTime;
+            if (timeElapsed > TOTAL_TIMEOUT) {
+                stopPositioning("Gave up after " + TOTAL_TIMEOUT + " seconds");
+            }
         }
     }
 
@@ -211,7 +219,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // -1 represents any, so return any best result
         if (tagIds[0] == -1) {
-            return result.getTargets().getFirst().fiducialId;
+            return result.getBestTarget().fiducialId;
         }
 
         // find best tag in the possible tag options
@@ -247,24 +255,34 @@ public class VisionSubsystem extends SubsystemBase {
     private void startPositioning(int[] targetTagIds, Transform2d targetPoseRelative) {
         this.targetTagOptions = targetTagIds;
         this.targetPoseRelative = targetPoseRelative;
-        this.startTime = Timer.getFPGATimestamp();
+
+        startTime = lastSeenTagTime = Timer.getFPGATimestamp();
 
         // reset pid controllers
         positionController.reset();
         rotationController.reset();
 
-        System.out.println("Positioning Status: In Progress");
+        System.out.println("Positioning started");
     }
 
     /**
      * Stop the positioning process
      */
     public void stopPositioning() {
+        stopPositioning(null);
+    }
+
+    /**
+     * Stop the positioning process
+     *
+     * @param status The status to log after positioning, e.g. "Success"
+     */
+    public void stopPositioning(String status) {
         targetTagOptions = null;
         targetTagId = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
-        System.out.println("Positioning Status: Completed");
+        System.out.println("Positioning ended" + (status != null ? " - " + status : ""));
     }
 
     /**
@@ -312,7 +330,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // TODO tune
     public final Transform2d CAMERA_OFFSET = new Transform2d(
-        1.0, 0.0, new Rotation2d(Math.PI)
+        0, 0, Rotation2d.kPi
     );
 
     /**
@@ -353,5 +371,9 @@ public class VisionSubsystem extends SubsystemBase {
         };
         command.addRequirements(RobotMap.Component.chassis);
         return command;
+    }
+
+    public Command c_stop() {
+        return new InstantCommand(this::stopPositioning);
     }
 }

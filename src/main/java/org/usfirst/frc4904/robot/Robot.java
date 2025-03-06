@@ -55,6 +55,9 @@ public class Robot extends CommandRobotBase {
             "max angular velocity",
             RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
         );
+
+        RobotMap.Component.vision.periodic();
+
         // //various logging can go here
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
         // SmartDashboard.putNumber("FL angle-1", Component.flTurnEncoder.getAbsolutePosition());
@@ -98,7 +101,9 @@ public class Robot extends CommandRobotBase {
     }
 
     @Override
-    public void disabledInitialize() {}
+    public void disabledInitialize() {
+        RobotMap.Component.vision.stopPositioning();
+    }
 
     @Override
     public void disabledExecute() {}
@@ -164,6 +169,5 @@ public class Robot extends CommandRobotBase {
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
-        RobotMap.Component.vision.periodic();
     }
 }
