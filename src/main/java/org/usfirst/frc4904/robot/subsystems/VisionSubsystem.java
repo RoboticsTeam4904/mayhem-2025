@@ -67,7 +67,7 @@ public class VisionSubsystem extends SubsystemBase {
     private Transform2d targetPoseRelative;
 
     // all timeouts in seconds
-    private final double CANT_SEE_TIMEOUT = 2; // give up if we cant see the april tag for this many seconds
+    private final double CANT_SEE_TIMEOUT = 1; // give up if we cant see the april tag for this many seconds
     private final double TOTAL_TIMEOUT = 5; // always give up after this many seconds
     private double startTime = 0;
     private double lastSeenTagTime = 0;
@@ -77,6 +77,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // int if aligning to a certain tag, null if not
     private Integer targetTagId = null;
+    private Transform3d targetOff = null;
 
     // max speeds
     // TODO tune speeds
@@ -142,15 +143,18 @@ public class VisionSubsystem extends SubsystemBase {
             double timeElapsed = currentTime - lastSeenTagTime;
             if (timeElapsed > CANT_SEE_TIMEOUT) {
                 stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds");
+                return;
             }
 
-            return;
         } else {
             lastSeenTagTime = currentTime;
+            // get transform from camera to the target
+            targetOff = target.getBestCameraToTarget();
         }
 
-        // get transform from camera to the target
-        Transform3d targetOff = target.getBestCameraToTarget();
+        if (targetOff==null){
+            return;
+        }
 
         // calculate position error relative to desired position
         Transform2d desiredOff = calculatePositionError(
@@ -280,6 +284,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void stopPositioning(String status) {
         targetTagOptions = null;
         targetTagId = null;
+        targetOff = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
         System.out.println("Positioning ended" + (status != null ? " - " + status : ""));
