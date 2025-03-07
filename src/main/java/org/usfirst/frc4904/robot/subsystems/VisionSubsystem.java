@@ -1,10 +1,7 @@
 package org.usfirst.frc4904.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -77,11 +74,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     // int if aligning to a certain tag, null if not
     private Integer targetTagId = null;
-    private Transform3d targetOff = null;
+    private Transform3d targetOffset = null;
 
     // max speeds
     // TODO tune speeds
-    private final double MAX_LINEAR_SPEED = 3; // meters per second
+    private final double MAX_LINEAR_SPEED = 2; // meters per second
     private final double MAX_ROT_SPEED = Math.PI; // radians per second
 
     // tolerance thresholds for positioning
@@ -105,8 +102,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         // initialize pid controllers
         // TODO tune pid values
-        positionController = new PIDController(100.0, 0.0, 0.0);
-        rotationController = new PIDController(10.0, 0.0, 0.0);
+        positionController = new PIDController(1.0, 0.0, 0.0);
+        rotationController = new PIDController(1.0, 0.0, 0.0);
 
         // make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
@@ -143,61 +140,59 @@ public class VisionSubsystem extends SubsystemBase {
             double timeElapsed = currentTime - lastSeenTagTime;
             if (timeElapsed > CANT_SEE_TIMEOUT) {
                 stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds");
-                return;
             }
 
+            return;
         } else {
             lastSeenTagTime = currentTime;
             // get transform from camera to the target
-            targetOff = target.getBestCameraToTarget();
+            targetOffset = target.getBestCameraToTarget();
         }
 
-        if (targetOff==null){
-            return;
-        }
+        if (targetOffset == null) return;
 
         // calculate position error relative to desired position
-        Transform2d desiredOff = calculatePositionError(
+        Transform2d desiredOffset = calculatePositionError(
             new Transform2d(
-                targetOff.getX(),
-                targetOff.getY(),
-                targetOff.getRotation().toRotation2d()
+                targetOffset.getX(),
+                targetOffset.getY(),
+                targetOffset.getRotation().toRotation2d()
             )
         );
 
         // use pid to calculate needed speeds for x, y, rotation
-        double xSpeed = positionController.calculate(0, desiredOff.getX());
-        double ySpeed = positionController.calculate(0, desiredOff.getY());
-        double rotSpeed = rotationController.calculate(0, desiredOff.getRotation().getRadians());
+        double xSpeed = positionController.calculate(0, desiredOffset.getX());
+        double ySpeed = positionController.calculate(0, desiredOffset.getY());
+        double rotSpeed = rotationController.calculate(0, desiredOffset.getRotation().getRadians());
 
         xSpeed = Util.clamp(xSpeed, -MAX_LINEAR_SPEED, MAX_LINEAR_SPEED);
         ySpeed = Util.clamp(ySpeed, -MAX_LINEAR_SPEED, MAX_LINEAR_SPEED);
         rotSpeed = Util.clamp(rotSpeed, -MAX_ROT_SPEED, MAX_ROT_SPEED);
 
         // convert to robot relative speeds
-        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+        ChassisSpeeds relativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+            xSpeed,
             ySpeed,
-            -xSpeed,
             rotSpeed,
-            swerveDrive.getOdometryHeading()
+            Rotation2d.kZero
         );
 
         // command swerve drive
-        swerveDrive.drive(fieldRelativeSpeeds);
+        swerveDrive.drive(relativeSpeeds);
 
         // log positioning data
         System.out.printf(
-            "Positioning to april tag %s... %s X, %s Y, %sdeg%n",
+            "Positioning to tag %s. X: %.4f, Y: %.4f, Rot: %.2fdeg%n",
             targetTagId,
-            Math.round(desiredOff.getX() * 1000) / 1000,
-            Math.round(desiredOff.getY() * 1000) / 1000,
-            desiredOff.getRotation().getDegrees()
+            desiredOffset.getX(),
+            desiredOffset.getY(),
+            desiredOffset.getRotation().getDegrees()
         );
 
         // check if reached target position
         boolean atPosition =
-            Math.hypot(desiredOff.getX(), desiredOff.getY()) < POS_TOLERANCE_METERS &&
-            Math.abs(desiredOff.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
+            Math.hypot(desiredOffset.getX(), desiredOffset.getY()) < POS_TOLERANCE_METERS &&
+            Math.abs(desiredOffset.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
 
         if (atPosition) {
             stopPositioning("Success");
@@ -284,7 +279,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void stopPositioning(String status) {
         targetTagOptions = null;
         targetTagId = null;
-        targetOff = null;
+        targetOffset = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
         System.out.println("Positioning ended" + (status != null ? " - " + status : ""));
@@ -293,14 +288,14 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Calculate the position error between current position and desired position
      *
-     * @param targetOff The transform from camera to the tag
+     * @param targetOffset The transform from camera to the tag
      * @return The transform from current position to desired position
      */
-    private Transform2d calculatePositionError(Transform2d targetOff) {
+    private Transform2d calculatePositionError(Transform2d targetOffset) {
         // calculate transform from robot to the tag
         Transform2d robotToTarget = new Transform2d(
-            targetOff.getTranslation().plus(cameraOffset.getTranslation().rotateBy(targetOff.getRotation())),
-            targetOff.getRotation().plus(cameraOffset.getRotation())
+            targetOffset.getTranslation().plus(cameraOffset.getTranslation().rotateBy(targetOffset.getRotation())),
+            targetOffset.getRotation().plus(cameraOffset.getRotation())
         );
 
         // calculate desired robot to target transform
@@ -335,7 +330,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // TODO tune
     public final Transform2d CAMERA_OFFSET = new Transform2d(
-        0, 0, Rotation2d.kPi
+        -0.3, 0, Rotation2d.kPi
     );
 
     /**
@@ -371,7 +366,7 @@ public class VisionSubsystem extends SubsystemBase {
             @Override
             public void cancel() {
                 super.cancel();
-                stopPositioning();
+                stopPositioning("Command canceled");
             }
         };
         command.addRequirements(RobotMap.Component.chassis);
@@ -379,6 +374,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Command c_stop() {
-        return new InstantCommand(this::stopPositioning);
+        return new InstantCommand(() -> this.stopPositioning("Stop command"));
     }
 }

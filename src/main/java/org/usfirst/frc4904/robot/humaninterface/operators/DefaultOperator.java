@@ -21,8 +21,8 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
-        joystick.button3.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY));
-        joystick.button4.onTrue(RobotMap.Component.vision.c_stop());
+        joystick.button1.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY));
+        joystick.button1.onFalse(RobotMap.Component.vision.c_stop());
 
         // orchestra
         joystick.button7.onTrue(

@@ -102,7 +102,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void disabledInitialize() {
-        RobotMap.Component.vision.stopPositioning();
+        RobotMap.Component.vision.stopPositioning("Robot disabled");
     }
 
     @Override
