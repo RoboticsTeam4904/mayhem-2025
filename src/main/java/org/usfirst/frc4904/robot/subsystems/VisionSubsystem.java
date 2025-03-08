@@ -17,10 +17,7 @@ import org.usfirst.frc4904.standard.Util;
 import org.usfirst.frc4904.standard.commands.WaitWhile;
 import swervelib.SwerveDrive;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /** Sponsored by Claude™ 3.7 Sonnet by Anthropic® */
 public class VisionSubsystem extends SubsystemBase {
@@ -182,6 +179,9 @@ public class VisionSubsystem extends SubsystemBase {
         // command swerve drive
         swerveDrive.drive(relativeSpeeds);
 
+        lastTime = currentTime;
+        lastSpeed = relativeSpeeds;
+
         // log positioning data
         System.out.printf(
             "Positioning to tag %s. X: %.4f, Y: %.4f, Rot: %.2fdeg%n",
@@ -277,7 +277,7 @@ public class VisionSubsystem extends SubsystemBase {
         this.targetTagOptions = targetTagIds;
         this.targetPoseRelative = targetPoseRelative;
 
-        startTime = lastSeenTagTime = Timer.getFPGATimestamp();
+        startTime = lastSeenTagTime = lastTime = Timer.getFPGATimestamp();
 
         // reset pid controllers
         positionController.reset();
