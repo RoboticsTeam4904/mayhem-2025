@@ -220,8 +220,8 @@ public class RobotMap {
         Component.camera = new PhotonCamera("dauntless-camera");
         Component.vision = new VisionSubsystem(
             Component.chassis.swerveDrive,
-            Component.camera,
-            new Transform2d(0, 0, Rotation2d.kZero)
+            new PhotonCamera[] { Component.camera },
+            new Transform2d[] { new Transform2d(0, 0, Rotation2d.kZero) }
         );
 
         // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
