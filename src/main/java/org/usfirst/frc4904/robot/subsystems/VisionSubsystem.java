@@ -115,10 +115,6 @@ public class VisionSubsystem extends SubsystemBase {
         // set tolerances
         positionController.setTolerance(POS_TOLERANCE_METERS);
         rotationController.setTolerance(Math.toRadians(ROT_TOLERANCE_DEG));
-
-        // target pose relative to tag
-        // TODO change depending on selection
-        targetPoseRelative = new Transform2d(0, 0.3, Rotation2d.kZero);
     }
 
     @Override
@@ -304,7 +300,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Calculate the position error between current position and desired position
      *
-     * @param targetOffset The transform from camera to the tag
+     * @param target The target to calculate alignment to
      * @return The transform from current position to desired position
      */
     private Transform2d calculatePositionError(CameraTag target) {
@@ -354,9 +350,9 @@ public class VisionSubsystem extends SubsystemBase {
         return Math.abs(value) < deadband ? 0.0 : value;
     }
 
-    // TODO tune
+    // TODO change to parameter for alignment offset
     public final Transform2d CAMERA_OFFSET = new Transform2d(
-        -0.3, 0, Rotation2d.kPi
+        0, 0, Rotation2d.kPi
     );
 
     /**

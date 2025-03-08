@@ -221,7 +221,7 @@ public class RobotMap {
         Component.vision = new VisionSubsystem(
             Component.chassis.swerveDrive,
             new PhotonCamera[] { Component.camera },
-            new Transform2d[] { new Transform2d(0, 0, Rotation2d.kZero) }
+            new Transform2d[] { new Transform2d(-1, 0, Rotation2d.kZero) }
         );
 
         // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
