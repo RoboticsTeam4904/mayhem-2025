@@ -78,7 +78,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     // int if aligning to a certain tag, null if not
     private Integer targetTagId = null;
-    private Transform3d targetOffset = null;
+    private Transform2d desiredOffset = null;
+
+    // used to estimate position when we can't see the tag
+    private double lastTime;
+    private ChassisSpeeds lastSpeed = null;
 
     // max speeds
     // TODO tune speeds
@@ -134,23 +138,29 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         if (target == null) {
-            // stop movement since no tags are visible
-            // TODO keep moving towards last seen pos
-            swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
-
             // stop positioning if tag has not been seen for a while
             double timeElapsed = currentTime - lastSeenTagTime;
             if (timeElapsed > CANT_SEE_TIMEOUT) {
                 stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds");
+                return;
             }
 
-            return;
+            if (lastSpeed == null || desiredOffset == null) return;
+
+            double deltaTime = currentTime - lastTime;
+            desiredOffset = desiredOffset.plus(
+                new Transform2d(
+                    -lastSpeed.vxMetersPerSecond * deltaTime,
+                    -lastSpeed.vyMetersPerSecond * deltaTime,
+                    new Rotation2d(-lastSpeed.omegaRadiansPerSecond * deltaTime)
+                )
+            );
+        } else {
+            lastSeenTagTime = currentTime;
+
+            // calculate position error relative to desired position
+            desiredOffset = calculatePositionError(target);
         }
-
-        lastSeenTagTime = currentTime;
-
-        // calculate position error relative to desired position
-        Transform2d desiredOffset = calculatePositionError(target);
 
         // use pid to calculate needed speeds for x, y, rotation
         double xSpeed = positionController.calculate(0, desiredOffset.getX());
@@ -291,7 +301,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void stopPositioning(String status) {
         targetTagOptions = null;
         targetTagId = null;
-        targetOffset = null;
+        desiredOffset = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
         System.out.println("Positioning ended" + (status != null ? " - " + status : ""));
