@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.standard.Util;
@@ -56,15 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    private class CameraTag {
-        public final PhotonTrackedTarget tag;
-        public final int cameraIndex;
-
-        CameraTag(PhotonTrackedTarget tag, int cameraIndex) {
-            this.tag = tag;
-            this.cameraIndex = cameraIndex;
-        }
-    }
+    private record CameraTag(PhotonTrackedTarget tag, int cameraIndex) {}
 
     private final SwerveDrive swerveDrive;
     private final PhotonCamera[] photonCameras;
@@ -136,13 +127,15 @@ public class VisionSubsystem extends SubsystemBase {
 
         double currentTime = Timer.getFPGATimestamp();
 
-        if (targetTagId == null) {
-            // find best tag out of possible and target it
-            targetTagId = getBestTargetId(targetTagOptions);
-        }
+        CameraTag target;
 
-        // get latest result from photonvision
-        CameraTag target = targetTagId != null ? getTarget(targetTagId) : null;
+        if (targetTagId == null) {
+            // find best tag out of possible tags and target it
+            target = getBestTargetId(targetTagOptions);
+            targetTagId = target != null ? target.tag.fiducialId : null;
+        } else {
+            target = getTarget(targetTagId);
+        }
 
         if (target == null) {
             // stop movement since no tags are visible
@@ -214,21 +207,21 @@ public class VisionSubsystem extends SubsystemBase {
      * @param tagIds The IDs of the April Tags to target
      * @return The ID of the best April Tag, or null if none were found
      */
-    private Integer getBestTargetId(int[] tagIds) {
+    private CameraTag getBestTargetId(int[] tagIds) {
         List<CameraTag> results = getResults();
 
         if (results.isEmpty()) return null;
 
         // -1 represents any, so return any best result
         if (tagIds[0] == -1) {
-            return results.get(0).tag.fiducialId;
+            return results.get(0);
         }
 
         // find best tag in the possible tag options
         for (var target : results) {
             for (int tagId : tagIds) {
                 if (tagId == target.tag.fiducialId) {
-                    return tagId;
+                    return target;
                 }
             }
         }
@@ -253,10 +246,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Get a PhotonVision target for an April Tag matching a certain ID
-     *
-     * @param tagId The ID of the tag to look for
-     * @return A {@link CameraTag} or {@code null} if no April Tag was found
+     * @return A list of possible targets
      */
     List<CameraTag> getResults() {
         List<CameraTag> results = new ArrayList<>();
@@ -269,8 +259,8 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        results.sort(Comparator.comparingDouble(t -> {
-            Transform3d transform = t.tag.getBestCameraToTarget();
+        results.sort(Comparator.comparingDouble(result -> {
+            Transform3d transform = result.tag.getBestCameraToTarget();
             return Math.pow(transform.getX(), 2) + Math.pow(transform.getY(), 2);
         }));
 
