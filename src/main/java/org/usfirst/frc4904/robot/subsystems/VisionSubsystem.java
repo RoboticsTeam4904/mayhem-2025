@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.standard.Util;
@@ -24,9 +25,7 @@ public class VisionSubsystem extends SubsystemBase {
     public enum TagGroup {
         ANY,
         INTAKE,
-        REEF,
-        BARGE,
-        PROCESSOR
+        REEF
     }
 
     private static final int TAGS_PER_FIELD_SIDE = 11;
@@ -37,8 +36,6 @@ public class VisionSubsystem extends SubsystemBase {
         tagIds.put(TagGroup.ANY, new int[] { -1 });
         tagIds.put(TagGroup.INTAKE, new int[] { 1, 2 });
         tagIds.put(TagGroup.REEF, new int[] { 6, 7, 8, 9, 10, 11 });
-        tagIds.put(TagGroup.BARGE, new int[] { 4, 5 });
-        tagIds.put(TagGroup.PROCESSOR, new int[] { 3 });
 
         // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
@@ -258,10 +255,21 @@ public class VisionSubsystem extends SubsystemBase {
         List<CameraTag> results = new ArrayList<>();
 
         for (int i = 0; i < photonCameras.length; i++) {
-            PhotonCamera camera = photonCameras[i];
+            List<PhotonPipelineResult> unreadResults = photonCameras[i].getAllUnreadResults();
+            if (unreadResults.isEmpty()) continue;
 
-            for (var target : camera.getLatestResult().getTargets()) {
-                results.add(new CameraTag(target, i));
+            double lastCaptureTime = 0;
+            for (var result : unreadResults) {
+                lastCaptureTime = Math.max(lastCaptureTime, result.getTimestampSeconds());
+            }
+
+            for (var result : unreadResults) {
+                // discard results that are more than 0.1 seconds older than the latest result
+                if (lastCaptureTime - result.getTimestampSeconds() > 0.1) continue;
+
+                for (var target : result.getTargets()) {
+                    results.add(new CameraTag(target, i));
+                }
             }
         }
 
