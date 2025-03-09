@@ -1,5 +1,6 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import org.usfirst.frc4904.robot.RobotMap;
@@ -21,8 +22,12 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
-        joystick.button3.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY));
+        joystick.button3.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, null)); // TODO divide by 10
+        joystick.button5.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, new Translation2d(-1.7, 0)));
+        joystick.button6.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, new Translation2d(1.7, 0)));
         joystick.button3.onFalse(RobotMap.Component.vision.c_stop());
+        joystick.button5.onFalse(RobotMap.Component.vision.c_stop());
+        joystick.button6.onFalse(RobotMap.Component.vision.c_stop());
 
         // orchestra
         joystick.button7.onTrue(

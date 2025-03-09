@@ -84,8 +84,8 @@ public class VisionSubsystem extends SubsystemBase {
     private final double MAX_ROT_SPEED = Math.PI; // radians per second
 
     // tolerance thresholds for positioning
-    private final double POS_TOLERANCE_METERS = 0.05; // 5 cm
-    private final double ROT_TOLERANCE_DEG = 2.0; // 2 degrees
+    private final double POS_TOLERANCE_METERS = 0.02;
+    private final double ROT_TOLERANCE_DEG = 1.0;
 
     // camera positions relative to robot center
     private final Transform2d[] cameraOffsets;
@@ -104,8 +104,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         // initialize pid controllers
         // TODO tune pid values
-        positionController = new PIDController(1.0, 0.0, 0.0);
-        rotationController = new PIDController(1.0, 0.0, 0.0);
+        positionController = new PIDController(5.0, 0.0, 0.0);
+        rotationController = new PIDController(7.5, 0.0, 0.0);
 
         // make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
@@ -341,6 +341,8 @@ public class VisionSubsystem extends SubsystemBase {
         // calculate desired robot to target transform
         Transform2d desiredRobotToTarget = targetPoseRelative;
 
+        System.out.println("THE CHEESE TAX: " + desiredRobotToTarget.getX() + " " + desiredRobotToTarget.getY());
+
         // calculate difference between current and desired
         Translation2d translationError = desiredRobotToTarget.getTranslation().minus(robotToTarget.getTranslation());
         Rotation2d rotationError = desiredRobotToTarget.getRotation().minus(robotToTarget.getRotation());
@@ -368,18 +370,13 @@ public class VisionSubsystem extends SubsystemBase {
         return Math.abs(value) < deadband ? 0.0 : value;
     }
 
-    // TODO change to parameter for alignment offset
-    public final Transform2d CAMERA_OFFSET = new Transform2d(
-        0, 0, Rotation2d.kPi
-    );
-
     /**
      * Start aligning to an April Tag that matches the ID given
      *
      * @param targetTagId The ID of the April Tag to align to
      */
-    public Command c_align(int targetTagId) {
-        return c_align(new int[] { targetTagId });
+    public Command c_align(int targetTagId, Translation2d offset) {
+        return c_align(new int[] { targetTagId }, offset);
     }
 
     /**
@@ -388,8 +385,8 @@ public class VisionSubsystem extends SubsystemBase {
      * @param targetTagGroup A group of april tags to align to, e.g. {@code TagGroup.REEF}.
      *                       The robot will align to whichever one PhotonVision considers the best
      */
-    public Command c_align(TagGroup targetTagGroup) {
-        return c_align(tagIds.get(targetTagGroup));
+    public Command c_align(TagGroup targetTagGroup, Translation2d offset) {
+        return c_align(tagIds.get(targetTagGroup), offset);
     }
 
     /**
@@ -398,9 +395,14 @@ public class VisionSubsystem extends SubsystemBase {
      * @param targetTagIds A list of april tag IDs to align to.
      *                     The robot will align to whichever one PhotonVision considers the best
      */
-    public Command c_align(int[] targetTagIds) {
+    public Command c_align(int[] targetTagIds, Translation2d offset) {
+        Transform2d transformOffset = new Transform2d(
+            offset != null ? offset : Translation2d.kZero,
+            Rotation2d.kPi
+        );
+
         var command = new SequentialCommandGroup(
-            this.runOnce(() -> startPositioning(targetTagIds, CAMERA_OFFSET)),
+            this.runOnce(() -> startPositioning(targetTagIds, transformOffset)),
             new WaitWhile(this::isPositioning)
         ) {
             @Override
