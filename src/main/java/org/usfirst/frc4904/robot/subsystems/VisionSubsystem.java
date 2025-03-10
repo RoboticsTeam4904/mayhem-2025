@@ -362,7 +362,7 @@ public class VisionSubsystem extends SubsystemBase {
      *
      * @param targetTagId The ID of the April Tag to align to
      */
-    public Command c_align(int targetTagId, Translation2d offset) {
+    public Command c_align(int targetTagId, Transform2d offset) {
         return c_align(new int[] { targetTagId }, offset);
     }
 
@@ -372,7 +372,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @param targetTagGroup A group of april tags to align to, e.g. {@code TagGroup.REEF}.
      *                       The robot will align to whichever one PhotonVision considers the best
      */
-    public Command c_align(TagGroup targetTagGroup, Translation2d offset) {
+    public Command c_align(TagGroup targetTagGroup, Transform2d offset) {
         System.out.println("OFFSET 1: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
         return c_align(tagIds.get(targetTagGroup), offset);
     }
@@ -383,16 +383,13 @@ public class VisionSubsystem extends SubsystemBase {
      * @param targetTagIds A list of april tag IDs to align to.
      *                     The robot will align to whichever one PhotonVision considers the best
      */
-    public Command c_align(int[] targetTagIds, Translation2d offset) {
+    public Command c_align(int[] targetTagIds, Transform2d offset) {
         System.out.println("OFFSET 2: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
-        Transform2d offsetTransform = new Transform2d(
-            offset != null ? offset : Translation2d.kZero,
-            Rotation2d.kPi
-        );
-        System.out.println("OFFSET 3: " + offsetTransform.getX() + " " + offsetTransform.getY()); // TODO remove
+        final Transform2d finalOffset = offset != null ? offset : Transform2d.kZero;
+        System.out.println("OFFSET 3: " + finalOffset.getX() + " " + finalOffset.getY()); // TODO remove
 
         var command = new SequentialCommandGroup(
-            this.runOnce(() -> startPositioning(targetTagIds, offsetTransform)),
+            this.runOnce(() -> startPositioning(targetTagIds, finalOffset)),
             new WaitWhile(this::isPositioning)
         ) {
             @Override
