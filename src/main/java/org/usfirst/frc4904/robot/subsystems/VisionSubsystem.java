@@ -59,7 +59,7 @@ public class VisionSubsystem extends SubsystemBase {
     private final PIDController rotationController;
 
     // target pose relative to tag
-    private Transform2d targetPoseRelative;
+    private Transform2d offset;
 
     // all timeouts in seconds
     private final double CANT_SEE_TIMEOUT = 1; // give up if we cant see the april tag for this many seconds
@@ -281,9 +281,10 @@ public class VisionSubsystem extends SubsystemBase {
         return results;
     }
 
-    private void startPositioning(int[] targetTagIds, Transform2d targetPoseRelative) {
+    private void startPositioning(int[] targetTagIds, Transform2d offset) {
+        System.out.println("OFFSET 4: " + offset.getX() + " " + offset.getY()); // TODO remove
         this.targetTagOptions = targetTagIds;
-        this.targetPoseRelative = targetPoseRelative;
+        this.offset = offset;
 
         startTime = lastSeenTagTime = lastTime = Timer.getFPGATimestamp();
 
@@ -338,14 +339,11 @@ public class VisionSubsystem extends SubsystemBase {
             targetOffset.getRotation().plus(cameraOffset.getRotation())
         );
 
-        // calculate desired robot to target transform
-        Transform2d desiredRobotToTarget = targetPoseRelative;
-
-        System.out.println("THE CHEESE TAX: " + desiredRobotToTarget.getX() + " " + desiredRobotToTarget.getY());
+        System.out.println("OFFSET 5: " + offset.getX() + " " + offset.getY()); // TODO remove
 
         // calculate difference between current and desired
-        Translation2d translationError = desiredRobotToTarget.getTranslation().minus(robotToTarget.getTranslation());
-        Rotation2d rotationError = desiredRobotToTarget.getRotation().minus(robotToTarget.getRotation());
+        Translation2d translationError = offset.getTranslation().minus(robotToTarget.getTranslation());
+        Rotation2d rotationError = offset.getRotation().minus(robotToTarget.getRotation());
 
         return new Transform2d(translationError, rotationError);
     }
@@ -357,17 +355,6 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public boolean isPositioning() {
         return targetTagOptions != null;
-    }
-
-    /**
-     * Apply a deadband to a value
-     *
-     * @param value The input value
-     * @param deadband The deadband range
-     * @return The value with deadband applied
-     */
-    private double applyDeadband(double value, double deadband) {
-        return Math.abs(value) < deadband ? 0.0 : value;
     }
 
     /**
@@ -386,6 +373,7 @@ public class VisionSubsystem extends SubsystemBase {
      *                       The robot will align to whichever one PhotonVision considers the best
      */
     public Command c_align(TagGroup targetTagGroup, Translation2d offset) {
+        System.out.println("OFFSET 1: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
         return c_align(tagIds.get(targetTagGroup), offset);
     }
 
@@ -396,13 +384,15 @@ public class VisionSubsystem extends SubsystemBase {
      *                     The robot will align to whichever one PhotonVision considers the best
      */
     public Command c_align(int[] targetTagIds, Translation2d offset) {
-        Transform2d transformOffset = new Transform2d(
+        System.out.println("OFFSET 2: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
+        Transform2d offsetTransform = new Transform2d(
             offset != null ? offset : Translation2d.kZero,
             Rotation2d.kPi
         );
+        System.out.println("OFFSET 3: " + offsetTransform.getX() + " " + offsetTransform.getY()); // TODO remove
 
         var command = new SequentialCommandGroup(
-            this.runOnce(() -> startPositioning(targetTagIds, transformOffset)),
+            this.runOnce(() -> startPositioning(targetTagIds, offsetTransform)),
             new WaitWhile(this::isPositioning)
         ) {
             @Override
