@@ -25,7 +25,10 @@ public class VisionSubsystem extends SubsystemBase {
     public enum TagGroup {
         ANY,
         INTAKE,
-        REEF
+        REEF,
+        REEF_BLUE_SIDE,
+        REEF_CENTER,
+        REEF_RED_SIDE
     }
 
     private static final int TAGS_PER_FIELD_SIDE = 11;
@@ -36,6 +39,9 @@ public class VisionSubsystem extends SubsystemBase {
         tagIds.put(TagGroup.ANY, new int[] { -1 });
         tagIds.put(TagGroup.INTAKE, new int[] { 1, 2 });
         tagIds.put(TagGroup.REEF, new int[] { 6, 7, 8, 9, 10, 11 });
+        tagIds.put(TagGroup.REEF_BLUE_SIDE, new int[] { 9 });
+        tagIds.put(TagGroup.REEF_CENTER, new int[] { 10 });
+        tagIds.put(TagGroup.REEF_RED_SIDE, new int[] { 11 });
 
         // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
@@ -49,6 +55,22 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
+    // sideways distance off of the april tag to align to
+    private static final double HORIZ_ALIGN_OFFSET = 0.17;
+
+    // max speeds
+    // TODO tune speeds
+    private final double MAX_LINEAR_SPEED = 2; // meters per second
+    private final double MAX_ROT_SPEED = Math.PI; // radians per second
+
+    // tolerance thresholds for positioning
+    private final double POS_TOLERANCE_METERS = 0.02;
+    private final double ROT_TOLERANCE_DEG = 1.0;
+
+    // all timeouts are in seconds
+    private final double CANT_SEE_TIMEOUT = 1; // give up if we cant see the april tag for this many seconds
+    private final double TOTAL_TIMEOUT = 5; // always give up after this many seconds
+
     private record CameraTag(PhotonTrackedTarget tag, int cameraIndex) {}
 
     private final SwerveDrive swerveDrive;
@@ -61,9 +83,6 @@ public class VisionSubsystem extends SubsystemBase {
     // target pose relative to tag
     private Transform2d offset;
 
-    // all timeouts in seconds
-    private final double CANT_SEE_TIMEOUT = 1; // give up if we cant see the april tag for this many seconds
-    private final double TOTAL_TIMEOUT = 5; // always give up after this many seconds
     private double startTime = 0;
     private double lastSeenTagTime = 0;
 
@@ -77,15 +96,6 @@ public class VisionSubsystem extends SubsystemBase {
     // used to estimate position when we can't see the tag
     private double lastTime;
     private ChassisSpeeds lastSpeed = null;
-
-    // max speeds
-    // TODO tune speeds
-    private final double MAX_LINEAR_SPEED = 2; // meters per second
-    private final double MAX_ROT_SPEED = Math.PI; // radians per second
-
-    // tolerance thresholds for positioning
-    private final double POS_TOLERANCE_METERS = 0.02;
-    private final double ROT_TOLERANCE_DEG = 1.0;
 
     // camera positions relative to robot center
     private final Transform2d[] cameraOffsets;
@@ -282,7 +292,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     private void startPositioning(int[] targetTagIds, Transform2d offset) {
-        System.out.println("OFFSET 4: " + offset.getX() + " " + offset.getY()); // TODO remove
         this.targetTagOptions = targetTagIds;
         this.offset = offset;
 
@@ -339,8 +348,6 @@ public class VisionSubsystem extends SubsystemBase {
             targetOffset.getRotation().plus(cameraOffset.getRotation())
         );
 
-        System.out.println("OFFSET 5: " + offset.getX() + " " + offset.getY()); // TODO remove
-
         // calculate difference between current and desired
         Translation2d translationError = offset.getTranslation().minus(robotToTarget.getTranslation());
         Rotation2d rotationError = offset.getRotation().minus(robotToTarget.getRotation());
@@ -360,36 +367,39 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Start aligning to an April Tag that matches the ID given
      *
-     * @param targetTagId The ID of the April Tag to align to
+     * @param targetTagId      The ID of the April Tag to align to
+     * @param offsetMultiplier The horizontal offset multiplier from the tag.
+     *                         For 2025 Reefscape: -1 is left coral, 0 is center, 1 is right coral.
      */
-    public Command c_align(int targetTagId, Transform2d offset) {
-        return c_align(new int[] { targetTagId }, offset);
+    public Command c_align(int targetTagId, int offsetMultiplier) {
+        return c_align(new int[] { targetTagId }, offsetMultiplier);
     }
 
     /**
      * Start aligning to an April Tag that matches the {@link TagGroup} given
      *
-     * @param targetTagGroup A group of april tags to align to, e.g. {@code TagGroup.REEF}.
-     *                       The robot will align to whichever one PhotonVision considers the best
+     * @param targetTagGroup   A group of april tags to align to, e.g. {@code TagGroup.REEF}.
+     *                         The robot will align to whichever one PhotonVision considers the best
+     * @param offsetMultiplier The horizontal offset multiplier from the tag.
+     *                         For 2025 Reefscape: -1 is left coral, 0 is center, 1 is right coral.
      */
-    public Command c_align(TagGroup targetTagGroup, Transform2d offset) {
-        System.out.println("OFFSET 1: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
-        return c_align(tagIds.get(targetTagGroup), offset);
+    public Command c_align(TagGroup targetTagGroup, int offsetMultiplier) {
+        return c_align(tagIds.get(targetTagGroup), offsetMultiplier);
     }
 
     /**
      * Start aligning to an April Tag that matches one of the IDs given
      *
-     * @param targetTagIds A list of april tag IDs to align to.
-     *                     The robot will align to whichever one PhotonVision considers the best
+     * @param targetTagIds     A list of april tag IDs to align to.
+     *                         The robot will align to whichever one PhotonVision considers the best
+     * @param offsetMultiplier The horizontal offset multiplier from the tag.
+     *                         For 2025 Reefscape: -1 is left coral, 0 is center, 1 is right coral.
      */
-    public Command c_align(int[] targetTagIds, Transform2d offset) {
-        System.out.println("OFFSET 2: " + (offset == null ? "null" : offset.getX() + " " + offset.getY())); // TODO remove
-        final Transform2d finalOffset = offset != null ? offset : Transform2d.kZero;
-        System.out.println("OFFSET 3: " + finalOffset.getX() + " " + finalOffset.getY()); // TODO remove
+    public Command c_align(int[] targetTagIds, int offsetMultiplier) {
+        Transform2d offset = new Transform2d(HORIZ_ALIGN_OFFSET * offsetMultiplier, 0, Rotation2d.kZero);
 
         var command = new SequentialCommandGroup(
-            this.runOnce(() -> startPositioning(targetTagIds, finalOffset)),
+            this.runOnce(() -> startPositioning(targetTagIds, offset)),
             new WaitWhile(this::isPositioning)
         ) {
             @Override

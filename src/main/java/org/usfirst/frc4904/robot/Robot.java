@@ -9,13 +9,25 @@ package org.usfirst.frc4904.robot;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
+import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.CommandRobotBase;
+import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
 public class Robot extends CommandRobotBase {
+
+    public static class AutonomousConfig {
+
+        public static final boolean ENABLED = true;
+
+        public static final String PATH_NAME = "line";
+        public static final TagGroup TARGET_TAG = TagGroup.REEF_CENTER;
+
+    }
 
     private final Driver driver = new SwerveGain();
     private final DefaultOperator operator = new DefaultOperator();
@@ -91,8 +103,14 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousInitialize() {
+        if (!AutonomousConfig.ENABLED) return;
+
         // start auton here
-        Component.chassis.getAutonomousCommand("line", true).schedule();
+        new SequentialCommandGroup(
+            Component.chassis.getAutonomousCommand(AutonomousConfig.PATH_NAME, true),
+            Component.vision.c_align(AutonomousConfig.TARGET_TAG, 1),
+            new NoOp() // TODO outtake
+        ).schedule();
     }
 
     @Override

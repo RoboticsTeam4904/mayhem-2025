@@ -23,15 +23,9 @@ public class DefaultOperator extends Operator {
     public void bindCommands() {
         var joystick = RobotMap.HumanInput.Operator.joystick;
 
-        joystick.button3.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, null));
-        joystick.button5.onTrue(RobotMap.Component.vision.c_align(
-            VisionSubsystem.TagGroup.ANY,
-            new Transform2d(-0.17, 0, Rotation2d.kZero)
-        ));
-        joystick.button6.onTrue(RobotMap.Component.vision.c_align(
-            VisionSubsystem.TagGroup.ANY,
-            new Transform2d(0.17, 0, Rotation2d.kZero)
-        ));
+        joystick.button3.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, 0));
+        joystick.button5.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, -1));
+        joystick.button6.onTrue(RobotMap.Component.vision.c_align(VisionSubsystem.TagGroup.ANY, 1));
         joystick.button3.onFalse(RobotMap.Component.vision.c_stop());
         joystick.button5.onFalse(RobotMap.Component.vision.c_stop());
         joystick.button6.onFalse(RobotMap.Component.vision.c_stop());
