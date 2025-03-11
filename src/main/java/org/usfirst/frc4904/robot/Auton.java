@@ -43,9 +43,15 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
     }
 
     /**
-     * 1. Move diagonally from the starting zone 2. Align with the inner diagonal of the reef 3. Outtake 4. Move to and
-     * align with the coral intake station 5. Wait 2 seconds for intake 6. Move to and align with the outer diagonal of
-     * the reef 7. Outtake
+     * <ol>
+     *   <li> Move diagonally from the starting zone
+     *   <li> Align with the inner diagonal of the reef
+     *   <li> Outtake
+     *   <li> Move to and align with the coral intake station
+     *   <li> Wait 2 seconds for intake
+     *   <li> Move to and align with the outer diagonal of the reef
+     *   <li> Outtake
+     * </ol>
      */
     Command c_sideCoralFancy() {
         return new SequentialCommandGroup(
