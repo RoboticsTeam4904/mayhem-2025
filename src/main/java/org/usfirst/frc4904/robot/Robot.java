@@ -8,24 +8,33 @@ package org.usfirst.frc4904.robot;
 
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
-import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.CommandRobotBase;
-import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
 public class Robot extends CommandRobotBase {
 
-    public static class AutonomousConfig {
+    private static class AutonConfig {
 
+        /** Whether to run auton at all */
         public static final boolean ENABLED = true;
 
-        public static final String PATH_NAME = "line";
-        public static final TagGroup TARGET_TAG = TagGroup.REEF_CENTER;
+        /** Whether to flip the path to the other side of the SAME alliance's field */
+        public static final boolean FLIP = false;
+
+        // paths are automatically flipped to the OTHER alliance's field
+        // based on the alliance that we are currently on.
+        // paths should default to being on the BLUE alliance's field.
+
+        /** Get the auton command to run */
+        public static Command getAuton(Auton auton) {
+            return auton.c_straight();
+        }
 
     }
 
@@ -103,19 +112,19 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousInitialize() {
-        if (!AutonomousConfig.ENABLED) return;
+        if (!AutonConfig.ENABLED) return;
 
-        // start auton here
-        new SequentialCommandGroup(
-            Component.chassis.getAutonomousCommand(AutonomousConfig.PATH_NAME, true),
-            Component.vision.c_align(AutonomousConfig.TARGET_TAG, 1),
-            new NoOp() // TODO outtake
-        ).schedule();
+        Auton auton = new Auton(
+            DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red,
+            AutonConfig.FLIP
+        );
+
+        AutonConfig.getAuton(auton).schedule();
     }
 
     @Override
     public void autonomousExecute() {
-        //logging can go here
+        // logging can go here
     }
 
     @Override

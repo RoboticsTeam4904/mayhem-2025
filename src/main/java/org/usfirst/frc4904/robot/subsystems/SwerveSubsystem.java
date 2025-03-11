@@ -157,6 +157,19 @@ public class SwerveSubsystem extends SubsystemBase {
      * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
      */
     public Command getAutonomousCommand(String pathName, boolean setOdomToStart) {
+        return getAutonomousCommand(pathName, setOdomToStart, false, false);
+    }
+
+    /**
+     * Get the path follower with events.
+     *
+     * @param pathName       PathPlanner path name.
+     * @param setOdomToStart Set the odometry position to the start of the path.
+     * @param flipAlliance   Flip the path onto the opposite alliance's side of the field.
+     * @param flipSide       Flip the path onto the opposite side of the SAME alliance.
+     * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
+     */
+    public Command getAutonomousCommand(String pathName, boolean setOdomToStart, boolean flipAlliance, boolean flipSide) {
         PathPlannerPath path;
 
         try {
@@ -165,6 +178,14 @@ public class SwerveSubsystem extends SubsystemBase {
         } catch (Exception e) {
             System.out.println(e);
             return null;
+        }
+
+        if (flipAlliance) {
+            path = path.flipPath();
+        }
+
+        if (flipSide) {
+            path = path.mirrorPath();
         }
 
         if (setOdomToStart) {

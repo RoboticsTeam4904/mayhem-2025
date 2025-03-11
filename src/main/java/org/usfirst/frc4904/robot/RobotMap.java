@@ -3,7 +3,6 @@ package org.usfirst.frc4904.robot;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import org.dyn4j.geometry.Transform;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +18,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
-import org.usfirst.frc4904.robot.subsystems.MultiMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem;
@@ -154,8 +152,8 @@ public class RobotMap {
         //Subsystems
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
-        public static SingleMotorSubsystem intake;
         public static ElevatorSubsystem elevator;
+        public static SingleMotorSubsystem outtake;
         public static VisionSubsystem vision;
 
         //Motor time
@@ -227,8 +225,8 @@ public class RobotMap {
         // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
         // Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
-        // Component.intakeMotor = new CANTalonFX(Port.CANMotor.INTAKE);
-        // Component.intake = new SingleMotorSubsystem(Component.intakeMotor, 1);
+        // Component.outtakeMotor = new CANTalonFX(Port.CANMotor.OUTTAKE);
+        // Component.outtake = new SingleMotorSubsystem(Component.outtakeMotor, 1);
 
         // Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
         // Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);

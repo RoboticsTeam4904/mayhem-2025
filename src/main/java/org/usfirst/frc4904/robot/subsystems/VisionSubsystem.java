@@ -26,9 +26,10 @@ public class VisionSubsystem extends SubsystemBase {
         ANY,
         INTAKE,
         REEF,
-        REEF_BLUE_SIDE,
-        REEF_CENTER,
-        REEF_RED_SIDE
+        REEF_INNER_CENTER,
+        REEF_OUTER_CENTER,
+        REEF_INNER_DIAGONAL,
+        REEF_OUTER_DIAGONAL
     }
 
     private static final int TAGS_PER_FIELD_SIDE = 11;
@@ -39,9 +40,10 @@ public class VisionSubsystem extends SubsystemBase {
         tagIds.put(TagGroup.ANY, new int[] { -1 });
         tagIds.put(TagGroup.INTAKE, new int[] { 1, 2 });
         tagIds.put(TagGroup.REEF, new int[] { 6, 7, 8, 9, 10, 11 });
-        tagIds.put(TagGroup.REEF_BLUE_SIDE, new int[] { 9 });
-        tagIds.put(TagGroup.REEF_CENTER, new int[] { 10 });
-        tagIds.put(TagGroup.REEF_RED_SIDE, new int[] { 11 });
+        tagIds.put(TagGroup.REEF_INNER_CENTER, new int[] { 10 });
+        tagIds.put(TagGroup.REEF_OUTER_CENTER, new int[] { 7 });
+        tagIds.put(TagGroup.REEF_INNER_DIAGONAL, new int[] { 9, 11 });
+        tagIds.put(TagGroup.REEF_OUTER_DIAGONAL, new int[] { 6, 8 });
 
         // move april tags to other side of board if on the blue alliance
         if (DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Blue) {
@@ -314,15 +316,15 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Stop the positioning process
      *
-     * @param status The status to log after positioning, e.g. "Success"
+     * @param reason The reason that positioning was stopped (for logging), e.g. "Success"
      */
-    public void stopPositioning(String status) {
+    public void stopPositioning(String reason) {
         targetTagOptions = null;
         targetTagId = null;
         desiredOffset = null;
         swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
-        System.out.println("Positioning ended" + (status != null ? " - " + status : ""));
+        System.out.println("Positioning ended" + (reason != null ? " - " + reason : ""));
     }
 
     /**

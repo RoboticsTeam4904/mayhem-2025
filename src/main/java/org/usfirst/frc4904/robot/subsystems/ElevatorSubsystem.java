@@ -5,13 +5,13 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
+
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.Utils;
 import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.commands.NoOp;
@@ -43,7 +43,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
         INTAKE,
-        OUTTAKE,
+        L1,
+        L2,
+        L3,
+        L4
     }
 
     public static HashMap<Position, Double> positions = new HashMap<>();
@@ -63,7 +66,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
 
         // TODO change (obviously)
         positions.put(Position.INTAKE, 0.0);
-        positions.put(Position.OUTTAKE, 4.0);
+        positions.put(Position.L1, 1.0);
+        positions.put(Position.L2, 2.0);
+        positions.put(Position.L3, 3.0);
+        positions.put(Position.L4, 4.0);
 
         for (var pos : Position.values()) {
             if (positions.get(pos) == null) {
@@ -78,6 +84,23 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     public double getDistance() {
         return encoder.getDistance();
+    }
+
+    public Command c_intake() {
+        // TODO tune timing
+        return new ParallelDeadlineGroup(
+            new WaitCommand(0.5),
+            RobotMap.Component.ramp.c_forward(),
+            RobotMap.Component.outtake.c_forward()
+        );
+    }
+
+    public Command c_outtake() {
+        // TODO tune timing
+        return new ParallelDeadlineGroup(
+            new WaitCommand(0.5),
+            RobotMap.Component.outtake.c_forward()
+        );
     }
 
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
@@ -100,18 +123,14 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public Command c_gotoPosition(Position pos) {
-        return c_gotoPosition(pos, null);
-    }
-
-    public Command c_gotoPosition(Position pos, Supplier<Command> onArrivalCommandDealer) {
         Double height = positions.get(pos);
 
         if (height == null) return new NoOp(); // not good
 
-        return c_gotoHeight(height, onArrivalCommandDealer);
+        return c_gotoHeight(height);
     }
 
-    public Command c_gotoHeight(double height, Supplier<Command> onArrivalCommandDealer) {
+    public Command c_gotoHeight(double height) {
         ezControl controller = new ezControl(kP, kI, kD, (position, velocityMetersPerSec) ->
             this.feedforward.calculate(velocityMetersPerSec)
         );
@@ -120,26 +139,14 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             new TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
         );
 
-        var cmd = getEzMotion(
+        Command cmd = getEzMotion(
             controller,
             profile,
-            new TrapezoidProfile.State(getDistance(), 0), // TODO ???
+            new TrapezoidProfile.State(getDistance(), 0), // TODO why are we assuming the velocity is 0
             new TrapezoidProfile.State(height, 0)
         );
         cmd.setName("elevator - c_gotoHeight");
-
-        return onArrivalCommandDealer == null
-            ? cmd
-            : Utils.nameCommand(
-                "move elevator w/ onArrival: " + cmd.getName(),
-                new ParallelCommandGroup(
-                    cmd,
-                    new SequentialCommandGroup(
-                        new WaitCommand(profile.totalTime()),
-                        new CreateAndDisown("elevator move", onArrivalCommandDealer)
-                    )
-                )
-            );
+        return cmd;
     }
 
     private ezMotion getEzMotion(
