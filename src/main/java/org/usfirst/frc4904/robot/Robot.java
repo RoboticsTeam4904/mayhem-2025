@@ -24,12 +24,12 @@ public class Robot extends CommandRobotBase {
         /** Whether to run auton at all */
         public static final boolean ENABLED = true;
 
-        /** Whether to flip the path to the other side of the SAME alliance's field */
+        /** Whether to flip the path to the other side of the current alliance's field */
         public static final boolean FLIP = false;
 
-        // paths are automatically flipped to the OTHER alliance's field
+        // paths are automatically flipped to the other alliance's field
         // based on the alliance that we are currently on.
-        // paths should default to being on the BLUE alliance's field.
+        // paths should default to being on the blue alliance's field.
 
         /** Get the auton command to run */
         public static Command getAuton(Auton auton) {
