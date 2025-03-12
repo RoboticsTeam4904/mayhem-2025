@@ -25,8 +25,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
         return new SequentialCommandGroup(
             Component.chassis.getAutonomousCommand("straight", true, flipAlliance, false),
             Component.vision.c_align(TagGroup.REEF_INNER_CENTER, 1),
-            Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L1),
-            Component.elevator.c_outtake()
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }
 
@@ -37,8 +36,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
         return new SequentialCommandGroup(
             Component.chassis.getAutonomousCommand("side", true, flipAlliance, flipSide),
             Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, 1),
-            Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L1),
-            Component.elevator.c_outtake()
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }
 
@@ -61,8 +59,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
             Component.elevator.c_intake(),
             Component.chassis.getAutonomousCommand("side3", true, flipAlliance, flipSide),
             Component.vision.c_align(TagGroup.REEF_OUTER_DIAGONAL, 1),
-            Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L1),
-            Component.elevator.c_outtake()
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }
 }

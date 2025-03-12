@@ -9,11 +9,8 @@ import edu.wpi.first.wpilibj2.command.*;
 
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import org.usfirst.frc4904.robot.RobotMap;
-import org.usfirst.frc4904.robot.Utils;
-import org.usfirst.frc4904.standard.commands.CreateAndDisown;
 import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
@@ -86,20 +83,52 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         return encoder.getDistance();
     }
 
-    public Command c_intake() {
+    /** Intake at the current elevator position */
+    public Command c_intakeRaw() {
+        // TODO tune timing
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new WaitCommand(0.5),
+                RobotMap.Component.ramp.c_forward()
+            ),
+            new ParallelDeadlineGroup(
+                new WaitCommand(0.5),
+                RobotMap.Component.ramp.c_forward(),
+                RobotMap.Component.outtake.c_forward()
+            )
+        );
+    }
+
+    /** Outtake at the current elevator position */
+    public Command c_outtakeRaw() {
         // TODO tune timing
         return new ParallelDeadlineGroup(
             new WaitCommand(0.5),
-            RobotMap.Component.ramp.c_forward(),
             RobotMap.Component.outtake.c_forward()
         );
     }
 
-    public Command c_outtake() {
-        // TODO tune timing
-        return new ParallelDeadlineGroup(
-            new WaitCommand(0.5),
-            RobotMap.Component.outtake.c_forward()
+    /** Go to the intake position and then intake */
+    public Command c_intake() {
+        return new SequentialCommandGroup(
+            c_gotoPosition(Position.INTAKE),
+            new ParallelDeadlineGroup(
+                c_intakeRaw(),
+                // TODO is this necessary? or does it automatically hold the current position
+                c_controlVelocity(() -> 0)
+            )
+        );
+    }
+
+    /** Go to the specified position and then outtake */
+    public Command c_outtakeAtPosition(Position pos) {
+        return new SequentialCommandGroup(
+            c_gotoPosition(pos),
+            new ParallelDeadlineGroup(
+                c_outtakeRaw(),
+                // TODO is this necessary? or does it automatically hold the current position
+                c_controlVelocity(() -> 0)
+            )
         );
     }
 
