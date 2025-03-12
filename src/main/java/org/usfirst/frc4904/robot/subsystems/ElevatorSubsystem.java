@@ -58,10 +58,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         this.feedforward = new ElevatorFeedforward(kG, kS, kV, kA);
         this.encoder = encoder;
 
-        // TODO what even is this
+        // TODO IMPORTANT: what even is this
         encoder.setDistancePerPulse(5);
 
-        // TODO change (obviously)
+        // TODO IMPORTANT: change (obviously)
         positions.put(Position.INTAKE, 0.0);
         positions.put(Position.L1, 1.0);
         positions.put(Position.L2, 2.0);

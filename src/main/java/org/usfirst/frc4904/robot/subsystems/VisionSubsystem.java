@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.usfirst.frc4904.robot.RobotMap;
+import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.Util;
 import org.usfirst.frc4904.standard.commands.WaitWhile;
 import swervelib.SwerveDrive;
@@ -410,7 +410,7 @@ public class VisionSubsystem extends SubsystemBase {
                 stopPositioning("Command canceled");
             }
         };
-        command.addRequirements(RobotMap.Component.chassis);
+        command.addRequirements(Component.chassis);
         return command;
     }
 

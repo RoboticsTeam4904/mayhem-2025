@@ -42,18 +42,23 @@ public class RobotMap {
             public static final int joystick = 2;
         }
 
-        //Port Constants
         public static class CANMotor {
 
-            //MOTOR TIME
+            // MOTOR TIME
             public static final int FRONT_LEFT_DRIVE = 1;
-            public static final int FRONT_LEFT_TURN = 5;
             public static final int FRONT_RIGHT_DRIVE = 2;
-            public static final int FRONT_RIGHT_TURN = 6;
             public static final int BACK_LEFT_DRIVE = 3;
-            public static final int BACK_LEFT_TURN = 7;
             public static final int BACK_RIGHT_DRIVE = 4;
+
+            public static final int FRONT_LEFT_TURN = 5;
+            public static final int FRONT_RIGHT_TURN = 6;
+            public static final int BACK_LEFT_TURN = 7;
             public static final int BACK_RIGHT_TURN = 8;
+
+            public static final int RAMP = 10;
+
+            public static final int ELEVATOR_RIGHT = 15;
+            public static final int ELEVATOR_LEFT = 16;
         }
 
         public static class PWM {
@@ -222,14 +227,14 @@ public class RobotMap {
             new Transform2d[] { new Transform2d(-0.18, 0, Rotation2d.kZero) }
         );
 
-        // Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
-        // Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
+        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
+        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
 
         // Component.outtakeMotor = new CANTalonFX(Port.CANMotor.OUTTAKE);
         // Component.outtake = new SingleMotorSubsystem(Component.outtakeMotor, 1);
 
-        // Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_ONE);
-        // Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_MOTOR_TWO);
+        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
+        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
         // TODO pass encoder as 3rd arg
         // Component.elevator = new ElevatorSubsystem(
         //     Component.elevatorMotorOne,
