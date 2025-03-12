@@ -18,7 +18,7 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
-    // TODO: tune
+    // TODO TUNING: elevator PID
     public static final double kS = 0.00;
     public static final double kV = 1.4555;
     public static final double kA = 0.0513;
@@ -85,7 +85,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     /** Intake at the current elevator position */
     public Command c_intakeRaw() {
-        // TODO tune timing
+        // TODO TUNING: tune intake timing
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5),
@@ -101,7 +101,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     /** Outtake at the current elevator position */
     public Command c_outtakeRaw() {
-        // TODO tune timing
+        // TODO TUNING: tune outtake timing
         return new ParallelDeadlineGroup(
             new WaitCommand(0.5),
             RobotMap.Component.outtake.c_forward()

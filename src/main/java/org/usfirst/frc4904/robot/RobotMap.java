@@ -235,7 +235,7 @@ public class RobotMap {
 
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
-        // TODO pass encoder as 3rd arg
+        // TODO IMPORTANT: pass encoder as 3rd arg
         // Component.elevator = new ElevatorSubsystem(
         //     Component.elevatorMotorOne,
         //     Component.elevatorMotorTwo,

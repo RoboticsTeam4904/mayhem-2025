@@ -61,7 +61,7 @@ public class VisionSubsystem extends SubsystemBase {
     private static final double HORIZ_ALIGN_OFFSET = 0.17;
 
     // max speeds
-    // TODO tune speeds
+    // TODO TUNING: tune speeds (ESPECIALLY MAX SPEED WHICH IS PROB TOO LOW)
     private final double MAX_LINEAR_SPEED = 2; // meters per second
     private final double MAX_ROT_SPEED = Math.PI; // radians per second
 
@@ -115,7 +115,7 @@ public class VisionSubsystem extends SubsystemBase {
         this.cameraOffsets = cameraOffsets;
 
         // initialize pid controllers
-        // TODO tune pid values
+        // TODO TUNING: tune pid values
         positionController = new PIDController(5.0, 0.0, 0.0);
         rotationController = new PIDController(7.5, 0.0, 0.0);
 
