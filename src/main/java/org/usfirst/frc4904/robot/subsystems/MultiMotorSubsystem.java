@@ -71,6 +71,6 @@ public class MultiMotorSubsystem extends SubsystemBase {
     }
 
     public Command c_stop() {
-        return c_holdVoltage(0);
+        return this.runOnce(() -> this.setVoltage(0));
     }
 }

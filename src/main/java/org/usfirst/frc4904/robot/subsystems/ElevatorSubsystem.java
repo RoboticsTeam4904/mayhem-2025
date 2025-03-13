@@ -3,13 +3,14 @@ package org.usfirst.frc4904.robot.subsystems;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 
+import org.usfirst.frc4904.robot.CustomEncoder;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
@@ -19,6 +20,8 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     // TODO TUNING: elevator PID
+    private static final double METERS_PER_ROTATION = 1;
+
     public static final double kS = 0.00;
     public static final double kV = 1.4555;
     public static final double kA = 0.0513;
@@ -35,38 +38,35 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double MAX_HEIGHT = 5;
 
     public final ElevatorFeedforward feedforward;
-    public final Encoder encoder;
+    public final CustomEncoder encoder;
 
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
         INTAKE,
-        L1,
+        // L1,
         L2,
         L3,
-        L4
+        // L4
     }
 
     public static HashMap<Position, Double> positions = new HashMap<>();
 
     // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
-    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, Encoder encoder) {
+    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, CustomEncoder encoder) {
         super(
             new SmartMotorController[] { motor1, motor2 },
-            new double[] { 1, -1 },
+            new double[] { 1, 1 },
             0 // if we ever want to have up/down commands that use a set voltage in addition to PID, put that voltage here
         );
         this.feedforward = new ElevatorFeedforward(kG, kS, kV, kA);
         this.encoder = encoder;
 
-        // TODO IMPORTANT: what even is this
-        encoder.setDistancePerPulse(5);
-
-        // TODO IMPORTANT: change (obviously)
         positions.put(Position.INTAKE, 0.0);
-        positions.put(Position.L1, 1.0);
-        positions.put(Position.L2, 2.0);
-        positions.put(Position.L3, 3.0);
-        positions.put(Position.L4, 4.0);
+        // positions.put(Position.L1, 1.0);
+        // TODO IMPORTANT: tune more accurately
+        positions.put(Position.L2, 7.0);
+        positions.put(Position.L3, 10.0);
+        // positions.put(Position.L4, 4.0);
 
         for (var pos : Position.values()) {
             if (positions.get(pos) == null) {
@@ -80,31 +80,51 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public double getDistance() {
-        return encoder.getDistance();
+        return encoder.get() * METERS_PER_ROTATION;
     }
 
     /** Intake at the current elevator position */
     public Command c_intakeRaw() {
-        // TODO TUNING: tune intake timing
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                new WaitCommand(0.5),
+                new WaitCommand(0.8),
                 RobotMap.Component.ramp.c_forward()
             ),
             new ParallelDeadlineGroup(
-                new WaitCommand(0.5),
+                new WaitCommand(0.35),
                 RobotMap.Component.ramp.c_forward(),
                 RobotMap.Component.outtake.c_forward()
+            ),
+            new ParallelCommandGroup(
+                RobotMap.Component.ramp.c_stop(),
+                RobotMap.Component.outtake.c_stop()
             )
         );
     }
 
     /** Outtake at the current elevator position */
     public Command c_outtakeRaw() {
-        // TODO TUNING: tune outtake timing
-        return new ParallelDeadlineGroup(
-            new WaitCommand(0.5),
-            RobotMap.Component.outtake.c_forward()
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new WaitCommand(0.5),
+                RobotMap.Component.outtake.c_forward()
+            ),
+            RobotMap.Component.outtake.c_stop()
+        );
+    }
+
+    /** Outtake at the current elevator position */
+    public Command c_rampOuttakeRaw() {
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new WaitCommand(1),
+                RobotMap.Component.outtake.c_backward(),
+                RobotMap.Component.ramp.c_backward()
+            ),
+            new ParallelCommandGroup(
+                RobotMap.Component.outtake.c_stop(),
+                RobotMap.Component.ramp.c_stop()
+            )
         );
     }
 
@@ -114,7 +134,17 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             c_gotoPosition(Position.INTAKE),
             new ParallelDeadlineGroup(
                 c_intakeRaw(),
-                // TODO is this necessary? or does it automatically hold the current position
+                c_controlVelocity(() -> 0)
+            )
+        );
+    }
+
+    /** Go to the intake position and then ramp outtake */
+    public Command c_rampOuttake() {
+        return new SequentialCommandGroup(
+            c_gotoPosition(Position.INTAKE),
+            new ParallelDeadlineGroup(
+                c_rampOuttakeRaw(),
                 c_controlVelocity(() -> 0)
             )
         );
@@ -126,26 +156,24 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             c_gotoPosition(pos),
             new ParallelDeadlineGroup(
                 c_outtakeRaw(),
-                // TODO is this necessary? or does it automatically hold the current position
                 c_controlVelocity(() -> 0)
             )
         );
     }
 
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
-        if (
-            (this.getDistance() > MAX_HEIGHT && metersPerSecDealer.getAsDouble() > 0) ||
-            (this.getDistance() < MIN_HEIGHT && metersPerSecDealer.getAsDouble() < 0)
-        ) {
-            return this.c_stop();
-        }
+        // if (
+        //     (this.getDistance() >= MAX_HEIGHT && metersPerSecDealer.getAsDouble() < 0) ||
+        //     (this.getDistance() <= MIN_HEIGHT && metersPerSecDealer.getAsDouble() > 0)
+        // ) {
+        //     return this.c_stop();
+        // }
 
-        var cmd =
-            this.run(() -> {
-                    var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
-                    SmartDashboard.putNumber("feedforward", ff);
-                    this.setVoltage(ff);
-                });
+        var cmd = this.run(() -> {
+            var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
+            SmartDashboard.putNumber("feedforward", ff);
+            this.setVoltage(ff);
+        });
         cmd.setName("elevator - c_controlVelocity");
 
         return cmd;
@@ -154,7 +182,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public Command c_gotoPosition(Position pos) {
         Double height = positions.get(pos);
 
-        if (height == null) return new NoOp(); // not good
+        if (height == null) {
+            System.err.println("Tried to go to elevator setpoint that does not exist: " + pos.toString());
+            return new NoOp();
+        }
 
         return c_gotoHeight(height);
     }
@@ -198,6 +229,11 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
                 return new Pair<>(result.position, result.velocity);
             },
             this
-        );
+        ) {
+            @Override
+            public void cancel() {
+                setVoltage(0);
+            }
+        };
     }
 }

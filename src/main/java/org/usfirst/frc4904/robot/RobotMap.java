@@ -1,8 +1,11 @@
 package org.usfirst.frc4904.robot;
 
+import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.units.measure.Mult;
+import edu.wpi.first.wpilibj.Encoder;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,13 +20,13 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
-import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
-import org.usfirst.frc4904.robot.subsystems.SingleMotorSubsystem;
-import org.usfirst.frc4904.robot.subsystems.SwerveSubsystem;
-import org.usfirst.frc4904.robot.subsystems.VisionSubsystem;
+
+import org.usfirst.frc4904.robot.subsystems.*;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
+import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
+import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 // import org.usfirst.frc4904.standard.LogKitten;
 
@@ -57,6 +60,9 @@ public class RobotMap {
 
             public static final int RAMP = 10;
 
+            public static final int OUTTAKE_MOTOR_RIGHT = 26;
+            public static final int OUTTAKE_MOTOR_LEFT = 27;
+
             public static final int ELEVATOR_RIGHT = 15;
             public static final int ELEVATOR_LEFT = 16;
         }
@@ -67,6 +73,8 @@ public class RobotMap {
             public static final int ENCODER_FR = 1;
             public static final int ENCODER_BL = 2;
             public static final int ENCODER_BR = 3;
+
+            public static final int ELEVATOR_ENCODER = 0;
         }
 
         public static class CAN {}
@@ -150,6 +158,8 @@ public class RobotMap {
         public static DutyCycleEncoder blTurnEncoder;
         public static DutyCycleEncoder brTurnEncoder;
 
+        public static CustomEncoder elevatorEncoder;
+
         public static AHRS navx;
         public static SPI serialPort;
 
@@ -158,18 +168,21 @@ public class RobotMap {
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
         public static ElevatorSubsystem elevator;
-        public static SingleMotorSubsystem outtake;
+        public static MultiMotorSubsystem outtake;
         public static VisionSubsystem vision;
 
         //Motor time
-        public static CANTalonFX rampMotor;
-        public static CANTalonFX intakeMotor;
+        public static CustomCANSparkMax rampMotor;
+
+        public static CustomCANSparkMax outtakeMotorLeft;
+        public static CustomCANSparkMax outtakeMotorRight;
 
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
 
-        //Camera time
-        public static PhotonCamera camera;
+        // public static PhotonCamera camera;
+        public static PhotonCamera cameraLeft;
+        public static PhotonCamera cameraRight;
     }
 
     public static class NetworkTables {
@@ -220,27 +233,57 @@ public class RobotMap {
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
 
-        Component.camera = new PhotonCamera("dauntless-camera");
+        // Component.camera = new PhotonCamera("dauntless-camera");
+        // Component.vision = new VisionSubsystem(
+        //     Component.chassis.swerveDrive,
+        //     new PhotonCamera[] { Component.camera },
+        //     new Transform2d[] { new Transform2d(-0.18, 0, Rotation2d.kZero) }
+        // );
+        // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
+        Component.cameraRight = new PhotonCamera("dauntless-camera");
         Component.vision = new VisionSubsystem(
             Component.chassis.swerveDrive,
-            new PhotonCamera[] { Component.camera },
-            new Transform2d[] { new Transform2d(-0.18, 0, Rotation2d.kZero) }
+            new PhotonCamera[] {
+                // Component.cameraLeft,
+                Component.cameraRight
+            },
+            new Transform2d[] {
+                // new Transform2d(Units.inchesToMeters(-10.5), Units.inchesToMeters( 11.5), Rotation2d.kZero),
+                new Transform2d(Units.inchesToMeters(-10.5), Units.inchesToMeters(-11.5), Rotation2d.kZero)
+            }
         );
 
-        Component.rampMotor = new CANTalonFX(Port.CANMotor.RAMP);
-        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, 1);
+        Component.rampMotor = new CustomCANSparkMax(
+            Port.CANMotor.RAMP,
+            SparkLowLevel.MotorType.kBrushless,
+            false
+        );
+        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, -7, -10);
 
-        // Component.outtakeMotor = new CANTalonFX(Port.CANMotor.OUTTAKE);
-        // Component.outtake = new SingleMotorSubsystem(Component.outtakeMotor, 1);
+        Component.outtakeMotorLeft = new CustomCANSparkMax(
+            Port.CANMotor.OUTTAKE_MOTOR_LEFT,
+            SparkLowLevel.MotorType.kBrushless,
+            false
+        );
+        Component.outtakeMotorRight = new CustomCANSparkMax(
+            Port.CANMotor.OUTTAKE_MOTOR_RIGHT,
+            SparkLowLevel.MotorType.kBrushless,
+            false
+        );
+        Component.outtake = new MultiMotorSubsystem(
+            new SmartMotorController[] { Component.outtakeMotorLeft, Component.outtakeMotorRight },
+            new double[] { 1, 1 },
+            -4
+        );
 
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
-        // TODO IMPORTANT: pass encoder as 3rd arg
-        // Component.elevator = new ElevatorSubsystem(
-        //     Component.elevatorMotorOne,
-        //     Component.elevatorMotorTwo,
-        //     null
-        // );
+        Component.elevatorEncoder = new CustomEncoder(new DutyCycleEncoder(Port.PWM.ELEVATOR_ENCODER));
+        Component.elevator = new ElevatorSubsystem(
+            Component.elevatorMotorOne,
+            Component.elevatorMotorTwo,
+            Component.elevatorEncoder
+        );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

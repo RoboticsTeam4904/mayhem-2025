@@ -130,6 +130,9 @@ public class Robot extends CommandRobotBase {
     @Override
     public void disabledInitialize() {
         RobotMap.Component.vision.stopPositioning("Robot disabled");
+
+        Component.elevatorMotorOne.setBrakeOnNeutral();
+        Component.elevatorMotorTwo.setBrakeOnNeutral();
     }
 
     @Override
@@ -138,6 +141,8 @@ public class Robot extends CommandRobotBase {
     @Override
     public void testInitialize() {
         //do things like setting neutral or brake mode on the mechanism or wheels here
+        Component.elevatorMotorOne.setCoastOnNeutral();
+        Component.elevatorMotorTwo.setCoastOnNeutral();
     }
 
     @Override
@@ -196,5 +201,8 @@ public class Robot extends CommandRobotBase {
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
+        if (Component.elevator != null) {
+            System.out.println("ELEVATOR ENCODER: " + Component.elevator.encoder.get());
+        }
     }
 }

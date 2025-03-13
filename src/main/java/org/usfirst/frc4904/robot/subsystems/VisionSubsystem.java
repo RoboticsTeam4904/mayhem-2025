@@ -107,7 +107,8 @@ public class VisionSubsystem extends SubsystemBase {
      *
      * @param swerveDrive The YAGSL swerve drive subsystem
      * @param photonCameras The PhotonVision cameras
-     * @param cameraOffsets The transforms from the camera to the robot center
+     * @param cameraOffsets The transforms from the camera to the robot center.
+     *                      -X is towards the front of the robot.
      */
     public VisionSubsystem(SwerveDrive swerveDrive, PhotonCamera[] photonCameras, Transform2d[] cameraOffsets) {
         this.swerveDrive = swerveDrive;
@@ -297,6 +298,8 @@ public class VisionSubsystem extends SubsystemBase {
         this.targetTagOptions = targetTagIds;
         this.offset = offset;
 
+        System.out.println("VISION OFFSET 2: X " + this.offset.getX() + " Y " + this.offset.getY());
+
         startTime = lastSeenTagTime = lastTime = Timer.getFPGATimestamp();
 
         // reset pid controllers
@@ -350,6 +353,8 @@ public class VisionSubsystem extends SubsystemBase {
             targetOffset.getRotation().plus(cameraOffset.getRotation())
         );
 
+        System.out.println("VISION OFFSET 3: X " + offset.getX() + " Y " + offset.getY());
+
         // calculate difference between current and desired
         Translation2d translationError = offset.getTranslation().minus(robotToTarget.getTranslation());
         Rotation2d rotationError = offset.getRotation().minus(robotToTarget.getRotation());
@@ -398,7 +403,9 @@ public class VisionSubsystem extends SubsystemBase {
      *                         For 2025 Reefscape: -1 is left coral, 0 is center, 1 is right coral.
      */
     public Command c_align(int[] targetTagIds, int offsetMultiplier) {
-        Transform2d offset = new Transform2d(HORIZ_ALIGN_OFFSET * offsetMultiplier, 0, Rotation2d.kZero);
+        Transform2d offset = new Transform2d(HORIZ_ALIGN_OFFSET * offsetMultiplier, 0, Rotation2d.kPi);
+
+        System.out.println("VISION OFFSET 1: X " + offset.getX() + " Y " + offset.getY());
 
         var command = new SequentialCommandGroup(
             this.runOnce(() -> startPositioning(targetTagIds, offset)),

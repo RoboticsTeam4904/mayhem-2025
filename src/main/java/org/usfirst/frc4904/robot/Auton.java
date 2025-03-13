@@ -7,8 +7,6 @@ import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 
-// TODO IMPORTANT: upload the paths from path planner
-//   should be named: straight, side, side2, side3
 public record Auton(boolean flipAlliance, boolean flipSide) {
 
     /**
@@ -24,7 +22,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
     Command c_straightCoral() {
         return new SequentialCommandGroup(
             Component.chassis.getAutonomousCommand("straight", true, flipAlliance, false),
-            Component.vision.c_align(TagGroup.REEF_INNER_CENTER, 1),
+            Component.vision.c_align(TagGroup.REEF_INNER_CENTER, -1),
             Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }
@@ -35,7 +33,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
     Command c_sideCoral() {
         return new SequentialCommandGroup(
             Component.chassis.getAutonomousCommand("side", true, flipAlliance, flipSide),
-            Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, 1),
+            Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, -1),
             Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }
@@ -58,7 +56,7 @@ public record Auton(boolean flipAlliance, boolean flipSide) {
             new WaitCommand(2),
             Component.elevator.c_intake(),
             Component.chassis.getAutonomousCommand("side3", true, flipAlliance, flipSide),
-            Component.vision.c_align(TagGroup.REEF_OUTER_DIAGONAL, 1),
+            Component.vision.c_align(TagGroup.REEF_OUTER_DIAGONAL, -1),
             Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
         );
     }

@@ -38,6 +38,6 @@ public class SingleMotorSubsystem extends SubsystemBase {
     }
 
     public Command c_stop() {
-        return c_holdVoltage(0);
+        return this.runOnce(() -> this.motor.setVoltage(0));
     }
 }
