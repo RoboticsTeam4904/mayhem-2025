@@ -16,7 +16,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.Util;
 import org.usfirst.frc4904.standard.commands.WaitWhile;
-import swervelib.SwerveDrive;
 
 import java.util.*;
 
@@ -75,7 +74,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     private record CameraTag(PhotonTrackedTarget tag, int cameraIndex) {}
 
-    private final SwerveDrive swerveDrive;
     private final PhotonCamera[] photonCameras;
 
     // pid controllers
@@ -105,13 +103,11 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Creates a new VisionSubsystem
      *
-     * @param swerveDrive The YAGSL swerve drive subsystem
      * @param photonCameras The PhotonVision cameras
      * @param cameraOffsets The transforms from the camera to the robot center.
      *                      -X is towards the front of the robot.
      */
-    public VisionSubsystem(SwerveDrive swerveDrive, PhotonCamera[] photonCameras, Transform2d[] cameraOffsets) {
-        this.swerveDrive = swerveDrive;
+    public VisionSubsystem(PhotonCamera[] photonCameras, Transform2d[] cameraOffsets) {
         this.photonCameras = photonCameras;
         this.cameraOffsets = cameraOffsets;
 
@@ -187,7 +183,7 @@ public class VisionSubsystem extends SubsystemBase {
         );
 
         // command swerve drive
-        swerveDrive.drive(relativeSpeeds);
+        Component.chassis.swerveDrive.drive(relativeSpeeds);
 
         lastTime = currentTime;
         lastSpeed = relativeSpeeds;
@@ -325,7 +321,7 @@ public class VisionSubsystem extends SubsystemBase {
         targetTagOptions = null;
         targetTagId = null;
         desiredOffset = null;
-        swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
+        Component.chassis.swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
         System.out.println("Positioning ended" + (reason != null ? " - " + reason : ""));
     }

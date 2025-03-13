@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.SPI;
 import java.io.File;
 
 import org.usfirst.frc4904.robot.subsystems.*;
+import org.usfirst.frc4904.standard.custom.CustomEncoder;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -242,7 +243,6 @@ public class RobotMap {
         // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
         Component.cameraRight = new PhotonCamera("dauntless-camera");
         Component.vision = new VisionSubsystem(
-            Component.chassis.swerveDrive,
             new PhotonCamera[] {
                 // Component.cameraLeft,
                 Component.cameraRight

@@ -19,21 +19,22 @@ import org.usfirst.frc4904.standard.humaninput.Driver;
 
 public class Robot extends CommandRobotBase {
 
-    private static class AutonConfig {
+    public static class AutonConfig {
 
         /** Whether to run auton at all */
         public static final boolean ENABLED = true;
 
         /** Whether to flip the path to the other side of the current alliance's field */
-        public static final boolean FLIP = false;
+        private static final boolean FLIP_SIDE = false;
 
-        // paths are automatically flipped to the other alliance's field
-        // based on the alliance that we are currently on.
-        // paths should default to being on the blue alliance's field.
+        /** Whether to flip the path to the other side of the current alliance's field */
+        public static boolean getFlipSide() {
+            return FLIP_SIDE;
+        }
 
-        /** Get the auton command to run */
-        public static Command getAuton(Auton auton) {
-            return auton.c_straight();
+        /** Whether to flip the path to be run as the red alliance */
+        public static boolean getFlipAlliance() {
+            return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red;
         }
 
     }
@@ -114,12 +115,7 @@ public class Robot extends CommandRobotBase {
     public void autonomousInitialize() {
         if (!AutonConfig.ENABLED) return;
 
-        Auton auton = new Auton(
-            DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red,
-            AutonConfig.FLIP
-        );
-
-        AutonConfig.getAuton(auton).schedule();
+        Auton.c_straight();
     }
 
     @Override
