@@ -20,15 +20,13 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     // TODO TUNING: elevator PID
-    private static final double METERS_PER_ROTATION = 1;
+    public static final double kS = 0.1;
+    public static final double kV = 2;
+    public static final double kA = 0.1;
+    public static final double kG = 0.2;
 
-    public static final double kS = 0.00;
-    public static final double kV = 1.4555;
-    public static final double kA = 0.0513;
-    public static final double kG = 0.235;
-
-    public static final double kP = 0.07;
-    public static final double kI = 0.03;
+    public static final double kP = 0.05;
+    public static final double kI = 0;
     public static final double kD = 0;
 
     public static final double MAX_VEL = 1;
@@ -56,16 +54,16 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         super(
             new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, 1 },
-            0 // if we ever want to have up/down commands that use a set voltage in addition to PID, put that voltage here
+            -3
         );
-        this.feedforward = new ElevatorFeedforward(kG, kS, kV, kA);
+        this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
         this.encoder = encoder;
 
         positions.put(Position.INTAKE, 0.0);
         // positions.put(Position.L1, 1.0);
         // TODO IMPORTANT: tune more accurately
-        positions.put(Position.L2, 7.0);
-        positions.put(Position.L3, 10.0);
+        positions.put(Position.L2, 5.27);
+        positions.put(Position.L3, 8.47);
         // positions.put(Position.L4, 4.0);
 
         for (var pos : Position.values()) {
@@ -80,7 +78,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public double getDistance() {
-        return encoder.get() * METERS_PER_ROTATION;
+        return encoder.get();
     }
 
     /** Intake at the current elevator position */

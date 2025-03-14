@@ -1,12 +1,19 @@
-package org.usfirst.frc4904.robot;
+package org.usfirst.frc4904.standard.custom;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class CustomEncoder {
     public final DutyCycleEncoder encoder;
 
+    private double resetOffset = 0;
+
     public CustomEncoder(DutyCycleEncoder encoder) {
         this.encoder = encoder;
+        reset();
+    }
+
+    public void reset() {
+        resetOffset = encoder.get();
     }
 
     int revolutions = 0;
@@ -30,6 +37,6 @@ public class CustomEncoder {
 
         lastReading = reading;
 
-        return reading + revolutions;
+        return reading + revolutions - resetOffset;
     }
 }

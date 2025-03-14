@@ -64,6 +64,8 @@ public class RobotMap {
             public static final int OUTTAKE_MOTOR_RIGHT = 26;
             public static final int OUTTAKE_MOTOR_LEFT = 27;
 
+            public static final int CLIMBER = 60;
+
             public static final int ELEVATOR_RIGHT = 15;
             public static final int ELEVATOR_LEFT = 16;
         }
@@ -170,6 +172,7 @@ public class RobotMap {
         public static SingleMotorSubsystem ramp;
         public static ElevatorSubsystem elevator;
         public static MultiMotorSubsystem outtake;
+        public static SingleMotorSubsystem climber;
         public static VisionSubsystem vision;
 
         //Motor time
@@ -180,6 +183,8 @@ public class RobotMap {
 
         public static CANTalonFX elevatorMotorOne;
         public static CANTalonFX elevatorMotorTwo;
+
+        public static CANTalonFX climberMotor;
 
         // public static PhotonCamera camera;
         public static PhotonCamera cameraLeft;
@@ -234,12 +239,6 @@ public class RobotMap {
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
 
-        // Component.camera = new PhotonCamera("dauntless-camera");
-        // Component.vision = new VisionSubsystem(
-        //     Component.chassis.swerveDrive,
-        //     new PhotonCamera[] { Component.camera },
-        //     new Transform2d[] { new Transform2d(-0.18, 0, Rotation2d.kZero) }
-        // );
         // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
         Component.cameraRight = new PhotonCamera("dauntless-camera");
         Component.vision = new VisionSubsystem(
@@ -248,8 +247,8 @@ public class RobotMap {
                 Component.cameraRight
             },
             new Transform2d[] {
-                // new Transform2d(Units.inchesToMeters(-10.5), Units.inchesToMeters( 11.5), Rotation2d.kZero),
-                new Transform2d(Units.inchesToMeters(-10.5), Units.inchesToMeters(-11.5), Rotation2d.kZero)
+                // new Transform2d(Units.inchesToMeters(-11), Units.inchesToMeters(-10.6), Rotation2d.kZero),
+                new Transform2d(Units.inchesToMeters(-11), Units.inchesToMeters(10.6), Rotation2d.kZero)
             }
         );
 
@@ -275,6 +274,9 @@ public class RobotMap {
             new double[] { 1, 1 },
             -4
         );
+
+        Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
+        Component.climber = new SingleMotorSubsystem(Component.climberMotor, 11);
 
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);

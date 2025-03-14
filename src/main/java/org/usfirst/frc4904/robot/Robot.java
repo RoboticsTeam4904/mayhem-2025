@@ -8,7 +8,6 @@ package org.usfirst.frc4904.robot;
 
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.usfirst.frc4904.robot.RobotMap.Component;
@@ -16,6 +15,8 @@ import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
+
+import java.util.function.Supplier;
 
 public class Robot extends CommandRobotBase {
 
@@ -25,18 +26,10 @@ public class Robot extends CommandRobotBase {
         public static final boolean ENABLED = true;
 
         /** Whether to flip the path to the other side of the current alliance's field */
-        private static final boolean FLIP_SIDE = false;
+        public static final boolean FLIP_SIDE = false;
 
-        /** Whether to flip the path to the other side of the current alliance's field */
-        public static boolean getFlipSide() {
-            return FLIP_SIDE;
-        }
-
-        /** Whether to flip the path to be run as the red alliance */
-        public static boolean getFlipAlliance() {
-            return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red;
-        }
-
+        /** The auton to run */
+        public static Supplier<Command> COMMAND = Auton::c_straight;
     }
 
     private final Driver driver = new SwerveGain();
@@ -115,7 +108,7 @@ public class Robot extends CommandRobotBase {
     public void autonomousInitialize() {
         if (!AutonConfig.ENABLED) return;
 
-        Auton.c_straight();
+        AutonConfig.COMMAND.get().schedule();
     }
 
     @Override

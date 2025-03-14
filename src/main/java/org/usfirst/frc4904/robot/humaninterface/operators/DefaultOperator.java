@@ -41,9 +41,11 @@ public class DefaultOperator extends Operator {
         joystick.button9.onTrue(Component.elevator.c_rampOuttakeRaw());
         joystick.button9.onFalse(Component.elevator.c_stop());
 
+        // TODO IMPORTANT: bind a button to climber
+
         // ELEVATOR
-        joystick.button11.onTrue(Component.elevator.c_controlVelocity(() -> -2));
-        joystick.button12.onTrue(Component.elevator.c_controlVelocity(() -> 2));
+        joystick.button11.onTrue(Component.elevator.c_forward());
+        joystick.button12.onTrue(Component.elevator.c_backward());
         joystick.button11.onFalse(Component.elevator.c_stop());
         joystick.button12.onFalse(Component.elevator.c_stop());
 

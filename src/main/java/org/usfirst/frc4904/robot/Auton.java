@@ -1,5 +1,6 @@
 package org.usfirst.frc4904.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -7,34 +8,42 @@ import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 
-public static class Auton {
+public class Auton {
+
+    public static boolean getFlipSide() {
+        return Robot.AutonConfig.FLIP_SIDE;
+    }
+
+    public static boolean getFlipAlliance() {
+        return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red;
+    }
 
     /**
      * Move straight out of the starting zone and do nothing.
      */
-    static Command c_straight() {
-        return Component.chassis.getAutonomousCommand("straight", true, Robot.AutonConfig.getFlipAlliance(), false);
+    public static Command c_straight() {
+        return Component.chassis.getAutonomousCommand("straight", true, getFlipAlliance(), false);
     }
 
     /**
      * Move straight out of the starting zone, align with the center of the reef, and outtake.
      */
-    static Command c_straightCoral() {
+    public static Command c_straightCoral() {
         return new SequentialCommandGroup(
-            Component.chassis.getAutonomousCommand("straight", true, Robot.AutonConfig.getFlipAlliance(), false),
+            Component.chassis.getAutonomousCommand("straight", true, getFlipAlliance(), false),
             Component.vision.c_align(TagGroup.REEF_INNER_CENTER, -1),
-            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
         );
     }
 
     /**
      * Move diagonally from the starting zone, align with the inner diagonal of the reef, and outtake.
      */
-    static Command c_sideCoral() {
+    public static Command c_sideCoral() {
         return new SequentialCommandGroup(
-            Component.chassis.getAutonomousCommand("side", true, Robot.AutonConfig.getFlipAlliance(), Robot.AutonConfig.getFlipSide()),
+            Component.chassis.getAutonomousCommand("side", true, getFlipAlliance(), getFlipSide()),
             Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, -1),
-            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
         );
     }
 
@@ -49,15 +58,15 @@ public static class Auton {
      *   <li> Outtake
      * </ol>
      */
-    static Command c_sideCoralFancy() {
+    public static Command c_sideCoralFancy() {
         return new SequentialCommandGroup(
             c_sideCoral(),
-            Component.chassis.getAutonomousCommand("side2", true, Robot.AutonConfig.getFlipAlliance(), Robot.AutonConfig.getFlipSide()),
+            Component.chassis.getAutonomousCommand("side2", true, getFlipAlliance(), getFlipSide()),
             new WaitCommand(2),
             Component.elevator.c_intake(),
-            Component.chassis.getAutonomousCommand("side3", true, Robot.AutonConfig.getFlipAlliance(), Robot.AutonConfig.getFlipSide()),
+            Component.chassis.getAutonomousCommand("side3", true, getFlipAlliance(), getFlipSide()),
             Component.vision.c_align(TagGroup.REEF_OUTER_DIAGONAL, -1),
-            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L1)
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
         );
     }
 }
