@@ -13,6 +13,7 @@ public class CustomEncoder {
     }
 
     public void reset() {
+        revolutions = 0;
         resetOffset = encoder.get();
     }
 

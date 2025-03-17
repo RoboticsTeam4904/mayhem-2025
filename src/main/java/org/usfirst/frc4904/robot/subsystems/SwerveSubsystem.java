@@ -294,6 +294,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DoubleSupplier angularRotationX
     ) {
         return run(() -> {
+            // System.out.println("x: " + translationX.getAsDouble() + " y: " + translationY.getAsDouble());
             swerveDrive.driveFieldOriented(
                 new ChassisSpeeds(
                     Math.pow(translationX.getAsDouble(), 1) *

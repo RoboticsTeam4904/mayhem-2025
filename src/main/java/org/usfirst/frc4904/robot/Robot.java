@@ -6,6 +6,9 @@
 /*----------------------------------------------------------------------------*/
 package org.usfirst.frc4904.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +17,7 @@ import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
+import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
 import java.util.function.Supplier;
@@ -29,7 +33,7 @@ public class Robot extends CommandRobotBase {
         public static final boolean FLIP_SIDE = false;
 
         /** The auton to run */
-        public static Supplier<Command> COMMAND = Auton::c_straight;
+        public static Supplier<Command> COMMAND = Auton::c_straightCoral;
     }
 
     private final Driver driver = new SwerveGain();
@@ -71,6 +75,17 @@ public class Robot extends CommandRobotBase {
             RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
         );
 
+        double pos = RobotMap.HumanInput.Operator.joystick.getY();
+        double DEADZONE = 0.3;
+    
+        // if (pos > DEADZONE) {
+        //     Component.elevator.c_backward().schedule();
+        // } else if (pos < -DEADZONE) {
+        //     Component.elevator.c_forward().schedule();
+        // } else {
+        //     Component.elevator.c_stop().schedule();
+        // }
+
         RobotMap.Component.vision.periodic();
 
         // //various logging can go here
@@ -104,15 +119,33 @@ public class Robot extends CommandRobotBase {
         // SmartDashboard.putBoolean("navx connected", Component.navx.isConnected());
     }
 
+    Timer timer = new Timer();
+
     @Override
     public void autonomousInitialize() {
         if (!AutonConfig.ENABLED) return;
 
-        AutonConfig.COMMAND.get().schedule();
+        Component.navx.reset();
+
+        timer.reset();
+        timer.start();
+
+        // AutonConfig.COMMAND.get().schedule();
     }
 
     @Override
     public void autonomousExecute() {
+        if (timer.get() < 2.0) {
+            Component.chassis.drive(               
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    -3.0,
+                    0.0,
+                    0.0,
+                    Rotation2d.kZero
+                )
+            );
+        }
+
         // logging can go here
     }
 
@@ -120,9 +153,9 @@ public class Robot extends CommandRobotBase {
     public void disabledInitialize() {
         RobotMap.Component.vision.stopPositioning("Robot disabled");
 
-        Component.elevatorMotorOne.setBrakeOnNeutral();
-        Component.elevatorMotorTwo.setBrakeOnNeutral();
-    }
+    //     Component.elevatorMotorOne.setBrakeOnNeutral();
+    //     Component.elevatorMotorTwo.setBrakeOnNeutral();
+     }
 
     @Override
     public void disabledExecute() {}
@@ -130,8 +163,8 @@ public class Robot extends CommandRobotBase {
     @Override
     public void testInitialize() {
         //do things like setting neutral or brake mode on the mechanism or wheels here
-        Component.elevatorMotorOne.setCoastOnNeutral();
-        Component.elevatorMotorTwo.setCoastOnNeutral();
+        // Component.elevatorMotorOne.setCoastOnNeutral();
+        // Component.elevatorMotorTwo.setCoastOnNeutral();
     }
 
     @Override
@@ -190,8 +223,8 @@ public class Robot extends CommandRobotBase {
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
-        if (Component.elevator != null) {
-            System.out.println("ELEVATOR ENCODER: " + Component.elevator.encoder.get());
-        }
+        // if (Component.elevator != null) {
+        //     // System.out.println("ELEVATOR ENCODER: " + Component.elevatorEncoder.get());
+        // }
     }
 }

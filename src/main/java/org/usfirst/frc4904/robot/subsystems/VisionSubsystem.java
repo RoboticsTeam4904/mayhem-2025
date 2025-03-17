@@ -398,9 +398,9 @@ public class VisionSubsystem extends SubsystemBase {
      *                         For 2025 Reefscape: -1 is left coral, 0 is center, 1 is right coral.
      */
     public Command c_align(int[] targetTagIds, int offsetMultiplier) {
-        Transform2d offset = new Transform2d(HORIZ_ALIGN_OFFSET * offsetMultiplier, 0, Rotation2d.kPi);
+        Transform2d offset = new Transform2d(0, HORIZ_ALIGN_OFFSET * offsetMultiplier, Rotation2d.kPi);
 
-        System.out.println("VISION OFFSET 1: X " + offset.getX() + " Y " + offset.getY());
+        // System.out.println("VISION OFFSET 1: X " + offset.getX() + " Y " + offset.getY());
 
         var command = new SequentialCommandGroup(
             this.runOnce(() -> startPositioning(targetTagIds, offset)),
@@ -410,6 +410,11 @@ public class VisionSubsystem extends SubsystemBase {
             public void cancel() {
                 super.cancel();
                 stopPositioning("Command canceled");
+            }
+
+            @Override
+            public InterruptionBehavior getInterruptionBehavior() {
+                return InterruptionBehavior.kCancelIncoming;
             }
         };
         command.addRequirements(Component.chassis);

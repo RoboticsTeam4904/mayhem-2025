@@ -206,7 +206,8 @@ public class SwerveModule {
         driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive.factor);
         driveMotor.configurePIDF(moduleConfiguration.velocityPIDF);
         driveMotor.setInverted(moduleConfiguration.driveMotorInverted);
-        driveMotor.setMotorBrake(true);
+       // TODO: maybe should not be false?
+        driveMotor.setMotorBrake(false);
 
         driveMotor.burnFlash();
         angleMotor.burnFlash();

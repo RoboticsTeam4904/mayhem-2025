@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 
 import org.usfirst.frc4904.robot.RobotMap;
+import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.CustomEncoder;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
@@ -20,14 +21,14 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     // TODO TUNING: elevator PID
-    public static final double kS = 0.1;
+    public static final double kS = 0;
     public static final double kV = 2;
     public static final double kA = 0.1;
     public static final double kG = 0.2;
 
     public static final double kP = 0.05;
     public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double kD = 0.1;
 
     public static final double MAX_VEL = 1;
     public static final double MAX_ACCEL = 1;
@@ -36,7 +37,6 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double MAX_HEIGHT = 5;
 
     public final ElevatorFeedforward feedforward;
-    public final CustomEncoder encoder;
 
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
@@ -50,20 +50,22 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static HashMap<Position, Double> positions = new HashMap<>();
 
     // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
-    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, CustomEncoder encoder) {
+    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2) {
         super(
             new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, 1 },
-            -3
+            -5
         );
         this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-        this.encoder = encoder;
 
         positions.put(Position.INTAKE, 0.0);
         // positions.put(Position.L1, 1.0);
+
         // TODO IMPORTANT: tune more accurately
-        positions.put(Position.L2, 5.27);
-        positions.put(Position.L3, 8.47);
+        /* TODO */ positions.put(Position.L2, 5.27 / 1.09); // TODO worst thing since sliced bread
+        /* TODO */ positions.put(Position.L3, 8.47 / 1.09); // TODO worst thing since sliced bread
+        // TODO IMPORTANT: tune more accurately
+
         // positions.put(Position.L4, 4.0);
 
         for (var pos : Position.values()) {
@@ -78,7 +80,8 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public double getDistance() {
-        return encoder.get();
+        System.out.println("elevator" + Component.elevatorEncoder.get());
+        return Component.elevatorEncoder.get();
     }
 
     /** Intake at the current elevator position */
@@ -200,8 +203,8 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         Command cmd = getEzMotion(
             controller,
             profile,
-            new TrapezoidProfile.State(getDistance(), 0), // TODO why are we assuming the velocity is 0
-            new TrapezoidProfile.State(height, 0)
+            new TrapezoidProfile.State(0, 0), // TODO why are we assuming the velocity is 0
+            new TrapezoidProfile.State(height, 0) // TODO worst thing since sliced bread
         );
         cmd.setName("elevator - c_gotoHeight");
         return cmd;

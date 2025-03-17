@@ -49,10 +49,10 @@ public class RobotMap {
         public static class CANMotor {
 
             // MOTOR TIME
-            public static final int FRONT_LEFT_DRIVE = 1;
-            public static final int FRONT_RIGHT_DRIVE = 2;
-            public static final int BACK_LEFT_DRIVE = 3;
-            public static final int BACK_RIGHT_DRIVE = 4;
+            // public static final int FRONT_LEFT_DRIVE = 1;
+            // public static final int FRONT_RIGHT_DRIVE = 2;
+            // public static final int BACK_LEFT_DRIVE = 3;
+            // public static final int BACK_RIGHT_DRIVE = 4;
 
             public static final int FRONT_LEFT_TURN = 5;
             public static final int FRONT_RIGHT_TURN = 6;
@@ -66,8 +66,8 @@ public class RobotMap {
 
             public static final int CLIMBER = 60;
 
-            public static final int ELEVATOR_RIGHT = 15;
-            public static final int ELEVATOR_LEFT = 16;
+            // public static final int ELEVATOR_RIGHT = 15;
+            // public static final int ELEVATOR_LEFT = 16;
         }
 
         public static class PWM {
@@ -102,7 +102,7 @@ public class RobotMap {
 
             //these are allowed maxes rather than max capabilities
             //constants taken from https://github.com/REVrobotics/MAXSwerve-Java-Template/blob/main/src/main/java/frc/robot/Constants.java
-            public static final double MAX_SPEED = 4.8; //allowed max speed in meters per second
+            public static final double MAX_SPEED = 8; //allowed max speed in meters per second
             public static final double MAX_ACCELERATION = 3; //allowed max acceleration in meters per second squared
             public static final double MAX_TRANSLATION_SPEED = 4.8;
             public static final double MAX_TURN_SPEED = 360; //allowed max turn speed in degrees per second
@@ -235,9 +235,9 @@ public class RobotMap {
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
             0.0473,
-            4.5
+            8
         );
-        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180));
+        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180 - 45));
 
         // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
         Component.cameraRight = new PhotonCamera("dauntless-camera");
@@ -257,7 +257,7 @@ public class RobotMap {
             SparkLowLevel.MotorType.kBrushless,
             false
         );
-        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, -7, -10);
+        Component.ramp = new SingleMotorSubsystem(Component.rampMotor, -7, -7);
 
         Component.outtakeMotorLeft = new CustomCANSparkMax(
             Port.CANMotor.OUTTAKE_MOTOR_LEFT,
@@ -276,24 +276,23 @@ public class RobotMap {
         );
 
         Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
-        Component.climber = new SingleMotorSubsystem(Component.climberMotor, 11);
+        Component.climber = new SingleMotorSubsystem(Component.climberMotor, 6);
 
-        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
-        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
-        Component.elevatorEncoder = new CustomEncoder(new DutyCycleEncoder(Port.PWM.ELEVATOR_ENCODER));
-        Component.elevator = new ElevatorSubsystem(
-            Component.elevatorMotorOne,
-            Component.elevatorMotorTwo,
-            Component.elevatorEncoder
-        );
+        // Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
+        // Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
+        // Component.elevatorEncoder = new CustomEncoder(new DutyCycleEncoder(Port.PWM.ELEVATOR_ENCODER));
+        // Component.elevator = new ElevatorSubsystem(
+        //     Component.elevatorMotorOne,
+        //     Component.elevatorMotorTwo
+        // );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
-            0.01
+            0.1
         );
         HumanInput.Driver.turnJoystick = new CustomCommandJoystick(
             Port.HumanInput.zJoystickPort,
-            0.01
+            0.1
         );
 
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
@@ -304,18 +303,19 @@ public class RobotMap {
 
         // //TODO: fix invert type, talk to anna
 
-        Component.flDrive = new CANTalonFX(Port.CANMotor.FRONT_LEFT_DRIVE);
-        // Component.flTurn = new CustomCANSparkMax(Port.CANMotor.FRONT_LEFT_TURN, MotorType.kBrushless, false);
-        Component.frDrive = new CANTalonFX(Port.CANMotor.FRONT_RIGHT_DRIVE);
-        // Component.frTurn = new CustomCANSparkMax(Port.CANMotor.FRONT_RIGHT_TURN, MotorType.kBrushless, false);
-        Component.blDrive = new CANTalonFX(Port.CANMotor.BACK_LEFT_DRIVE);
-        // Component.blTurn = new CustomCANSparkMax(Port.CANMotor.BACK_LEFT_TURN, MotorType.kBrushless, false);
-        Component.brDrive = new CANTalonFX(Port.CANMotor.BACK_RIGHT_DRIVE);
-        // Component.brTurn = new CustomCANSparkMax(Port.CANMotor.BACK_RIGHT_TURN, MotorType.kBrushless, false);
-        // // Component.backRightWheelTalon.setSafetyEnabled(false);
-        // // Component.frontRightWheelTalon.setSafetyEnabled(false);
-        // // Component.backLeftWheelTalon.setSafetyEnabled(false);
-        // // Component.frontLeftWheelTalon.setSafetyEnabled(false);
+        // Component.flDrive = new CANTalonFX(1);
+        // Component.frDrive = new CANTalonFX(2);
+        // Component.blDrive = new CANTalonFX(3);
+        // Component.brDrive = new CANTalonFX(4);
+        // Component.flDrive.setBrakeOnNeutral();
+        // Component.frDrive.setOnNeutral();
+        // Component.blDrive.setCoastOnNeutral();
+        // Component.brDrive.setCoastOnNeutral();
+
+        // Component.backRightWheelTalon.setSafetyEnabled(false);
+        // Component.frontRightWheelTalon.setSafetyEnabled(false);
+        // Component.backLeftWheelTalon.setSafetyEnabled(false);
+        // Component.frontLeftWheelTalon.setSafetyEnabled(false);
 
         // //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
         // //FR is ++, FL is +-, BR is -+, BL is --
