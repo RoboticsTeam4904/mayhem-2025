@@ -66,8 +66,8 @@ public class RobotMap {
 
             public static final int CLIMBER = 60;
 
-            // public static final int ELEVATOR_RIGHT = 15;
-            // public static final int ELEVATOR_LEFT = 16;
+            public static final int ELEVATOR_RIGHT = 15;
+            public static final int ELEVATOR_LEFT = 16;
         }
 
         public static class PWM {
@@ -278,13 +278,14 @@ public class RobotMap {
         Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
         Component.climber = new SingleMotorSubsystem(Component.climberMotor, 6);
 
-        // Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
-        // Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
-        // Component.elevatorEncoder = new CustomEncoder(new DutyCycleEncoder(Port.PWM.ELEVATOR_ENCODER));
-        // Component.elevator = new ElevatorSubsystem(
-        //     Component.elevatorMotorOne,
-        //     Component.elevatorMotorTwo
-        // );
+        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
+        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
+        Component.elevatorEncoder = new CustomEncoder(new DutyCycleEncoder(Port.PWM.ELEVATOR_ENCODER));
+        Component.elevator = new ElevatorSubsystem(
+            Component.elevatorMotorOne,
+            Component.elevatorMotorTwo,
+            Component.elevatorEncoder
+        );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

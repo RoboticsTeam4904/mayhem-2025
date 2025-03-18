@@ -65,27 +65,6 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopExecute() {
-        SmartDashboard.putBoolean(
-            "button",
-            RobotMap.HumanInput.Driver.turnJoystick.button1.getAsBoolean()
-        );
-
-        SmartDashboard.putNumber(
-            "max angular velocity",
-            RobotMap.Component.chassis.swerveDrive.getMaximumChassisAngularVelocity()
-        );
-
-        double pos = RobotMap.HumanInput.Operator.joystick.getY();
-        double DEADZONE = 0.3;
-    
-        // if (pos > DEADZONE) {
-        //     Component.elevator.c_backward().schedule();
-        // } else if (pos < -DEADZONE) {
-        //     Component.elevator.c_forward().schedule();
-        // } else {
-        //     Component.elevator.c_stop().schedule();
-        // }
-
         RobotMap.Component.vision.periodic();
 
         // //various logging can go here
@@ -145,6 +124,8 @@ public class Robot extends CommandRobotBase {
                 )
             );
         }
+
+        // RobotMap.Component.vision.periodic();
 
         // logging can go here
     }

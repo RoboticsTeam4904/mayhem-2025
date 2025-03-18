@@ -3,14 +3,12 @@ package org.usfirst.frc4904.robot.subsystems;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 
 import java.util.HashMap;
 import java.util.function.DoubleSupplier;
 
-import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.CustomEncoder;
@@ -37,6 +35,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static final double MAX_HEIGHT = 5;
 
     public final ElevatorFeedforward feedforward;
+    public final CustomEncoder encoder;
 
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
@@ -50,13 +49,14 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public static HashMap<Position, Double> positions = new HashMap<>();
 
     // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
-    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2) {
+    public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, CustomEncoder encoder) {
         super(
             new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, 1 },
             -5
         );
         this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
+        this.encoder = encoder;
 
         positions.put(Position.INTAKE, 0.0);
         // positions.put(Position.L1, 1.0);
@@ -79,9 +79,11 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         }
     }
 
-    public double getDistance() {
-        System.out.println("elevator" + Component.elevatorEncoder.get());
-        return Component.elevatorEncoder.get();
+    /**
+     * @return The current height of the elevator in Magical Encoder Units™
+     */
+    public double getHeight() {
+        return encoder.get();
     }
 
     /** Intake at the current elevator position */
@@ -89,16 +91,16 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.8),
-                RobotMap.Component.ramp.c_forward()
+                Component.ramp.c_forward()
             ),
             new ParallelDeadlineGroup(
                 new WaitCommand(0.35),
-                RobotMap.Component.ramp.c_forward(),
-                RobotMap.Component.outtake.c_forward()
+                Component.ramp.c_forward(),
+                Component.outtake.c_forward()
             ),
             new ParallelCommandGroup(
-                RobotMap.Component.ramp.c_stop(),
-                RobotMap.Component.outtake.c_stop()
+                Component.ramp.c_stop(),
+                Component.outtake.c_stop()
             )
         );
     }
@@ -108,9 +110,9 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5),
-                RobotMap.Component.outtake.c_forward()
+                Component.outtake.c_forward()
             ),
-            RobotMap.Component.outtake.c_stop()
+            Component.outtake.c_stop()
         );
     }
 
@@ -119,12 +121,12 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(1),
-                RobotMap.Component.outtake.c_backward(),
-                RobotMap.Component.ramp.c_backward()
+                Component.outtake.c_backward(),
+                Component.ramp.c_backward()
             ),
             new ParallelCommandGroup(
-                RobotMap.Component.outtake.c_stop(),
-                RobotMap.Component.ramp.c_stop()
+                Component.outtake.c_stop(),
+                Component.ramp.c_stop()
             )
         );
     }
@@ -203,8 +205,8 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         Command cmd = getEzMotion(
             controller,
             profile,
-            new TrapezoidProfile.State(0, 0), // TODO why are we assuming the velocity is 0
-            new TrapezoidProfile.State(height, 0) // TODO worst thing since sliced bread
+            new TrapezoidProfile.State(getHeight(), 0), // TODO why are we assuming the velocity is 0
+            new TrapezoidProfile.State(height, 0)
         );
         cmd.setName("elevator - c_gotoHeight");
         return cmd;
@@ -218,7 +220,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     ) {
         return new ezMotion(
             controller,
-            this::getDistance,
+            this::getHeight,
             (double volts) -> {
                 SmartDashboard.putNumber("Elevator volts", volts);
                 this.setVoltage(volts);
