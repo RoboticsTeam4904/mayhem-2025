@@ -77,36 +77,6 @@ public class Robot extends CommandRobotBase {
 
             Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 10.0);
         }
-
-        // //various logging can go here
-        // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN CHEESE UNITS!
-        // SmartDashboard.putNumber("FL angle-1", Component.flTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.flModule.getAbsoluteAngle());
-        //
-        // SmartDashboard.putNumber("FR angle-1", Component.flTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("FR angle-2", Component.frModule.getAbsoluteAngle());
-        // SmartDashboard.putNumber("BL angle-1", Component.blTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("BL angle-2", Component.blModule.getAbsoluteAngle());
-        // SmartDashboard.putNumber("BR angle-1", Component.brTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("BR angle-2", Component.brModule.getAbsoluteAngle());
-        //
-        // var moduleTargets = Component.chassis.kinematics.toSwerveModuleStates(new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed()));
-        // for (var c : moduleTargets){
-        //     SmartDashboard.putNumber("placeholder", c.angle.getDegrees());
-        // }
-        // SmartDashboard.putNumber("FL speed", Component.flDrive.get());
-        // SmartDashboard.putNumber("FR speed", Component.frDrive.get());
-        // SmartDashboard.putNumber("BL speed", Component.blDrive.get());
-        // SmartDashboard.putNumber("BR speed", Component.brDrive.get());
-        //
-        // SmartDashboard.putNumber("driver X ", driver.getX());
-        // SmartDashboard.putNumber("driver Y ", driver.getY());
-        // SmartDashboard.putNumber("driver Z ", driver.getTurnSpeed());
-        //
-        // //navx gyro readings
-        // SmartDashboard.putNumber("navx angle", Component.navx.getAngle());
-        // SmartDashboard.putBoolean("navx calibrating", Component.navx.isCalibrating());
-        // SmartDashboard.putBoolean("navx connected", Component.navx.isConnected());
     }
 
     Timer timer = new Timer();
@@ -161,55 +131,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void testExecute() {
-        // //coast drive
-        // Component.flDrive.stopMotor();
-        // Component.frDrive.stopMotor();
-        // Component.blDrive.stopMotor();
-        // Component.brDrive.stopMotor();
-        //
-        // Component.flDrive.setNeutralMode(NeutralModeValue.Coast);
-        // Component.frDrive.setNeutralMode(NeutralModeValue.Coast);
-        // Component.blDrive.setNeutralMode(NeutralModeValue.Coast);
-        // Component.brDrive.setNeutralMode(NeutralModeValue.Coast);
-        //
-        // //coast turn
-        // Component.flTurn.neutralOutput();
-        // Component.frTurn.neutralOutput();
-        // Component.blTurn.neutralOutput();
-        // Component.brTurn.neutralOutput();
-        //
-        // Component.flTurn.setCoastOnNeutral();
-        // Component.frTurn.setCoastOnNeutral();
-        // Component.blTurn.setCoastOnNeutral();
-        // Component.brTurn.setCoastOnNeutral();
-        //
-        // //various logging can go here
-        // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
-        // SmartDashboard.putNumber("FL angle-1", Component.flTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("FL angle-2 (currently using 2)", Component.flModule.getAbsoluteAngle());
-        //
-        // SmartDashboard.putNumber("FR angle-1", Component.frTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("FR angle-2", Component.frModule.getAbsoluteAngle());
-        // SmartDashboard.putNumber("BL angle-1", Component.blTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("BL angle-2", Component.blModule.getAbsoluteAngle());
-        // SmartDashboard.putNumber("BR angle-1", Component.brTurnEncoder.getAbsolutePosition());
-        // SmartDashboard.putNumber("BR angle-2", Component.brModule.getAbsoluteAngle());
-        //
-        // var moduleTargets = Component.chassis.kinematics.toSwerveModuleStates(new ChassisSpeeds(driver.getX(), driver.getY(), driver.getTurnSpeed()));
-        // for (var c : moduleTargets){
-        //     SmartDashboard.putNumber(c.toString(), c.angle.getDegrees());
-        // }
-        // SmartDashboard.putNumber("FL speed", Component.flDrive.get());
-        // SmartDashboard.putNumber("FR speed", Component.frDrive.get());
-        // SmartDashboard.putNumber("BL speed", Component.blDrive.get());
-        // SmartDashboard.putNumber("BR speed", Component.brDrive.get());
-        //
-        // SmartDashboard.putNumber("driver X ", driver.getX());
-        // SmartDashboard.putNumber("driver Y ", driver.getY());
-        // SmartDashboard.putNumber("driver Z ", driver.getTurnSpeed());
-        //
-        // //navx gyro readings
-        // SmartDashboard.putNumber("navx angle", Component.navx.getAngle());
+
     }
 
     @Override
