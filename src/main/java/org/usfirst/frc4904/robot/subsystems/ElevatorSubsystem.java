@@ -19,20 +19,20 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     // TODO TUNING: elevator PID
-    public static final double kS = 0;
+    public static final double kS = 0.1;
     public static final double kV = 2;
-    public static final double kA = 0.1;
+    public static final double kA = 0.04;
     public static final double kG = 0.2;
 
-    public static final double kP = 0.05;
+    public static final double kP = 0.04;
     public static final double kI = 0;
-    public static final double kD = 0.1;
+    public static final double kD = 0;
 
-    public static final double MAX_VEL = 1;
-    public static final double MAX_ACCEL = 1;
+    public static final double MAX_VEL = 4;
+    public static final double MAX_ACCEL = 4;
 
     public static final double MIN_HEIGHT = 0;
-    public static final double MAX_HEIGHT = 5;
+    public static final double MAX_HEIGHT = 12.5;
 
     public final ElevatorFeedforward feedforward;
     public final CustomEncoder encoder;
@@ -52,8 +52,9 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, CustomEncoder encoder) {
         super(
             new SmartMotorController[] { motor1, motor2 },
-            new double[] { 1, 1 },
-            -5
+            new double[] { 1, -1 },
+            7,
+            4
         );
         this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
         this.encoder = encoder;
@@ -62,8 +63,8 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         // positions.put(Position.L1, 1.0);
 
         // TODO IMPORTANT: tune more accurately
-        /* TODO */ positions.put(Position.L2, 5.27 / 1.09); // TODO worst thing since sliced bread
-        /* TODO */ positions.put(Position.L3, 8.47 / 1.09); // TODO worst thing since sliced bread
+        /* TODO */ positions.put(Position.L2, 5.2); // TODO worst thing since sliced bread
+        /* TODO */ positions.put(Position.L3, 5.3); // TODO worst thing since sliced bread
         // TODO IMPORTANT: tune more accurately
 
         // positions.put(Position.L4, 4.0);
@@ -165,13 +166,6 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
-        // if (
-        //     (this.getDistance() >= MAX_HEIGHT && metersPerSecDealer.getAsDouble() < 0) ||
-        //     (this.getDistance() <= MIN_HEIGHT && metersPerSecDealer.getAsDouble() > 0)
-        // ) {
-        //     return this.c_stop();
-        // }
-
         var cmd = this.run(() -> {
             var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
             SmartDashboard.putNumber("feedforward", ff);
@@ -238,5 +232,23 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
                 setVoltage(0);
             }
         };
+    }
+
+    @Override
+    public void setVoltage(double voltage) {
+        setVoltage(voltage, false);
+    }
+
+    public void setVoltage(double voltage, boolean bypassSoftwareStop) {
+        if (
+            !bypassSoftwareStop && (
+                (this.getHeight() >= MAX_HEIGHT && voltage > 0) ||
+                (this.getHeight() <= MIN_HEIGHT && voltage < 0)
+            )
+        ) {
+            voltage = 0;
+        }
+
+        super.setVoltage(voltage);
     }
 }

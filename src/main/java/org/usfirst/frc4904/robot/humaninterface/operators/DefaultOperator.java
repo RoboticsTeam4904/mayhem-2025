@@ -33,21 +33,21 @@ public class DefaultOperator extends Operator {
         var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
 
         /* ELEVATOR SETPOINTS */
-        // joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L1));
+        joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
         joystick.button8.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
         joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
         // joystick.button10.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L4));
 
         /* MANUAL ELEVATOR CONTROL */
-        joystick.button11.onTrue(Component.elevator.c_forward());
-        joystick.button12.onTrue(Component.elevator.c_backward());
+        joystick.button11.onTrue(Component.elevator.c_backward());
+        joystick.button12.onTrue(Component.elevator.c_forward());
         joystick.button11.onFalse(Component.elevator.c_stop());
         joystick.button12.onFalse(Component.elevator.c_stop());
 
         /* INTAKE */
-        joystick.button11.onTrue(Component.elevator.c_intakeRaw());
-        /* RAMP OUTTAKE */
-        joystick.button12.onTrue(Component.elevator.c_rampOuttakeRaw());
+        // joystick.button11.onTrue(Component.elevator.c_intakeRaw());
+        // /* RAMP OUTTAKE */
+        // joystick.button12.onTrue(Component.elevator.c_rampOuttakeRaw());
 
         /* MANUAL RAMP CONTROL */
         joystick.button3.onTrue(Component.ramp.c_forward());
@@ -69,9 +69,15 @@ public class DefaultOperator extends Operator {
         turnJoystick.button1.whileTrue(Component.vision.c_align(TagGroup.REEF, -1));
         turnJoystick.button2.whileTrue(Component.vision.c_align(TagGroup.REEF, 1));
 
-        /* ENCODER/ODOMETRY RESETTING */
+        /* ODOMETRY RESETTING */
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
-        xyJoystick.button2.onTrue(new InstantCommand(() -> Component.elevatorEncoder.reset()));
+        
+        /* ELEVATOR ENCODER RESETTING */
+        xyJoystick.button2.onTrue(new InstantCommand(() -> Component.elevator.setVoltage(-1, true)));
+        xyJoystick.button2.onFalse(new InstantCommand(() -> {
+            Component.elevator.setVoltage(0);
+            Component.elevatorEncoder.reset();
+        }));
 
         /*
         // orchestra
