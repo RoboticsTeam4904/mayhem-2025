@@ -18,10 +18,6 @@ public class Auton {
         return Robot.AutonConfig.FLIP_SIDE;
     }
 
-    public static boolean getFlipAlliance() {
-        return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red;
-    }
-
     // public static Command c_jank() {
     //     return new ParallelDeadlineGroup(
     //         new WaitCommand(1),
@@ -40,13 +36,14 @@ public class Auton {
      * Move straight out of the starting zone and do nothing.
      */
     public static Command c_straight() {
-        return Component.chassis.getAutonomousCommand("straight", true, getFlipAlliance(), false);
+        return Component.chassis.getAutonomousCommand("straight", true, false);
     }
 
      /**
      * Move straight out of the starting zone, align with the center of the reef, and outtake.
      */
     public static Command c_straightCoral() {
+        // TODO super janky
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5),
@@ -54,11 +51,6 @@ public class Auton {
                     @Override
                     public void execute() {
                         Component.chassis.drive(new ChassisSpeeds(0, 3, 0));
-                    }
-                    
-                    @Override
-                    public boolean isFinished() {
-                        return false;
                     }
                 }
             ),
@@ -85,7 +77,7 @@ public class Auton {
      */
     public static Command c_sideCoral() {
         return new SequentialCommandGroup(
-            Component.chassis.getAutonomousCommand("side", true, getFlipAlliance(), getFlipSide()),
+            Component.chassis.getAutonomousCommand("side", true, getFlipSide()),
             Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, -1)
             //Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
         );
@@ -105,10 +97,10 @@ public class Auton {
     public static Command c_sideCoralFancy() {
         return new SequentialCommandGroup(
             c_sideCoral(),
-            Component.chassis.getAutonomousCommand("side2", true, getFlipAlliance(), getFlipSide()),
+            Component.chassis.getAutonomousCommand("side2", true, getFlipSide()),
             new WaitCommand(2),
             //Component.elevator.c_intake(),
-            Component.chassis.getAutonomousCommand("side3", true, getFlipAlliance(), getFlipSide()),
+            Component.chassis.getAutonomousCommand("side3", true, getFlipSide()),
             Component.vision.c_align(TagGroup.REEF_OUTER_DIAGONAL, -1)
             //Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
         );
