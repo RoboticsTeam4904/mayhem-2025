@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
@@ -61,24 +62,24 @@ public class Robot extends CommandRobotBase {
         Component.chassis.setDefaultCommand(
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
-        Component.elevator.setDefaultCommand(
-            Component.elevator.c_voltsVariable(RobotMap.HumanInput.Operator.joystick.getAxis(1)*5)
-        );
     }
 
     @Override
     public void teleopExecute() {
-        RobotMap.Component.vision.periodic();
+        Component.vision.periodic();
 
         double y = RobotMap.HumanInput.Operator.joystick.getY();
         System.out.println(Math.abs(y));
 
-        if (Math.abs(y) > 0.1) {
-            RobotMap.Component.elevator.setVoltage(y * 10.0);
+        if (Math.abs(y) >= 0.1) {
+            var currentElevatorCommand = CommandScheduler.getInstance().requiring(Component.elevator);
+            if (currentElevatorCommand != null) currentElevatorCommand.cancel();
+
+            Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 10.0);
         }
 
         // //various logging can go here
-        // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!
+        // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN CHEESE UNITS!
         // SmartDashboard.putNumber("FL angle-1", Component.flTurnEncoder.getAbsolutePosition());
         // SmartDashboard.putNumber("FL angle-2 (currentyl using 2)", RobotMap.Component.flModule.getAbsoluteAngle());
         //
@@ -142,7 +143,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void disabledInitialize() {
-        RobotMap.Component.vision.stopPositioning("Robot disabled");
+        Component.vision.stopPositioning("Robot disabled");
 
     //     Component.elevatorMotorOne.setBrakeOnNeutral();
     //     Component.elevatorMotorTwo.setBrakeOnNeutral();

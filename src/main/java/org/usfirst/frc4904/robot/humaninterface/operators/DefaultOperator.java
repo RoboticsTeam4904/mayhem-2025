@@ -32,59 +32,56 @@ public class DefaultOperator extends Operator {
         var xyJoystick = RobotMap.HumanInput.Driver.xyJoystick;
         var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
 
-        /* ELEVATOR SETPOINTS */
+        /// ELEVATOR SETPOINTS
         joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
         joystick.button8.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
         joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
         // joystick.button10.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L4));
 
-        /* MANUAL ELEVATOR CONTROL */
-        joystick.button11.onTrue(Component.elevator.c_backward());
-        joystick.button12.onTrue(Component.elevator.c_forward());
-        joystick.button11.onFalse(Component.elevator.c_stop());
-        joystick.button12.onFalse(Component.elevator.c_stop());
-        // Component.elevator.c_voltsVariable(joystick.getAxis(1)*5);
+        /// MANUAL ELEVATOR CONTROL
+        // see Robot.teleopExecute()
+        // joystick.button11.onTrue(Component.elevator.c_backward());
+        // joystick.button12.onTrue(Component.elevator.c_forward());
+        // joystick.button11.onFalse(Component.elevator.c_stop());
+        // joystick.button12.onFalse(Component.elevator.c_stop());
 
-        /* INTAKE */
-        // joystick.button11.onTrue(Component.elevator.c_intakeRaw());
-        // /* RAMP OUTTAKE */
-        // joystick.button12.onTrue(Component.elevator.c_rampOuttakeRaw());
+        /// INTAKE
+        joystick.button11.onTrue(Component.elevator.c_intakeRaw());
+        /// RAMP OUTTAKE
+        joystick.button12.onTrue(Component.elevator.c_rampOuttakeRaw());
 
-        /* MANUAL RAMP CONTROL */
+        /// MANUAL RAMP CONTROL
         joystick.button3.onTrue(Component.ramp.c_forward());
         joystick.button5.onTrue(Component.ramp.c_backward());
         joystick.button3.onFalse(Component.ramp.c_stop());
         joystick.button5.onFalse(Component.ramp.c_stop());
 
-        /* MANUAL OUTTAKE CONTROL */
+        /// MANUAL OUTTAKE CONTROL
         joystick.button4.onTrue(Component.outtake.c_forward());
         joystick.button6.onTrue(Component.outtake.c_backward());
         joystick.button4.onFalse(Component.outtake.c_stop());
         joystick.button6.onFalse(Component.outtake.c_stop());
 
-        /* CLIMBER */
+        /// CLIMBER
         joystick.button1.onTrue(Component.climber.c_forward());
         joystick.button1.onFalse(Component.climber.c_stop());
 
-        /* VISION */
+        /// VISION
         turnJoystick.button1.whileTrue(Component.vision.c_align(TagGroup.REEF, -1));
         turnJoystick.button2.whileTrue(Component.vision.c_align(TagGroup.REEF, 1));
 
-        /* ODOMETRY RESETTING */
+        /// ODOMETRY RESETTING
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
         
-        /* ELEVATOR ENCODER RESETTING */
-        xyJoystick.button2.onTrue(new InstantCommand(() -> {
-            Component.elevator.setVoltage(-1, true);
-            System.out.println("GO DOWN TO BRO");
-    }));
+        /// ELEVATOR ENCODER RESETTING
+        xyJoystick.button2.onTrue(new InstantCommand(() -> Component.elevator.setVoltage(-1, true)));
         xyJoystick.button2.onFalse(new InstantCommand(() -> {
             Component.elevator.setVoltage(0);
             Component.elevatorEncoder.reset();
         }));
 
+        /// ORCHESTRA
         /*
-        // orchestra
         joystick.button7.onTrue(
             OrchestraSubsystem.c_loadAndPlaySong(
                 "delfino",
