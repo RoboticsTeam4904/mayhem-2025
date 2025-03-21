@@ -43,6 +43,7 @@ public class DefaultOperator extends Operator {
         joystick.button12.onTrue(Component.elevator.c_forward());
         joystick.button11.onFalse(Component.elevator.c_stop());
         joystick.button12.onFalse(Component.elevator.c_stop());
+        // Component.elevator.c_voltsVariable(joystick.getAxis(1)*5);
 
         /* INTAKE */
         // joystick.button11.onTrue(Component.elevator.c_intakeRaw());
@@ -73,7 +74,10 @@ public class DefaultOperator extends Operator {
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
         
         /* ELEVATOR ENCODER RESETTING */
-        xyJoystick.button2.onTrue(new InstantCommand(() -> Component.elevator.setVoltage(-1, true)));
+        xyJoystick.button2.onTrue(new InstantCommand(() -> {
+            Component.elevator.setVoltage(-1, true);
+            System.out.println("GO DOWN TO BRO");
+    }));
         xyJoystick.button2.onFalse(new InstantCommand(() -> {
             Component.elevator.setVoltage(0);
             Component.elevatorEncoder.reset();
@@ -127,5 +131,6 @@ public class DefaultOperator extends Operator {
 
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
         */
+        
     }
 }

@@ -28,17 +28,17 @@ public class SwerveGain extends Driver { //ALL SWERVEGAIN JOYSTICKS OUTPUT FROM 
     }
 
     public double getX() {
-        double raw = RobotMap.HumanInput.Driver.xyJoystick.getX();
+        double raw = -RobotMap.HumanInput.Driver.xyJoystick.getX();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getY() {
-        double raw = RobotMap.HumanInput.Driver.xyJoystick.getY();
+        double raw = -RobotMap.HumanInput.Driver.xyJoystick.getY();
         return scaleGain(raw, SPEED_EXP);
     }
 
     public double getTurnSpeed() {
-        double raw = RobotMap.HumanInput.Driver.turnJoystick.getX();
+        double raw = -RobotMap.HumanInput.Driver.turnJoystick.getX();
         return scaleGain(raw, TURN_EXP);
     }
 

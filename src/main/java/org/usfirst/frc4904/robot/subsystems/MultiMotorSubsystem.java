@@ -67,6 +67,10 @@ public class MultiMotorSubsystem extends SubsystemBase {
         return c_holdVoltage(forwardVoltage);
     }
 
+    public Command c_voltsVariable(double voltage) {
+        return c_holdVoltage(voltage);
+    }
+
     public Command c_backward() {
         return c_holdVoltage(-backwardVoltage);
     }

@@ -61,11 +61,21 @@ public class Robot extends CommandRobotBase {
         Component.chassis.setDefaultCommand(
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
+        Component.elevator.setDefaultCommand(
+            Component.elevator.c_voltsVariable(RobotMap.HumanInput.Operator.joystick.getAxis(1)*5)
+        );
     }
 
     @Override
     public void teleopExecute() {
         RobotMap.Component.vision.periodic();
+
+        double y = RobotMap.HumanInput.Operator.joystick.getY();
+        System.out.println(Math.abs(y));
+
+        if (Math.abs(y) > 0.1) {
+            RobotMap.Component.elevator.setVoltage(y * 10.0);
+        }
 
         // //various logging can go here
         // //TODO: getAbsolutePosition() MIGHT NOT WORK OR BE IN RIGHT UNITS!

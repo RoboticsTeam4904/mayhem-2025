@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, -1 },
             7,
-            4
+            7
         );
         this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
         this.encoder = encoder;
