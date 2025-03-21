@@ -199,8 +199,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     private Command getRawHeightCommand(double height) {
-        ezControl controller = new ezControl(kP, kI, kD, (position, velocityMetersPerSec) ->
-            this.feedforward.calculate(velocityMetersPerSec)
+        ezControl controller = new ezControl(
+            kP, kI, kD,
+            (position, velocityMetersPerSec) -> this.feedforward.calculate(velocityMetersPerSec),
+            0.02
         );
 
         TrapezoidProfile profile = new TrapezoidProfile(
