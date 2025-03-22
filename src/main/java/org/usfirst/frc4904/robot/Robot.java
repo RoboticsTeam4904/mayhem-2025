@@ -11,14 +11,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 // import com.ctre.phoenix6.signals.NeutralModeValue;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
-import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
 import java.util.function.Supplier;
@@ -64,7 +62,7 @@ public class Robot extends CommandRobotBase {
         );
     }
 
-    boolean elevatorjustOn = false;
+    boolean wasControllingElevator = false;
 
     @Override
     public void teleopExecute() {
@@ -73,14 +71,14 @@ public class Robot extends CommandRobotBase {
         double y = RobotMap.HumanInput.Operator.joystick.getY();
 
         if (Math.abs(y) >= 0.05) {
-            elevatorjustOn = true;
+            wasControllingElevator = true;
 
             var currentElevatorCommand = CommandScheduler.getInstance().requiring(Component.elevator);
             if (currentElevatorCommand != null) currentElevatorCommand.cancel();
 
             Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 12.0);
-        } else if (elevatorjustOn) {
-            elevatorjustOn = false;
+        } else if (wasControllingElevator) {
+            wasControllingElevator = false;
             Component.elevator.setVoltage(0);
         }
     }

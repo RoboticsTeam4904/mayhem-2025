@@ -36,7 +36,6 @@ public class DefaultOperator extends Operator {
         joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
         joystick.button8.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
         joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
-        // joystick.button10.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L4));
 
         /// MANUAL ELEVATOR CONTROL
         // see Robot.teleopExecute()
@@ -72,10 +71,10 @@ public class DefaultOperator extends Operator {
 
         /// ODOMETRY RESETTING
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
-        
+
         /// ELEVATOR ENCODER RESETTING
-        xyJoystick.button2.onTrue(new InstantCommand(() -> Component.elevator.setVoltage(-1, true)));
-        xyJoystick.button2.onFalse(new InstantCommand(() -> {
+        joystick.button10.onTrue(new InstantCommand(() -> Component.elevator.setVoltage(-1, true)));
+        joystick.button10.onFalse(new InstantCommand(() -> {
             Component.elevator.setVoltage(0);
             Component.elevatorEncoder.reset();
         }));
@@ -128,6 +127,6 @@ public class DefaultOperator extends Operator {
 
         joystick.button12.onTrue(new InstantCommand(OrchestraSubsystem::stopAll));
         */
-        
+
     }
 }
