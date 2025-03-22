@@ -71,8 +71,8 @@ public class ezMotion extends Command {
 
     @Override
     public void initialize() {
-        this.setpointDealer = setpointDealerDealer.get();
-        this.initialTimestamp = Timer.getFPGATimestamp();
+        setpointDealer = setpointDealerDealer.get();
+        initialTimestamp = Timer.getFPGATimestamp();
     }
 
     private boolean finished = false;
@@ -82,12 +82,15 @@ public class ezMotion extends Command {
         finished = false;
 
         try {
-            Pair<Double, Double> setpoints = this.setpointDealer.apply(getElapsedTime());
+            Pair<Double, Double> setpoints = setpointDealer.apply(getElapsedTime());
             setpoint = setpoints.getFirst();
             setpoint_dt = setpoints.getSecond();
         } catch (EndSignal e) {
             finished = true;
         }
+
+        // TODO set `finished = true` when we arrive at the setpoint
+        //      (setpoint as in the FINAL destination, which is different than the 'setpoint' class field)
 
         control.updateSetpoint(setpoint, setpoint_dt);
         double controlEffort = control.calculate(feedback.getAsDouble(), getElapsedTime());

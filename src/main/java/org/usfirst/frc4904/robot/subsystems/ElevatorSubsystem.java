@@ -41,34 +41,26 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     // make sure that all values defined in this enum are added to the 'positions' map in the constructor
     public enum Position {
         INTAKE,
-        // L1,
         L2,
         L3,
-        // L4
     }
 
     public static HashMap<Position, Double> positions = new HashMap<>();
 
-    // possible helpful https://www.chiefdelphi.com/t/using-encoder-to-drive-a-certain-distance/147219/2
     public ElevatorSubsystem(SmartMotorController motor1, SmartMotorController motor2, CustomEncoder encoder) {
         super(
             new SmartMotorController[] { motor1, motor2 },
             new double[] { 1, -1 },
-            7,
             7
         );
         this.feedforward = new ElevatorFeedforward(kS, kG, kV, kA);
         this.encoder = encoder;
 
         positions.put(Position.INTAKE, 0.0);
-        // positions.put(Position.L1, 1.0);
 
-        // TODO IMPORTANT: tune more accurately
-        /* TODO */ positions.put(Position.L2, 5.2); // TODO worst thing since sliced bread
-        /* TODO */ positions.put(Position.L3, 5.3); // TODO worst thing since sliced bread
-        // TODO IMPORTANT: tune more accurately
-
-        // positions.put(Position.L4, 4.0);
+        // TODO IMPORTANT: tune (these are EXTREMELY inaccurate right now dont even try to use them)
+        positions.put(Position.L2, 5.2);
+        positions.put(Position.L3, 7.5);
 
         for (var pos : Position.values()) {
             if (positions.get(pos) == null) {
