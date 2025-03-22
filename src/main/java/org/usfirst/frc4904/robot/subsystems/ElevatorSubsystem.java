@@ -189,8 +189,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public Command c_gotoHeight(double height) {
-        return this.getRawHeightCommand(height);
-        //return new CreateOnInitialize(() -> this.getRawHeightCommand(height));
+        return new CreateOnInitialize(() -> this.getRawHeightCommand(height));
     }
 
     private Command getRawHeightCommand(double height) {
@@ -231,7 +230,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             this
         ) {
             @Override
-            public void cancel() {
+            public void end(boolean interrupted) {
                 setVoltage(0);
             }
         };

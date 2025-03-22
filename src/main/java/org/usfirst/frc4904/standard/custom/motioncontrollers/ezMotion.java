@@ -89,10 +89,6 @@ public class ezMotion extends Command {
             finished = true;
         }
 
-        if (control.atSetpoint()) {
-            finished = true;
-        }
-
         control.updateSetpoint(setpoint, setpoint_dt);
         double controlEffort = control.calculate(feedback.getAsDouble(), getElapsedTime());
         processVariable.accept(controlEffort);
