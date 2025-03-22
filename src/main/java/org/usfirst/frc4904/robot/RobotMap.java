@@ -235,7 +235,7 @@ public class RobotMap {
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
             0.0473,
-            8
+            5
         );
         Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180 - 45));
 
@@ -248,7 +248,7 @@ public class RobotMap {
             },
             new Transform2d[] {
                 // new Transform2d(Units.inchesToMeters(-11), Units.inchesToMeters(-10.6), Rotation2d.kZero),
-                new Transform2d(Units.inchesToMeters(-11), Units.inchesToMeters(10.6), Rotation2d.kZero)
+                new Transform2d(Units.inchesToMeters(-8), Units.inchesToMeters(10.6), Rotation2d.kZero)
             }
         );
 

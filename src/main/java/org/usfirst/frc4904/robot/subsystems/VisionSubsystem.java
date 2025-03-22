@@ -60,8 +60,8 @@ public class VisionSubsystem extends SubsystemBase {
     private static final double HORIZ_ALIGN_OFFSET = 0.17;
 
     // max speeds
-    private final double MAX_LINEAR_SPEED = 3; // meters per second
-    private final double MAX_ROT_SPEED = Math.PI; // radians     per second
+    private final double MAX_LINEAR_SPEED = 0.5; // meters per second
+    private final double MAX_ROT_SPEED = Math.PI / 4; // radians     per second
 
     // tolerance thresholds for positioning
     private final double POS_TOLERANCE_METERS = 0.02;
@@ -112,8 +112,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         // initialize pid controllers
         // TODO TUNING: tune pid values
-        positionController = new PIDController(5.0, 0.0, 0.0);
-        rotationController = new PIDController(7.5, 0.0, 0.0);
+        positionController = new PIDController(1, 0.0, 0.0);
+        rotationController = new PIDController(1, 0.0, 0.0);
 
         // make rotation controller continuous
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
@@ -175,9 +175,9 @@ public class VisionSubsystem extends SubsystemBase {
 
         // convert to robot relative speeds
         ChassisSpeeds relativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-            xSpeed,
-            ySpeed,
-            rotSpeed,
+            -xSpeed,
+            -ySpeed,
+            -rotSpeed,
             Rotation2d.kZero
         );
 

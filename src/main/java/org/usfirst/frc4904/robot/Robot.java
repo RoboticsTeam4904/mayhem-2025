@@ -64,18 +64,24 @@ public class Robot extends CommandRobotBase {
         );
     }
 
+    boolean elevatorjustOn = false;
+
     @Override
     public void teleopExecute() {
         Component.vision.periodic();
 
         double y = RobotMap.HumanInput.Operator.joystick.getY();
-        System.out.println(Math.abs(y));
 
-        if (Math.abs(y) >= 0.1) {
+        if (Math.abs(y) >= 0.05) {
+            elevatorjustOn = true;
+
             var currentElevatorCommand = CommandScheduler.getInstance().requiring(Component.elevator);
             if (currentElevatorCommand != null) currentElevatorCommand.cancel();
 
-            Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 10.0);
+            Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 12.0);
+        } else if (elevatorjustOn) {
+            elevatorjustOn = false;
+            Component.elevator.setVoltage(0);
         }
     }
 
@@ -95,15 +101,24 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousExecute() {
-        if (timer.get() < 2.0) {
+        if (timer.get() < 1.0) {
             Component.chassis.drive(               
                 ChassisSpeeds.fromRobotRelativeSpeeds(
-                    -3.0,
+                    3.0,
                     0.0,
                     0.0,
                     Rotation2d.kZero
                 )
             );
+        } else{
+            Component.chassis.drive(               
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    0.0,
+                    0.0,
+                    0.0,
+                    Rotation2d.kZero
+                )
+            ); 
         }
 
         // RobotMap.Component.vision.periodic();
@@ -134,11 +149,14 @@ public class Robot extends CommandRobotBase {
 
     }
 
+    double lastLogTime = 0;
+
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
-        // if (Component.elevator != null) {
-        //     // System.out.println("ELEVATOR ENCODER: " + Component.elevatorEncoder.get());
-        // }
+        if (Component.elevator != null && Timer.getFPGATimestamp() - lastLogTime > 0.2) {
+            lastLogTime = Timer.getFPGATimestamp();
+            System.out.printf("ELEVATOR ENCODER: %.4f%n", Component.elevatorEncoder.get());
+        }
     }
 }

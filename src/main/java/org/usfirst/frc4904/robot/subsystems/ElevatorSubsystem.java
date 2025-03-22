@@ -22,10 +22,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     // TODO TUNING: elevator PID
     public static final double kS = 0.1;
     public static final double kV = 2;
-    public static final double kA = 0.04;
-    public static final double kG = 0.2;
+    public static final double kA = 0.4;
+    public static final double kG = 0.3;
 
-    public static final double kP = 0.04;
+    public static final double kP = 0.4;
     public static final double kI = 0;
     public static final double kD = 0;
 
@@ -189,7 +189,8 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     }
 
     public Command c_gotoHeight(double height) {
-        return new CreateOnInitialize(() -> this.getRawHeightCommand(height));
+        return this.getRawHeightCommand(height);
+        //return new CreateOnInitialize(() -> this.getRawHeightCommand(height));
     }
 
     private Command getRawHeightCommand(double height) {
@@ -250,7 +251,6 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
         ) {
             voltage = 0;
         }
-
         super.setVoltage(voltage);
     }
 }
