@@ -123,6 +123,9 @@ public class VisionSubsystem extends SubsystemBase {
         rotationController.setTolerance(Math.toRadians(ROT_TOLERANCE_DEG));
     }
 
+    private double startingDistance = -1;
+    private double startingRotDistance = -1;
+
     @Override
     public void periodic() {
         if (!this.isPositioning()) return;
@@ -143,7 +146,7 @@ public class VisionSubsystem extends SubsystemBase {
             // stop positioning if tag has not been seen for a while
             double timeElapsed = currentTime - lastSeenTagTime;
             if (timeElapsed > CANT_SEE_TIMEOUT) {
-                stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds");
+                stopPositioning("No april tag visible for " + CANT_SEE_TIMEOUT + " seconds", true);
                 return;
             }
 
@@ -197,17 +200,27 @@ public class VisionSubsystem extends SubsystemBase {
         );
 
         // check if reached target position
-        boolean atPosition =
-            Math.hypot(desiredOffset.getX(), desiredOffset.getY()) < POS_TOLERANCE_METERS &&
-            Math.abs(desiredOffset.getRotation().getDegrees()) < ROT_TOLERANCE_DEG;
+        double distance = Math.hypot(desiredOffset.getX(), desiredOffset.getY());
+        double rotDistance = Math.abs(desiredOffset.getRotation().getDegrees());
+
+        if (startingDistance == -1) startingDistance = distance;
+        if (startingRotDistance == -1) startingRotDistance = rotDistance;
+
+        Component.lights.visionProgress = Math.pow(
+            (1 - distance / startingDistance) * 0.6 + (1 - rotDistance / startingRotDistance) * 0.4,
+            2
+        );
+
+        boolean atPosition = distance < POS_TOLERANCE_METERS && rotDistance < ROT_TOLERANCE_DEG;
 
         if (atPosition) {
-            stopPositioning("Success");
+            stopPositioning("Success", false);
+            Component.lights.flashColor(LightSubsystem.Color.SUCCESS);
         } else {
             // give up if too much time has passed
             double timeElapsed = currentTime - startTime;
             if (timeElapsed > TOTAL_TIMEOUT) {
-                stopPositioning("Gave up after " + TOTAL_TIMEOUT + " seconds");
+                stopPositioning("Gave up after " + TOTAL_TIMEOUT + " seconds", true);
             }
         }
     }
@@ -302,27 +315,36 @@ public class VisionSubsystem extends SubsystemBase {
         rotationController.reset();
 
         System.out.println("Positioning started");
+
+        Component.lights.visionProgress = 0;
+        Component.lights.flashColor(LightSubsystem.Color.VISION);
     }
 
     /**
      * Stop the positioning process
      */
     public void stopPositioning() {
-        stopPositioning(null);
+        stopPositioning(null, false);
     }
 
     /**
      * Stop the positioning process
      *
      * @param reason The reason that positioning was stopped (for logging), e.g. "Success"
+     * @param failed Whether positioning was stopped due to some sort of failure. Only for the purpose of fancy lights.
      */
-    public void stopPositioning(String reason) {
+    public void stopPositioning(String reason, boolean failed) {
         targetTagOptions = null;
         targetTagId = null;
         desiredOffset = null;
         Component.chassis.swerveDrive.drive(new ChassisSpeeds(0, 0, 0));
 
         System.out.println("Positioning ended" + (reason != null ? " - " + reason : ""));
+
+        Component.lights.visionProgress = -1;
+        if (failed) {
+            Component.lights.flashColor(LightSubsystem.Color.FAIL);
+        }
     }
 
     /**
@@ -409,7 +431,7 @@ public class VisionSubsystem extends SubsystemBase {
             @Override
             public void cancel() {
                 super.cancel();
-                stopPositioning("Command canceled");
+                stopPositioning("Command canceled", false);
             }
 
             @Override
@@ -422,6 +444,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Command c_stop() {
-        return new InstantCommand(() -> this.stopPositioning("Stop command"));
+        return new InstantCommand(() -> this.stopPositioning("Stop command", false));
     }
 }

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
+import org.usfirst.frc4904.robot.subsystems.LightSubsystem;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
@@ -60,12 +61,15 @@ public class Robot extends CommandRobotBase {
         Component.chassis.setDefaultCommand(
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
+
+        Component.lights.flashColor(LightSubsystem.Color.ENABLED);
     }
 
     boolean wasControllingElevator = false;
 
     @Override
     public void teleopExecute() {
+        // TODO maybe unnecessary
         Component.vision.periodic();
 
         double y = RobotMap.HumanInput.Operator.joystick.getY();
@@ -100,7 +104,7 @@ public class Robot extends CommandRobotBase {
     @Override
     public void autonomousExecute() {
         if (timer.get() < 1.0) {
-            Component.chassis.drive(               
+            Component.chassis.drive(
                 ChassisSpeeds.fromRobotRelativeSpeeds(
                     3.0,
                     0.0,
@@ -116,17 +120,17 @@ public class Robot extends CommandRobotBase {
                     0.0,
                     Rotation2d.kZero
                 )
-            ); 
+            );
         }
-
-        // RobotMap.Component.vision.periodic();
 
         // logging can go here
     }
 
     @Override
     public void disabledInitialize() {
-        Component.vision.stopPositioning("Robot disabled");
+        Component.vision.stopPositioning("Robot disabled", false);
+
+        Component.lights.flashColor(LightSubsystem.Color.DISABLED);
 
     //     Component.elevatorMotorOne.setBrakeOnNeutral();
     //     Component.elevatorMotorTwo.setBrakeOnNeutral();

@@ -4,8 +4,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.units.measure.Mult;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.AddressableLED;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +27,8 @@ import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
+
+import org.usfirst.frc4904.robot.humaninterface.HumanInterfaceConfig;
 
 // import org.usfirst.frc4904.standard.LogKitten;
 
@@ -78,6 +79,8 @@ public class RobotMap {
             public static final int ENCODER_BR = 3;
 
             public static final int ELEVATOR_ENCODER = 0;
+
+            public static final int LED_STRIP = -1; // TODO
         }
 
         public static class CAN {}
@@ -166,7 +169,6 @@ public class RobotMap {
         public static AHRS navx;
         public static SPI serialPort;
 
-        // public static RobotUDP robotUDP;
         //Subsystems
         public static SwerveSubsystem chassis;
         public static SingleMotorSubsystem ramp;
@@ -174,6 +176,7 @@ public class RobotMap {
         public static MultiMotorSubsystem outtake;
         public static SingleMotorSubsystem climber;
         public static VisionSubsystem vision;
+        public static LightSubsystem lights;
 
         //Motor time
         public static CustomCANSparkMax rampMotor;
@@ -189,6 +192,8 @@ public class RobotMap {
         // public static PhotonCamera camera;
         public static PhotonCamera cameraLeft;
         public static PhotonCamera cameraRight;
+
+        public static AddressableLED ledStrip;
     }
 
     public static class NetworkTables {
@@ -287,69 +292,18 @@ public class RobotMap {
             Component.elevatorEncoder
         );
 
+        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
+        Component.lights = new LightSubsystem(Component.ledStrip, 10);
+
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
-            0.1
+            HumanInterfaceConfig.JOYSTICK_DEADZONE
         );
         HumanInput.Driver.turnJoystick = new CustomCommandJoystick(
             Port.HumanInput.zJoystickPort,
-            0.1
+            HumanInterfaceConfig.JOYSTICK_DEADZONE
         );
 
         HumanInput.Operator.joystick = new CustomCommandJoystick(Port.HumanInput.joystick, 0.01);
-
-        // /***********************
-        //  * Chassis Subsystem
-        // *************************/
-
-        // //TODO: fix invert type, talk to anna
-
-        // Component.flDrive = new CANTalonFX(1);
-        // Component.frDrive = new CANTalonFX(2);
-        // Component.blDrive = new CANTalonFX(3);
-        // Component.brDrive = new CANTalonFX(4);
-        // Component.flDrive.setBrakeOnNeutral();
-        // Component.frDrive.setOnNeutral();
-        // Component.blDrive.setCoastOnNeutral();
-        // Component.brDrive.setCoastOnNeutral();
-
-        // Component.backRightWheelTalon.setSafetyEnabled(false);
-        // Component.frontRightWheelTalon.setSafetyEnabled(false);
-        // Component.backLeftWheelTalon.setSafetyEnabled(false);
-        // Component.frontLeftWheelTalon.setSafetyEnabled(false);
-
-        // //TalonMotorSubsystem rightDriveMotors = new TalonMotorSubsystem("right drive motors", NeutralMode.Brake, 0, Component.frontRightWheelTalon, Component.backRightWheelTalon);
-        // //FR is ++, FL is +-, BR is -+, BL is --
-        // Translation2d locationFL = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
-        // Translation2d locationFR = new Translation2d(Metrics.Chassis.TRACK_LENGTH_METERS / 2, Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        // Translation2d locationBL = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), -(Metrics.Chassis.TRACK_WIDTH_METERS / 2));
-        // Translation2d locationBR = new Translation2d(-(Metrics.Chassis.TRACK_LENGTH_METERS / 2), Metrics.Chassis.TRACK_WIDTH_METERS / 2);
-        // SwerveDriveKinematics kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
-
-        // Component.flTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FL); //TODO: fix port
-        // Component.frTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_FR); //TODO: fix port
-        // Component.blTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BL); //TODO: fix port
-        // Component.brTurnEncoder = new DutyCycleEncoder(Port.PWM.ENCODER_BR); //TODO: fix port
-        // Component.flTurnEncoder.setPositionOffset(.45); //TODO: fix offset
-        // Component.frTurnEncoder.setPositionOffset(.037); //TODO: fix offset
-        // Component.blTurnEncoder.setPositionOffset(.7344); //TODO: fix offset
-        // Component.brTurnEncoder.setPositionOffset(.651); //TODO: fix offset
-
-        // Component.flModule  = new SwerveModule(Component.FLdrive, Component.flTurn, Component.flTurnEncoder, locationFL, "flModule");
-        // Component.frModule = new SwerveModule(Component.FRdrive, Component.frTurn, Component.frTurnEncoder, locationFR, "frModule");
-        // Component.blModule   = new SwerveModule(Component.BLdrive, Component.blTurn, Component.blTurnEncoder, locationBL, "blModule");
-        // Component.brModule  = new SwerveModule(Component.BRdrive, Component.brTurn, Component.brTurnEncoder, locationBR, "brModule");
-        // SwerveModule[] modules = {Component.flModule, Component.frModule, Component.blModule, Component.brModule};
-
-        //SwerveDriveOdometry odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(getHeading()));
-        // Component.chassis = new SwerveDrive(modules, kinematics, Component.navx, Metrics.Chassis.CENTER_MASS_OFFSET, new Pose2d(0,0,new Rotation2d(0)));
-
-        // // Autonomous.autonCommand = Component.chassis.c_buildPathPlannerAuto(
-        // //     PID.Drive.kS, PID.Drive.kV, PID.Drive.kA,
-        // //     Autonomous.RAMSETE_B, Autonomous.RAMSETE_ZETA,
-        // //     Autonomous.AUTON_NAME, Autonomous.MAX_VEL, Autonomous.MAX_ACCEL,
-        // //     Autonomous.autonEventMap
-        // // );
-
     }
 }
