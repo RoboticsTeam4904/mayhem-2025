@@ -7,8 +7,8 @@ public class CustomEncoder {
 
     private double resetOffset = 0;
 
-    public CustomEncoder(DutyCycleEncoder encoder) {
-        this.encoder = encoder;
+    public CustomEncoder(int encoder) {
+        this.encoder = new DutyCycleEncoder(encoder);
         reset();
     }
 

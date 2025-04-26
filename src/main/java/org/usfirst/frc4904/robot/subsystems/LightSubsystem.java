@@ -1,0 +1,148 @@
+package org.usfirst.frc4904.robot.subsystems;
+
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class LightSubsystem extends SubsystemBase {
+
+    public static class Color {
+
+        public static final int[] SUCCESS = new int[] { 0, 200, 50 };
+        public static final int[] FAIL = new int[] { 255, 50, 0 };
+
+        public static final int[] VISION = new int[] { 127, 0, 255 };
+        public static final int[] ELEVATOR = new int[] { 255, 240, 0 };
+
+        public static final int[] ENABLED = new int[] { 255, 100, 0 };
+        public static final int[] DISABLED = new int[] { 200, 220, 255 };
+
+    }
+
+    public double visionProgress = -1;
+    public double elevatorProgress = -1;
+
+    private float[] flashColor = new float[4];
+    private float flashStrength = 0;
+
+    double lastUpdateTime;
+
+    // final AddressableLED[] leds;
+    final AddressableLED led;
+    final AddressableLEDBuffer buffer;
+    final int length;
+
+    public LightSubsystem(AddressableLED led, int length) {
+        this.length = length;
+
+        // this.leds = leds;
+        this.led = led;
+        buffer = new AddressableLEDBuffer(length);
+        // for (AddressableLED led : leds) {
+        led.setLength(length);
+        led.start();
+        // }
+
+        lastUpdateTime = Timer.getFPGATimestamp();
+    }
+
+    private float[] alphaBlend(float[] a, float[] b) {
+        return alphaBlend(a, b, 1);
+    }
+
+    private float[] alphaBlend(float[] a, float[] b, float mix) {
+        float alpha = b[3] * mix;
+
+        // this math might not be entirely correct if the alpha component of a is < 1, but it's close enough
+        return new float[] {
+            a[0] * (1 - alpha) + b[0] * alpha,
+            a[1] * (1 - alpha) + b[1] * alpha,
+            a[2] * (1 - alpha) + b[2] * alpha,
+            1 - (1 - a[3]) * (1 - b[3])
+        };
+    }
+
+    private float[][] progressBar(float progress, int[] color) {
+        float[][] colors = new float[4][length];
+
+        for (int i = 0; i < length; i++) {
+            float strength = Math.min(1, progress * length - i);
+            if (strength > 0) {
+                colors[i] = new float[] {
+                    color[0] / 255f,
+                    color[1] / 255f,
+                    color[2] / 255f,
+                    color[3] * strength
+                };
+            }
+        }
+
+        return colors;
+    }
+
+    public void flashColor(int[] color) {
+        if (color.length == 3) {
+            flashColor(color[0], color[1], color[2]);
+        } else if (color.length == 4) {
+            flashColor(color[0], color[1], color[2], color[3]);
+        } else {
+            System.err.println("LightSubsystem.flashColor(int[] color) must take an array of 3 or 4 ints for RGB or RGBA");
+            flashColor(0, 0, 0);
+        }
+    }
+
+    public void flashColor(int r, int g, int b) {
+        flashColor(r, g, b, 255);
+    }
+
+    public void flashColor(int r, int g, int b, int a) {
+        flashColor = new float[] { r / 255f, g / 255f, b / 255f, a / 255f };
+        flashStrength = 1;
+    }
+
+    @Override
+    public void periodic() {
+        double time = Timer.getFPGATimestamp();
+        double deltaTime = time - lastUpdateTime;
+        lastUpdateTime = time;
+
+        float[][] colors;
+
+        if (visionProgress != -1) {
+            colors = progressBar((float) visionProgress, Color.VISION);
+        } else if (elevatorProgress != -1) {
+            colors = progressBar((float) elevatorProgress, Color.ELEVATOR);
+        } else {
+            colors = new float[4][length];
+        }
+
+        if (flashStrength > 0) {
+            for (int i = 1; i < colors.length; i++) {
+                colors[i] = alphaBlend(colors[i], flashColor, flashStrength * i / (colors.length - 1));
+            }
+
+            flashStrength -= (float) deltaTime;
+        }
+
+        displayColors(colors);
+    }
+
+    private void displayColors(float[][] colors) {
+        for (int i = 0; i < colors.length; i++) {
+            float[] color = colors[i];
+            float scale = color[3] * 255;
+
+            buffer.setRGB(
+                i,
+                (int) (color[0] * scale),
+                (int) (color[1] * scale),
+                (int) (color[2] * scale)
+            );
+        }
+
+        // for (AddressableLED led : leds) {
+        led.setData(buffer);
+        // }
+    }
+}

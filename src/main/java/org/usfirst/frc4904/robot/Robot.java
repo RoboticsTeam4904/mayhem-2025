@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
+import org.usfirst.frc4904.robot.subsystems.LightSubsystem;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
@@ -62,12 +63,15 @@ public class Robot extends CommandRobotBase {
         Component.chassis.setDefaultCommand(
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
+
+        Component.lights.flashColor(LightSubsystem.Color.ENABLED);
     }
 
     boolean wasControllingElevator = false;
 
     @Override
     public void teleopExecute() {
+        // TODO maybe unnecessary
         Component.vision.periodic();
 
         double y = RobotMap.HumanInput.Operator.joystick.getY();
@@ -102,6 +106,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousExecute() {
+<<<<<<< HEAD
         // if (timer.get() < 1.0) {
         //     Component.chassis.drive(               
         //         ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -121,15 +126,36 @@ public class Robot extends CommandRobotBase {
         //         )
         //     ); 
         // }
-
-        // RobotMap.Component.vision.periodic();
+=======
+        if (timer.get() < 1.0) {
+            Component.chassis.drive(
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    3.0,
+                    0.0,
+                    0.0,
+                    Rotation2d.kZero
+                )
+            );
+        } else{
+            Component.chassis.drive(               
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                    0.0,
+                    0.0,
+                    0.0,
+                    Rotation2d.kZero
+                )
+            );
+        }
+>>>>>>> 4fdf5ef9be026201228367ae240708cdeaac9892
 
         // logging can go here
     }
 
     @Override
     public void disabledInitialize() {
-        Component.vision.stopPositioning("Robot disabled");
+        Component.vision.stopPositioning("Robot disabled", false);
+
+        Component.lights.flashColor(LightSubsystem.Color.DISABLED);
 
     //     Component.elevatorMotorOne.setBrakeOnNeutral();
     //     Component.elevatorMotorTwo.setBrakeOnNeutral();

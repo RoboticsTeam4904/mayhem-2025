@@ -17,7 +17,7 @@ import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
-public class ElevatorSubsystem extends MultiMotorSubsystem {
+public class ElevatorSubsystem extends MotorSubsystem {
 
     // TODO TUNING: elevator PID
     public static final double kS = 1;
