@@ -106,48 +106,6 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void autonomousExecute() {
-<<<<<<< HEAD
-        // if (timer.get() < 1.0) {
-        //     Component.chassis.drive(               
-        //         ChassisSpeeds.fromRobotRelativeSpeeds(
-        //             3.0,
-        //             0.0,
-        //             0.0,
-        //             Rotation2d.kZero
-        //         )
-        //     );
-        // } else{
-        //     Component.chassis.drive(               
-        //         ChassisSpeeds.fromRobotRelativeSpeeds(
-        //             0.0,
-        //             0.0,
-        //             0.0,
-        //             Rotation2d.kZero
-        //         )
-        //     ); 
-        // }
-=======
-        if (timer.get() < 1.0) {
-            Component.chassis.drive(
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                    3.0,
-                    0.0,
-                    0.0,
-                    Rotation2d.kZero
-                )
-            );
-        } else{
-            Component.chassis.drive(               
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                    0.0,
-                    0.0,
-                    0.0,
-                    Rotation2d.kZero
-                )
-            );
-        }
->>>>>>> 4fdf5ef9be026201228367ae240708cdeaac9892
-
         // logging can go here
     }
 
