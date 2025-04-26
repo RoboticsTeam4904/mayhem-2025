@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
@@ -32,7 +34,7 @@ public class Robot extends CommandRobotBase {
         public static final boolean FLIP_SIDE = false;
 
         /** The auton to run */
-        public static Supplier<Command> COMMAND = Auton::c_straightCoral;
+        public static Supplier<Command> COMMAND = Auton::c_jankRightCoral;
     }
 
     private final Driver driver = new SwerveGain();
@@ -72,11 +74,12 @@ public class Robot extends CommandRobotBase {
 
         if (Math.abs(y) >= 0.05) {
             wasControllingElevator = true;
-
-            var currentElevatorCommand = CommandScheduler.getInstance().requiring(Component.elevator);
-            if (currentElevatorCommand != null) currentElevatorCommand.cancel();
-
-            Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 12.0);
+            
+            var command = new InstantCommand(
+                () -> Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 12.0)
+            );
+            command.addRequirements(Component.elevator);
+            command.schedule();
         } else if (wasControllingElevator) {
             wasControllingElevator = false;
             Component.elevator.setVoltage(0);
@@ -91,33 +94,33 @@ public class Robot extends CommandRobotBase {
 
         Component.navx.reset();
 
-        timer.reset();
-        timer.start();
+        // timer.reset();
+        // timer.start();
 
-        // AutonConfig.COMMAND.get().schedule();
+        AutonConfig.COMMAND.get().schedule();
     }
 
     @Override
     public void autonomousExecute() {
-        if (timer.get() < 1.0) {
-            Component.chassis.drive(               
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                    3.0,
-                    0.0,
-                    0.0,
-                    Rotation2d.kZero
-                )
-            );
-        } else{
-            Component.chassis.drive(               
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                    0.0,
-                    0.0,
-                    0.0,
-                    Rotation2d.kZero
-                )
-            ); 
-        }
+        // if (timer.get() < 1.0) {
+        //     Component.chassis.drive(               
+        //         ChassisSpeeds.fromRobotRelativeSpeeds(
+        //             3.0,
+        //             0.0,
+        //             0.0,
+        //             Rotation2d.kZero
+        //         )
+        //     );
+        // } else{
+        //     Component.chassis.drive(               
+        //         ChassisSpeeds.fromRobotRelativeSpeeds(
+        //             0.0,
+        //             0.0,
+        //             0.0,
+        //             Rotation2d.kZero
+        //         )
+        //     ); 
+        // }
 
         // RobotMap.Component.vision.periodic();
 
@@ -152,9 +155,9 @@ public class Robot extends CommandRobotBase {
     @Override
     public void alwaysExecute() {
         // logging stuff can go here
-        if (Component.elevator != null && Timer.getFPGATimestamp() - lastLogTime > 0.2) {
-            lastLogTime = Timer.getFPGATimestamp();
-            System.out.printf("ELEVATOR ENCODER: %.4f%n", Component.elevatorEncoder.get());
-        }
+        // if (Component.elevator != null && Timer.getFPGATimestamp() - lastLogTime > 0.2) {
+        //     lastLogTime = Timer.getFPGATimestamp();
+        //     System.out.printf("ELEVATOR ENCODER: %.4f%n", Component.elevatorEncoder.get());
+        // }
     }
 }

@@ -20,17 +20,17 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController
 public class ElevatorSubsystem extends MultiMotorSubsystem {
 
     // TODO TUNING: elevator PID
-    public static final double kS = 0.1;
+    public static final double kS = 1;
     public static final double kV = 2;
     public static final double kA = 0.4;
-    public static final double kG = 0.3;
+    public static final double kG = 0.2;
 
-    public static final double kP = 0.4;
+    public static final double kP = 6;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double MAX_VEL = 4;
-    public static final double MAX_ACCEL = 4;
+    public static final double MAX_VEL = 8;
+    public static final double MAX_ACCEL = MAX_VEL * 4; // accelerate to max speed in 1/4 of a second
 
     public static final double MIN_HEIGHT = 0;
     public static final double MAX_HEIGHT = 12.5;
@@ -42,7 +42,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public enum Position {
         INTAKE,
         L2,
-        L3,
+        L3
     }
 
     public static HashMap<Position, Double> positions = new HashMap<>();
@@ -58,9 +58,9 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
 
         positions.put(Position.INTAKE, 0.0);
 
-        // TODO IMPORTANT: tune (these are EXTREMELY inaccurate right now dont even try to use them)
-        positions.put(Position.L2, 5.2);
-        positions.put(Position.L3, 7.5);
+        // TODO IMPORTANT: tune
+        positions.put(Position.L2, 6.1);
+        positions.put(Position.L3, 9.3);
 
         for (var pos : Position.values()) {
             if (positions.get(pos) == null) {
@@ -84,11 +84,11 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     public Command c_intakeRaw() {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                new WaitCommand(0.8),
+                new WaitCommand(0.4),
                 Component.ramp.c_forward()
             ),
             new ParallelDeadlineGroup(
-                new WaitCommand(0.35),
+                new WaitCommand(0.32),
                 Component.ramp.c_forward(),
                 Component.outtake.c_forward()
             ),
@@ -150,7 +150,10 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
     /** Go to the specified position and then outtake */
     public Command c_outtakeAtPosition(Position pos) {
         return new SequentialCommandGroup(
-            c_gotoPosition(pos),
+            new ParallelDeadlineGroup(
+                new WaitCommand(3),
+                c_gotoPosition(pos)
+            ),
             new ParallelDeadlineGroup(
                 c_outtakeRaw(),
                 c_controlVelocity(() -> 0)
@@ -202,6 +205,7 @@ public class ElevatorSubsystem extends MultiMotorSubsystem {
             new TrapezoidProfile.State(height, 0)
         );
         cmd.setName("elevator - c_gotoHeight");
+        cmd.addRequirements(this);
         return cmd;
     }
 

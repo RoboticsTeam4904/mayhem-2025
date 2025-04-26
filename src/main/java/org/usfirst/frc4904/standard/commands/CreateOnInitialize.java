@@ -15,6 +15,8 @@ public class CreateOnInitialize extends Command {
     public CreateOnInitialize(String name, Supplier<Command> commandDealer) {
         this.commandDealer = commandDealer;
         setName(name);
+
+        this.addRequirements(commandDealer.get().getRequirements());
     }
 
     /**
@@ -32,9 +34,6 @@ public class CreateOnInitialize extends Command {
     public void initialize() {
         currentActiveCommand = commandDealer.get();
         currentActiveCommand.initialize();
-
-        this.getRequirements().clear();
-        this.addRequirements(currentActiveCommand.getRequirements());
 
         setName("CreateOnInitialize: " + currentActiveCommand.getName());
     }

@@ -45,19 +45,70 @@ public class Auton {
     public static Command c_straightCoral() {
         // TODO super janky
         return new SequentialCommandGroup(
+            new WaitCommand(5),
             new ParallelDeadlineGroup(
-                new WaitCommand(0.5),
+                new WaitCommand(2),
                 new Command() {
                     @Override
                     public void execute() {
-                        Component.chassis.drive(new ChassisSpeeds(0, 3, 0));
+                        // IN BIZARRO WORLD, LEFT IS POSITIVE, FORWARD IS POS
+                        Component.chassis.drive(new ChassisSpeeds(0.4, 0, 0));
                     }
                 }
             ),
             new InstantCommand(() -> Component.chassis.drive(new ChassisSpeeds(0, 0, 0))),
-            // Component.chassis.getAutonomousCommand("straight", true, getFlipAlliance(), false),
-            Component.vision.c_align(TagGroup.REEF_INNER_DIAGONAL, -1)
-            //Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2)
+            Component.vision.c_align(new int[] { 10, 21 }, -1),
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L3),
+            Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE)
+        );
+    }
+
+    public static Command c_jankStraight() {
+        return new SequentialCommandGroup(
+            new WaitCommand(13),
+            new ParallelDeadlineGroup(
+                new WaitCommand(1.5),
+                new Command() {
+                    @Override
+                    public void execute() {
+                        // IN CHEESE WORLD, CHEDDAR IS ACCEPTABLE, PARMESAN IS FINE
+                        // IN BIZARRO WORLD, FORWARD IS POSITIVE, LEFT IS POSITIVE
+                        Component.chassis.drive(new ChassisSpeeds(0.5, 0, 0));
+                    }
+                }
+            ),
+            new InstantCommand(() -> Component.chassis.drive(new ChassisSpeeds(0, 0, 0)))
+        );
+    }
+
+    public static Command c_jankLeftCoral() {
+        return c_jankSideCoral(1);
+    }
+
+    public static Command c_jankRightCoral() {
+        return c_jankSideCoral(-1);
+    }
+
+    /** @param side 1 = robot-relative left, -1 = robot-relative right */
+    public static Command c_jankSideCoral(int side) {
+        // TODO super janky
+        return new SequentialCommandGroup(
+            new WaitCommand(3),
+            new ParallelDeadlineGroup(
+                new WaitCommand(1.5),
+                new Command() {
+                    @Override
+                    public void execute() {
+                        // IN CHEESE WORLD, CHEDDAR IS ACCEPTABLE, PARMESAN IS FINE
+                        // IN BIZARRO WORLD, FORWARD IS POSITIVE, LEFT IS POSITIVE
+                        Component.chassis.drive(new ChassisSpeeds(0.4 / Math.sqrt(3), 0.4 * side, 0));
+                    }
+                }
+            ),
+            new InstantCommand(() -> Component.chassis.drive(new ChassisSpeeds(0, 0, 0))),
+            Component.vision.c_align(new int[] { 9, 11, 20, 22 }, -1),
+            Component.elevator.c_outtakeAtPosition(ElevatorSubsystem.Position.L2),
+            Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE)
         );
     }
 
