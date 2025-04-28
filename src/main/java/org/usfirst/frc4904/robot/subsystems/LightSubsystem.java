@@ -9,14 +9,14 @@ public class LightSubsystem extends SubsystemBase {
 
     public static class Color {
 
-        public static final int[] SUCCESS = new int[] { 0, 200, 50 };
-        public static final int[] FAIL = new int[] { 255, 50, 0 };
+        public static final int[] SUCCESS  = { 0, 200, 50 };
+        public static final int[] FAIL     = { 255, 50, 0 };
 
-        public static final int[] VISION = new int[] { 127, 0, 255 };
-        public static final int[] ELEVATOR = new int[] { 255, 240, 0 };
+        public static final int[] VISION   = { 127, 0, 255 };
+        public static final int[] ELEVATOR = { 255, 240, 0 };
 
-        public static final int[] ENABLED = new int[] { 255, 100, 0 };
-        public static final int[] DISABLED = new int[] { 200, 220, 255 };
+        public static final int[] ENABLED  = { 255, 100, 0 };
+        public static final int[] DISABLED = { 200, 220, 255 };
 
     }
 
@@ -81,6 +81,9 @@ public class LightSubsystem extends SubsystemBase {
         return colors;
     }
 
+    /**
+     * Flash an RGB color for about a second. Color is an array of 3 (RGB) or 4 (RGBA) ints from 0-255.
+     */
     public void flashColor(int[] color) {
         if (color.length == 3) {
             flashColor(color[0], color[1], color[2]);
@@ -92,10 +95,16 @@ public class LightSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Flash an RGB color for about a second. Colors are from 0-255.
+     */
     public void flashColor(int r, int g, int b) {
         flashColor(r, g, b, 255);
     }
 
+    /**
+     * Flash an RGB color for about a second. Colors and alpha are from 0-255.
+     */
     public void flashColor(int r, int g, int b, int a) {
         flashColor = new float[] { r / 255f, g / 255f, b / 255f, a / 255f };
         flashStrength = 1;
