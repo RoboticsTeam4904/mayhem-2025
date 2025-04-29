@@ -60,11 +60,11 @@ public class VisionSubsystem extends SubsystemBase {
     private static final double HORIZ_ALIGN_OFFSET = 0.17;
 
     // max speeds
-    private final double MAX_LINEAR_SPEED = 1; // meters per second
+    private final double MAX_LINEAR_SPEED = 0.2; // meters per second
     private final double MAX_ROT_SPEED = Math.PI; // radians per second
 
     // tolerance thresholds for positioning
-    private final double POS_TOLERANCE_METERS = 0.02;
+    private final double POS_TOLERANCE_METERS = 0.005;
     private final double ROT_TOLERANCE_DEG = 1.0;
 
     // all timeouts are in seconds
@@ -178,9 +178,9 @@ public class VisionSubsystem extends SubsystemBase {
 
         // convert to robot relative speeds
         ChassisSpeeds relativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-            -xSpeed,
-            -ySpeed,
-            -rotSpeed,
+            xSpeed,
+            ySpeed,
+            rotSpeed,
             Rotation2d.kZero
         );
 
@@ -206,16 +206,16 @@ public class VisionSubsystem extends SubsystemBase {
         if (startingDistance == -1) startingDistance = distance;
         if (startingRotDistance == -1) startingRotDistance = rotDistance;
 
-        Component.lights.visionProgress = Math.pow(
-            (1 - distance / startingDistance) * 0.6 + (1 - rotDistance / startingRotDistance) * 0.4,
-            2
-        );
+        // Component.lights.visionProgress = Math.pow(
+        //     (1 - distance / startingDistance) * 0.6 + (1 - rotDistance / startingRotDistance) * 0.4,
+        //     2
+        // );
 
         boolean atPosition = distance < POS_TOLERANCE_METERS && rotDistance < ROT_TOLERANCE_DEG;
 
         if (atPosition) {
             stopPositioning("Success", false);
-            Component.lights.flashColor(LightSubsystem.Color.SUCCESS);
+            // Component.lights.flashColor(LightSubsystem.Color.SUCCESS);
         } else {
             // give up if too much time has passed
             double timeElapsed = currentTime - startTime;
@@ -316,8 +316,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         System.out.println("Positioning started");
 
-        Component.lights.visionProgress = 0;
-        Component.lights.flashColor(LightSubsystem.Color.VISION);
+        // Component.lights.visionProgress = 0;
+        // Component.lights.flashColor(LightSubsystem.Color.VISION);
     }
 
     /**
@@ -341,10 +341,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         System.out.println("Positioning ended" + (reason != null ? " - " + reason : ""));
 
-        Component.lights.visionProgress = -1;
-        if (failed) {
-            Component.lights.flashColor(LightSubsystem.Color.FAIL);
-        }
+        // Component.lights.visionProgress = -1;
+        // if (failed) {
+        //     Component.lights.flashColor(LightSubsystem.Color.FAIL);
+        // }
     }
 
     /**

@@ -242,7 +242,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
             !bypassSoftwareStop && (
                 (this.getHeight() >= MAX_HEIGHT && voltage > 0) ||
                 (this.getHeight() <= MIN_HEIGHT && voltage < 0)
-            ) // hhbbggggggggggggggggg
+            )
         ) {
             voltage = 0;
         }

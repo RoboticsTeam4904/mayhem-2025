@@ -153,7 +153,7 @@ public class RobotMap {
             0.0473,
             5
         );
-        Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, 180 - 45));
+        // Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, Units.degreesToRadians(180)));
 
         // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
         Component.cameraRight = new PhotonCamera("dauntless-camera");
@@ -163,8 +163,9 @@ public class RobotMap {
                 Component.cameraRight
             },
             new Transform2d[] {
-                // new Transform2d(Units.inchesToMeters(-8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
-                new Transform2d(Units.inchesToMeters(-8), Units.inchesToMeters(10.6), Rotation2d.kZero)
+                // new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
+                new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(10.6), Rotation2d.kZero)
+                // new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.kZero)
             }
         );
 
@@ -202,8 +203,8 @@ public class RobotMap {
             Component.elevatorEncoder
         );
 
-        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
-        Component.lights = new LightSubsystem(Component.ledStrip, 10);
+        // Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
+        // Component.lights = new LightSubsystem(Component.ledStrip, 10);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

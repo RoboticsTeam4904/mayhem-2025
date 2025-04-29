@@ -70,7 +70,7 @@ public class DefaultOperator extends Operator {
         turnJoystick.button2.whileTrue(Component.vision.c_align(new int[] { 13 }, 1));
 
         /// ODOMETRY RESETTING
-        xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
+        // xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
 
         /// ELEVATOR ENCODER RESETTING
         var elevatorEncoderCommand = new InstantCommand(() -> Component.elevator.setVoltage(-3, true));

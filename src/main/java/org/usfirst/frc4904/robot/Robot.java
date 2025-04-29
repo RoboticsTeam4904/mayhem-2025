@@ -64,7 +64,7 @@ public class Robot extends CommandRobotBase {
             Component.chassis.driveCommand(driver::getY, driver::getX, driver::getTurnSpeed)
         );
 
-        Component.lights.flashColor(LightSubsystem.Color.ENABLED);
+        // Component.lights.flashColor(LightSubsystem.Color.ENABLED);
     }
 
     boolean wasControllingElevator = false;
@@ -113,7 +113,7 @@ public class Robot extends CommandRobotBase {
     public void disabledInitialize() {
         Component.vision.stopPositioning("Robot disabled", false);
 
-        Component.lights.flashColor(LightSubsystem.Color.DISABLED);
+        // Component.lights.flashColor(LightSubsystem.Color.DISABLED);
 
     //     Component.elevatorMotorOne.setBrakeOnNeutral();
     //     Component.elevatorMotorTwo.setBrakeOnNeutral();
