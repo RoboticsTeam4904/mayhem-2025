@@ -119,8 +119,17 @@ public class Robot extends CommandRobotBase {
     //     Component.elevatorMotorTwo.setBrakeOnNeutral();
      }
 
+    double lastUpdateTime = 0;
+
     @Override
-    public void disabledExecute() {}
+    public void disabledExecute() {
+        double time = Timer.getFPGATimestamp();
+
+        if (time - lastUpdateTime >= 1000) {
+            Component.lights.flashColor(255, 255, 255);
+            lastUpdateTime = time;
+        }
+    }
 
     @Override
     public void testInitialize() {
