@@ -3,20 +3,16 @@ package org.usfirst.frc4904.robot;
 import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-
-import edu.wpi.first.wpilibj.AddressableLED;
-import org.photonvision.PhotonCamera;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.Filesystem;
-import java.io.File;
-
+import org.photonvision.PhotonCamera;
+import org.usfirst.frc4904.robot.humaninterface.HumanInterfaceConfig;
 import org.usfirst.frc4904.robot.subsystems.*;
 import org.usfirst.frc4904.standard.custom.CustomEncoder;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -203,8 +199,8 @@ public class RobotMap {
             Component.elevatorEncoder
         );
 
-        // Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
-        // Component.lights = new LightSubsystem(Component.ledStrip, 10);
+        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
+        Component.lights = new LightSubsystem(Component.ledStrip, 10);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
