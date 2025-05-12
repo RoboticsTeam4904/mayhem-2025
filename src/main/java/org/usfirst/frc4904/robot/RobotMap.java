@@ -21,7 +21,7 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
-import org.usfirst.frc4904.robot.humaninterface.HumanInterfaceConfig;
+import java.io.File;
 
 // import org.usfirst.frc4904.standard.LogKitten;
 
@@ -62,7 +62,7 @@ public class RobotMap {
 
             public static final int ELEVATOR_ENCODER = 0;
 
-            public static final int LED_STRIP = -1; // TODO
+            public static final int LED_STRIP = 22;
         }
     }
 

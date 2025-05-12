@@ -133,7 +133,7 @@ public class Robot extends CommandRobotBase {
         double time = Timer.getFPGATimestamp();
 
         if (time - lastUpdateTime >= 1000) {
-            // Component.lights.flashColor(255, 255, 255);
+            Component.lights.flashColor(255, 255, 255);
             lastUpdateTime = time;
         }
     }
