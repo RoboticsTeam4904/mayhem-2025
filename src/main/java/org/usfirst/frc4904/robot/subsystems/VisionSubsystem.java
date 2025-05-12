@@ -3,6 +3,7 @@ package org.usfirst.frc4904.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,7 +58,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     // sideways distance off of the april tag to align to
-    private static final double HORIZ_ALIGN_OFFSET = 0.17;
+    private static final double HORIZ_ALIGN_OFFSET = Units.inchesToMeters(6.5);
 
     // max speeds
     private final double MAX_LINEAR_SPEED = 2; // meters per second

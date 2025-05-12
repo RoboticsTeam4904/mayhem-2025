@@ -15,6 +15,9 @@ import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import java.util.function.Supplier;
 
 public class Robot extends CommandRobotBase {
@@ -28,7 +31,7 @@ public class Robot extends CommandRobotBase {
         public static final boolean FLIP_SIDE = false;
 
         /** The auton to run */
-        public static Supplier<Command> COMMAND = Auton::c_jankRightCoral;
+        public static Supplier<Command> COMMAND = Auton::c_straight;
     }
 
     private final Driver driver = new SwerveGain();
@@ -89,12 +92,22 @@ public class Robot extends CommandRobotBase {
     public void autonomousInitialize() {
         if (!AutonConfig.ENABLED) return;
 
-        Component.navx.reset();
+        try {
+            // Load the path you want to follow using its name in the GUI
+            PathPlannerPath path = PathPlannerPath.fromPathFile("straight");
+            AutoBuilder.followPath(path).schedule();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        // Component.chassis.getAutonomousCommand("straight", true, false).schedule();;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+        // Component.navx.reset();
 
         // timer.reset();
         // timer.start();
 
-        AutonConfig.COMMAND.get().schedule();
+        // AutonConfig.COMMAND.get().schedule();
     }
 
     @Override
@@ -106,6 +119,7 @@ public class Robot extends CommandRobotBase {
     public void disabledInitialize() {
         Component.vision.stopPositioning("Robot disabled", false);
 
+        Component.chassis.setMotorBrake(true);
         // Component.lights.flashColor(LightSubsystem.Color.DISABLED);
 
     //     Component.elevatorMotorOne.setBrakeOnNeutral();

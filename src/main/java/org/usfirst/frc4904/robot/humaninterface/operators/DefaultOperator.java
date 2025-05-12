@@ -66,11 +66,11 @@ public class DefaultOperator extends Operator {
         joystick.button1.onFalse(Component.climber.c_stop());
 
         /// VISION
-        turnJoystick.button1.whileTrue(Component.vision.c_align(new int[] { 13 }, -1));
-        turnJoystick.button2.whileTrue(Component.vision.c_align(new int[] { 13 }, 1));
+        turnJoystick.button1.whileTrue(Component.vision.c_align(new int[] { 4 }, -1));
+        turnJoystick.button2.whileTrue(Component.vision.c_align(new int[] { 4 }, 1));
 
         /// ODOMETRY RESETTING
-        // xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
+        xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
 
         /// ELEVATOR ENCODER RESETTING
         var elevatorEncoderCommand = new InstantCommand(() -> Component.elevator.setVoltage(-3, true));
