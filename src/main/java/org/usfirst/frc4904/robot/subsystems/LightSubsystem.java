@@ -2,8 +2,12 @@ package org.usfirst.frc4904.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LightSubsystem extends SubsystemBase {
 
@@ -28,21 +32,36 @@ public class LightSubsystem extends SubsystemBase {
 
     double lastUpdateTime;
 
-    // final AddressableLED[] leds;
-    final AddressableLED led;
-    final AddressableLEDBuffer buffer;
-    final int length;
+    public static class BufferViewData {
 
-    public LightSubsystem(AddressableLED led, int length) {
-        this.length = length;
+        public final AddressableLED led;
+        public final int length;
+        public final AddressableLEDBufferView view;
 
-        // this.leds = leds;
-        this.led = led;
-        buffer = new AddressableLEDBuffer(length);
-        // for (AddressableLED led : leds) {
-        led.setLength(length);
-        led.start();
-        // }
+        public BufferViewData(AddressableLED led, int length, int start, int end) {
+            this.led = led;
+            this.length = length;
+
+            if (!bufferMap.containsKey(led)) {
+                bufferMap.put(led, new AddressableLEDBuffer(length));
+                led.setLength(length);
+                led.start();
+            }
+            view = new AddressableLEDBufferView(getBuffer(), start, end);
+        }
+
+        public static final Map<AddressableLED, AddressableLEDBuffer> bufferMap = new HashMap<>();
+
+        public AddressableLEDBuffer getBuffer() {
+            return bufferMap.get(led);
+        }
+
+    }
+
+    final BufferViewData[] views;
+
+    public LightSubsystem(BufferViewData... views) {
+        this.views = views;
 
         lastUpdateTime = Timer.getFPGATimestamp();
     }
@@ -63,7 +82,7 @@ public class LightSubsystem extends SubsystemBase {
         };
     }
 
-    private float[][] progressBar(float progress, int[] color) {
+    private float[][] progressBar(float progress, int[] color, int length) {
         float[][] colors = new float[4][length];
 
         for (int i = 0; i < length; i++) {
@@ -116,42 +135,44 @@ public class LightSubsystem extends SubsystemBase {
         double deltaTime = time - lastUpdateTime;
         lastUpdateTime = time;
 
-        float[][] colors;
+        for (var view : views) {
+            float[][] colors;
 
-        if (visionProgress != -1) {
-            colors = progressBar((float) visionProgress, Color.VISION);
-        } else if (elevatorProgress != -1) {
-            colors = progressBar((float) elevatorProgress, Color.ELEVATOR);
-        } else {
-            colors = new float[4][length];
-        }
-
-        if (flashStrength > 0) {
-            for (int i = 1; i < colors.length; i++) {
-                colors[i] = alphaBlend(colors[i], flashColor, flashStrength * i / (colors.length - 1));
+            if (visionProgress != -1) {
+                colors = progressBar((float) visionProgress, Color.VISION, view.length);
+            } else if (elevatorProgress != -1) {
+                colors = progressBar((float) elevatorProgress, Color.ELEVATOR, view.length);
+            } else {
+                colors = new float[4][view.length];
             }
 
-            flashStrength -= (float) deltaTime;
+            if (flashStrength > 0) {
+                for (int i = 0; i < view.length; i++) {
+                    colors[i] = alphaBlend(colors[i], flashColor, flashStrength);
+                }
+
+                flashStrength -= (float) deltaTime;
+            }
+
+            setViewColors(view.view, colors);
         }
 
-        displayColors(colors);
+        for (var led : BufferViewData.bufferMap.keySet()) {
+            led.setData(BufferViewData.bufferMap.get(led));
+        }
     }
 
-    private void displayColors(float[][] colors) {
+    private void setViewColors(AddressableLEDBufferView view, float[][] colors) {
         for (int i = 0; i < colors.length; i++) {
             float[] color = colors[i];
             float scale = color[3] * 255;
 
-            buffer.setRGB(
+            view.setRGB(
                 i,
                 (int) (color[0] * scale),
                 (int) (color[1] * scale),
                 (int) (color[2] * scale)
             );
         }
-
-        // for (AddressableLED led : leds) {
-        led.setData(buffer);
-        // }
     }
 }
