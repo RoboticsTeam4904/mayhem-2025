@@ -202,13 +202,11 @@ public class RobotMap {
         );
 
         Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
-        Component.ledBuffer = new AddressableLEDBuffer(48);
-        Component.ledStrip.setLength(48);
-        Component.ledStrip.start();
-        // Component.lights = new LightSubsystem(
-        //     new LightSubsystem.BufferViewData(Component.ledStrip, 48, 0, 31),
-        //     new LightSubsystem.BufferViewData(Component.ledStrip, 48, 47, 32)
-        // );
+        Component.ledBuffer = new AddressableLEDBuffer(50);
+        Component.lights = new LightSubsystem(
+            new LightSubsystem.BufferViewData(Component.ledStrip, 50, 0, 31),
+            new LightSubsystem.BufferViewData(Component.ledStrip, 50, 49, 32)
+        );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
