@@ -40,7 +40,7 @@ public class LightSubsystem extends SubsystemBase {
 
         public BufferViewData(AddressableLED led, int length, int start, int end) {
             this.led = led;
-            this.length = length;
+            this.length = end - start;
 
             if (!bufferMap.containsKey(led)) {
                 bufferMap.put(led, new AddressableLEDBuffer(length));
