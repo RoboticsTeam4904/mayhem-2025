@@ -1,8 +1,8 @@
 package org.usfirst.frc4904.standard;
 
-import java.util.concurrent.TimeUnit;
-
 import edu.wpi.first.hal.util.BoundaryException;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Common utilities
@@ -35,6 +35,7 @@ public class Util {
         return isZero(value, Math.sqrt(Math.ulp(1.0)));
     }
 
+    // TODO upgrade java version and use Math.clamp
     /**
      * Clamp a value between a minimum and maximum
      *
@@ -43,8 +44,19 @@ public class Util {
      * @param max The maximum allowed value
      * @return The clamped value
      */
-    // TODO upgrade java version and use Math.clamp
     public static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    /**
+     * Clamp a value between a minimum and maximum
+     *
+     * @param value The input value
+     * @param min The minimum allowed value
+     * @param max The maximum allowed value
+     * @return The clamped value
+     */
+    public static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }
 

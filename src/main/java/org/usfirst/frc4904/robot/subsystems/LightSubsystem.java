@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.usfirst.frc4904.standard.Perlin2D;
+import org.usfirst.frc4904.standard.Util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +38,13 @@ public class LightSubsystem extends SubsystemBase {
 
         public final AddressableLED led;
         public final int length;
+        public final float[][] colorArray;
         public final AddressableLEDBufferView view;
 
         public BufferViewData(AddressableLED led, int length, int start, int end) {
             this.led = led;
             this.length = end - start;
+            this.colorArray = new float[length][4];
 
             if (!bufferMap.containsKey(led)) {
                 bufferMap.put(led, new AddressableLEDBuffer(length));
@@ -66,38 +70,46 @@ public class LightSubsystem extends SubsystemBase {
         lastUpdateTime = Timer.getFPGATimestamp();
     }
 
-    private float[] alphaBlend(float[] a, float[] b) {
-        return alphaBlend(a, b, 1);
+    private void alphaBlend(float[][] colors, float[] c2, float mix) {
+        float alpha = c2[3] * mix;
+
+        for (int i = 0; i < colors.length; i++) {
+            // this math might not be entirely correct if the alpha component of a is < 1, but it's close enough
+            colors[i][0] = colors[i][0] * (1 - alpha) + c2[0] * alpha;
+            colors[i][1] = colors[i][1] * (1 - alpha) + c2[1] * alpha;
+            colors[i][2] = colors[i][2] * (1 - alpha) + c2[2] * alpha;
+            colors[i][3] = 1 - (1 - colors[i][3]) * (1 - c2[3]);
+        }
     }
 
-    private float[] alphaBlend(float[] a, float[] b, float mix) {
-        float alpha = b[3] * mix;
-
-        // this math might not be entirely correct if the alpha component of a is < 1, but it's close enough
-        return new float[] {
-            a[0] * (1 - alpha) + b[0] * alpha,
-            a[1] * (1 - alpha) + b[1] * alpha,
-            a[2] * (1 - alpha) + b[2] * alpha,
-            1 - (1 - a[3]) * (1 - b[3])
-        };
-    }
-
-    private float[][] progressBar(float progress, int[] color, int length) {
-        float[][] colors = new float[length][4];
+    private void progressBar(float[][] colors, float progress, int[] color) {
+        int length = colors.length;
 
         for (int i = 0; i < length; i++) {
-            float strength = Math.min(1, progress * length - i);
+            float strength = Util.clamp(progress * length - i, 0, 1);
             if (strength > 0) {
-                colors[i] = new float[] {
-                    color[0] / 255f,
-                    color[1] / 255f,
-                    color[2] / 255f,
-                    color[3] * strength
-                };
+                colors[i][0] = color[0] / 255f;
+                colors[i][1] = color[1] / 255f;
+                colors[i][2] = color[2] / 255f;
             }
+            colors[i][3] = color[3] * strength;
         }
+    }
 
-        return colors;
+    private final Perlin2D fireNoise = new Perlin2D(12345678987654321L);
+
+    private void fire(float[][] colors) {
+        float time = (float) lastUpdateTime;
+
+        for (int i = 0; i < colors.length; i++) {
+            float noise = fireNoise.noise(time, (float) Math.pow((float) i / colors.length, 2) * 200 + time * 2);
+            float strength = (float) Math.pow(noise, 2.5) + i * 1.2f - 0.5f;
+
+            colors[i][0] = 1;
+            colors[i][1] = Util.clamp(strength * 2 - 0.5f, 0, 1);
+            colors[i][2] = Util.clamp(strength * 4 - 3, 0, 1);
+            colors[i][3] = Util.clamp(strength * 4, 0, 1);
+        }
     }
 
     /**
@@ -136,21 +148,18 @@ public class LightSubsystem extends SubsystemBase {
         lastUpdateTime = time;
 
         for (var view : views) {
-            float[][] colors;
+            float[][] colors = view.colorArray;
 
             if (visionProgress != -1) {
-                colors = progressBar((float) visionProgress, Color.VISION, view.length);
+                progressBar(colors, (float) visionProgress, Color.VISION);
             } else if (elevatorProgress != -1) {
-                colors = progressBar((float) elevatorProgress, Color.ELEVATOR, view.length);
+                progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
             } else {
-                colors = new float[view.length][4];
+                fire(colors);
             }
 
             if (flashStrength > 0) {
-                for (int i = 0; i < view.length; i++) {
-                    colors[i] = alphaBlend(colors[i], flashColor, flashStrength);
-                }
-
+                alphaBlend(colors, flashColor, flashStrength);
                 flashStrength -= (float) deltaTime;
             }
 
