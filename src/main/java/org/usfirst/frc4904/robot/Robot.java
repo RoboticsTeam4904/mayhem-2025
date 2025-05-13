@@ -6,7 +6,11 @@
 /*----------------------------------------------------------------------------*/
 package org.usfirst.frc4904.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap.Component;
@@ -14,9 +18,6 @@ import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import java.util.function.Supplier;
 
@@ -133,7 +134,11 @@ public class Robot extends CommandRobotBase {
         double time = Timer.getFPGATimestamp();
 
         if (time - lastUpdateTime >= 1000) {
-            Component.lights.flashColor(255, 255, 255);
+            LEDPattern red = LEDPattern.solid(Color.kRed);
+            red.applyTo(Component.ledBuffer);
+            Component.ledStrip.setData(Component.ledBuffer);
+
+            // Component.lights.flashColor(255, 255, 255);
             lastUpdateTime = time;
         }
     }
