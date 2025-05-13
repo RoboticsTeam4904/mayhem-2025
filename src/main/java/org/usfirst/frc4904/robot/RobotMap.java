@@ -10,7 +10,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Filesystem;
 import org.photonvision.PhotonCamera;
 import org.usfirst.frc4904.robot.humaninterface.HumanInterfaceConfig;
@@ -63,7 +62,8 @@ public class RobotMap {
 
             public static final int ELEVATOR_ENCODER = 0;
 
-            public static final int LED_STRIP = 22;
+            public static final int LEFT_LED_STRIP = 8;
+            public static final int RIGHT_LED_STRIP = 9;
         }
     }
 
@@ -101,8 +101,8 @@ public class RobotMap {
         public static PhotonCamera cameraLeft;
         public static PhotonCamera cameraRight;
 
-        public static AddressableLED ledStrip;
-        public static AddressableLEDBuffer ledBuffer;
+        public static AddressableLED leftLedStrip;
+        public static AddressableLED rightLedStrip;
     }
 
     public static class NetworkTables {
@@ -201,11 +201,13 @@ public class RobotMap {
             Component.elevatorEncoder
         );
 
-        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
-        Component.ledBuffer = new AddressableLEDBuffer(50);
+        Component.leftLedStrip = new AddressableLED(Port.PWM.LEFT_LED_STRIP);
+        Component.rightLedStrip = new AddressableLED(Port.PWM.RIGHT_LED_STRIP);
         Component.lights = new LightSubsystem(
-            new LightSubsystem.BufferViewData(Component.ledStrip, 50, 0, 31),
-            new LightSubsystem.BufferViewData(Component.ledStrip, 50, 49, 32)
+            new LightSubsystem.BufferViewData(Component.leftLedStrip, 50, 0, 31),
+            new LightSubsystem.BufferViewData(Component.leftLedStrip, 50, 49, 32),
+            new LightSubsystem.BufferViewData(Component.rightLedStrip, 50, 0, 31),
+            new LightSubsystem.BufferViewData(Component.rightLedStrip, 50, 49, 32)
         );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
