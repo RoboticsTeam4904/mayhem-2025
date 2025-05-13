@@ -83,7 +83,7 @@ public class LightSubsystem extends SubsystemBase {
     }
 
     private float[][] progressBar(float progress, int[] color, int length) {
-        float[][] colors = new float[4][length];
+        float[][] colors = new float[length][4];
 
         for (int i = 0; i < length; i++) {
             float strength = Math.min(1, progress * length - i);
@@ -143,7 +143,7 @@ public class LightSubsystem extends SubsystemBase {
             } else if (elevatorProgress != -1) {
                 colors = progressBar((float) elevatorProgress, Color.ELEVATOR, view.length);
             } else {
-                colors = new float[4][view.length];
+                colors = new float[view.length][4];
             }
 
             if (flashStrength > 0) {
