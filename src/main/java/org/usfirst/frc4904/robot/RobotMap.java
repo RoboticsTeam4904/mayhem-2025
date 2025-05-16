@@ -3,6 +3,7 @@ package org.usfirst.frc4904.robot;
 import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
@@ -62,8 +63,7 @@ public class RobotMap {
 
             public static final int ELEVATOR_ENCODER = 0;
 
-            public static final int LEFT_LED_STRIP = 8;
-            public static final int RIGHT_LED_STRIP = 9;
+            public static final int LED_STRIP = 9;
         }
     }
 
@@ -101,8 +101,7 @@ public class RobotMap {
         public static PhotonCamera cameraLeft;
         public static PhotonCamera cameraRight;
 
-        public static AddressableLED leftLedStrip;
-        public static AddressableLED rightLedStrip;
+        public static AddressableLED ledStrip;
     }
 
     public static class NetworkTables {
@@ -201,13 +200,12 @@ public class RobotMap {
             Component.elevatorEncoder
         );
 
-        Component.leftLedStrip = new AddressableLED(Port.PWM.LEFT_LED_STRIP);
-        Component.rightLedStrip = new AddressableLED(Port.PWM.RIGHT_LED_STRIP);
+        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
         Component.lights = new LightSubsystem(
-            new LightSubsystem.BufferViewData(Component.leftLedStrip, 50, 0, 31),
-            new LightSubsystem.BufferViewData(Component.leftLedStrip, 50, 49, 32),
-            new LightSubsystem.BufferViewData(Component.rightLedStrip, 50, 0, 31),
-            new LightSubsystem.BufferViewData(Component.rightLedStrip, 50, 49, 32)
+            Component.ledStrip,
+            50,
+            new Pair(0, 31),
+            new Pair(49, 32)
         );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
