@@ -3,7 +3,6 @@ package org.usfirst.frc4904.robot;
 import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
@@ -204,8 +203,8 @@ public class RobotMap {
         Component.lights = new LightSubsystem(
             Component.ledStrip,
             50,
-            new Pair(0, 31),
-            new Pair(49, 32)
+            new int[] { 32, 18 },
+            new boolean[] { false, true }
         );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
