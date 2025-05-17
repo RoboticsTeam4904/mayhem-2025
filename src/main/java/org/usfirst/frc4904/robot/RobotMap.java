@@ -204,7 +204,7 @@ public class RobotMap {
             Component.ledStrip,
             107,
             new int[] { 20, 37, 34, 16 },
-            new boolean[] { true, false, false, true }
+            new boolean[] { true, false, true, false }
         );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
