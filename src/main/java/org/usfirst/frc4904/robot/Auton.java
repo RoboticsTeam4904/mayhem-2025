@@ -41,9 +41,9 @@ public class Auton {
 
      /**
      * Move straight out of the starting zone, align with the center of the reef, and outtake.
+     * PUTS THE CORAL ON THE ALGAE :skull:
      */
-    public static Command c_straightCoral() {
-        // TODO super janky
+    public static Command c_jankStraightCoral() {
         return new SequentialCommandGroup(
             new WaitCommand(5),
             new ParallelDeadlineGroup(

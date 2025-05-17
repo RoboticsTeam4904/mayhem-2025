@@ -202,9 +202,9 @@ public class RobotMap {
         Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
         Component.lights = new LightSubsystem(
             Component.ledStrip,
-            50,
-            new int[] { 32, 18 },
-            new boolean[] { false, true }
+            107,
+            new int[] { 20, 37, 34, 16 },
+            new boolean[] { true, false, false, true }
         );
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
