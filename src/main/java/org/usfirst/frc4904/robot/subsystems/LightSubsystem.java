@@ -112,8 +112,8 @@ public class LightSubsystem extends SubsystemBase {
 
         for (int i = 0; i < colors.length; i++) {
             float height = 1 - (float) i / (colors.length - 1);
-            float noise = fireNoise.noise(time * 1.5f, (float) Math.pow(height, 2) * 200 + time * 2);
-            float strength = (float) Math.pow(noise, 2.5) + height * 1.2f - 0.5f;
+            float noise = fireNoise.noise(time, i * 0.13f + time * 2);
+            float strength = (float) Math.pow(noise, 2.5) + height - 0.45f;
 
             float r = 1;
             float g = Util.clamp(strength * 2 - 0.5f, 0, 1);
