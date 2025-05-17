@@ -1,5 +1,6 @@
 package org.usfirst.frc4904.robot.subsystems;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.usfirst.frc4904.standard.Perlin2D;
@@ -156,29 +157,39 @@ public class LightSubsystem extends SubsystemBase {
         flashStrength = 1;
     }
 
+    private final LEDPattern rainbowPattern = LEDPattern.rainbow(255, 128)
+                                                        .scrollAtAbsoluteSpeed(
+                                                            Units.MetersPerSecond.of(1),
+                                                            Units.Meters.of(1.0 / 60)
+                                                        );
+
     @Override
     public void periodic() {
         double time = Timer.getFPGATimestamp();
         double deltaTime = time - lastUpdateTime;
         lastUpdateTime = time;
 
-        for (var view : views) {
-            float[][] colors = view.colorArray;
+        if (DriverStation.isDisabled()) {
+            rainbowPattern.applyTo(buffer);
+        } else {
+            for (var view : views) {
+                float[][] colors = view.colorArray;
 
-            if (visionProgress != -1) {
-                progressBar(colors, (float) visionProgress, Color.VISION);
-            } else if (elevatorProgress != -1) {
-                progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
-            } else {
-                fire(colors, DriverStation.isAutonomous());
+                if (visionProgress != -1) {
+                    progressBar(colors, (float) visionProgress, Color.VISION);
+                } else if (elevatorProgress != -1) {
+                    progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
+                } else {
+                    fire(colors, DriverStation.isAutonomous());
+                }
+
+                if (flashStrength > 0) {
+                    alphaBlend(colors, flashColor, flashStrength);
+                    flashStrength -= (float) deltaTime;
+                }
+
+                view.copyColorsToBuffer();
             }
-
-            if (flashStrength > 0) {
-                alphaBlend(colors, flashColor, flashStrength);
-                flashStrength -= (float) deltaTime;
-            }
-
-            view.copyColorsToBuffer();
         }
 
         led.setData(buffer);
