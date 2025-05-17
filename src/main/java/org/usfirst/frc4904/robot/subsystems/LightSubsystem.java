@@ -1,9 +1,6 @@
 package org.usfirst.frc4904.robot.subsystems;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.usfirst.frc4904.standard.Perlin2D;
 import org.usfirst.frc4904.standard.Util;
@@ -81,14 +78,16 @@ public class LightSubsystem extends SubsystemBase {
     }
 
     private void alphaBlend(float[][] colors, float[] c2, float mix) {
-        float alpha = c2[3] * mix;
+        float a2 = c2[3] * mix;
 
         for (float[] c1 : colors) {
-            // this math might not be entirely correct if the alpha component of a is < 1, but it's close enough
-            c1[0] = c1[0] * (1 - alpha) + c2[0] * alpha;
-            c1[1] = c1[1] * (1 - alpha) + c2[1] * alpha;
-            c1[2] = c1[2] * (1 - alpha) + c2[2] * alpha;
-            c1[3] = 1 - (1 - c1[3]) * (1 - c2[3]);
+            float a1 = c1[3];
+            float a = a2 + a1 * (1 - a2);
+
+            c1[0] = (c2[0] * a2 + c1[0] * a1 * (1 - a2)) / a;
+            c1[1] = (c2[1] * a2 + c1[1] * a1 * (1 - a2)) / a;
+            c1[2] = (c2[2] * a2 + c1[2] * a1 * (1 - a2)) / a;
+            c1[3] = a;
         }
     }
 
@@ -108,19 +107,23 @@ public class LightSubsystem extends SubsystemBase {
 
     private final Perlin2D fireNoise = new Perlin2D(12345678987654321L);
 
-    private void fire(float[][] colors) {
+    private void fire(float[][] colors, boolean blue) {
         float time = (float) lastUpdateTime;
 
         for (int i = 0; i < colors.length; i++) {
-            float height = (float) i / (colors.length - 1);
-            float noise = fireNoise.noise(time, (float) Math.pow(height, 2) * 200 + time * 2);
-            float otherNoise = (noise + (float) Math.sqrt(2)) / 2 / (float) Math.sqrt(2);
-            float strength = (float) Math.pow(otherNoise, 2.5) + height * 1.2f - 0.5f;
+            float height = 1 - (float) i / (colors.length - 1);
+            float noise = fireNoise.noise(time * 1.5f, (float) Math.pow(height, 2) * 200 + time * 2);
+            float strength = (float) Math.pow(noise, 2.5) + height * 1.2f - 0.5f;
 
-            colors[i][0] = 1;
-            colors[i][1] = Util.clamp(strength * 2 - 0.5f, 0, 1);
-            colors[i][2] = Util.clamp(strength * 4 - 3, 0, 1);
-            colors[i][3] = Util.clamp(strength * 4, 0, 1);
+            float r = 1;
+            float g = Util.clamp(strength * 2 - 0.5f, 0, 1);
+            float b = Util.clamp(strength * 4 - 3, 0, 1);
+            float a = Util.clamp(strength * 4, 0, 1);
+
+            colors[i][0] = blue ? b : r;
+            colors[i][1] = g * 0.8f; // green LEDs are brighter
+            colors[i][2] = blue ? r : b;
+            colors[i][3] = a;
         }
     }
 
@@ -167,7 +170,7 @@ public class LightSubsystem extends SubsystemBase {
             } else if (elevatorProgress != -1) {
                 progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
             } else {
-                fire(colors);
+                fire(colors, DriverStation.isAutonomous());
             }
 
             if (flashStrength > 0) {

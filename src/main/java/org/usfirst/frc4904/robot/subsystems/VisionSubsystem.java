@@ -207,16 +207,16 @@ public class VisionSubsystem extends SubsystemBase {
         if (startingDistance == -1) startingDistance = distance;
         if (startingRotDistance == -1) startingRotDistance = rotDistance;
 
-        // Component.lights.visionProgress = Math.pow(
-        //     (1 - distance / startingDistance) * 0.6 + (1 - rotDistance / startingRotDistance) * 0.4,
-        //     2
-        // );
+        Component.lights.visionProgress = Math.pow(
+            (1 - distance / startingDistance) * 0.6 + (1 - rotDistance / startingRotDistance) * 0.4,
+            2
+        );
 
         boolean atPosition = distance < POS_TOLERANCE_METERS && rotDistance < ROT_TOLERANCE_DEG;
 
         if (atPosition) {
             stopPositioning("Success", false);
-            // Component.lights.flashColor(LightSubsystem.Color.SUCCESS);
+            Component.lights.flashColor(LightSubsystem.Color.SUCCESS);
         } else {
             // give up if too much time has passed
             double timeElapsed = currentTime - startTime;
@@ -317,8 +317,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         System.out.println("Positioning started");
 
-        // Component.lights.visionProgress = 0;
-        // Component.lights.flashColor(LightSubsystem.Color.VISION);
+        Component.lights.visionProgress = 0;
+        Component.lights.flashColor(LightSubsystem.Color.VISION);
     }
 
     /**
@@ -342,10 +342,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         System.out.println("Positioning ended" + (reason != null ? " - " + reason : ""));
 
-        // Component.lights.visionProgress = -1;
-        // if (failed) {
-        //     Component.lights.flashColor(LightSubsystem.Color.FAIL);
-        // }
+        Component.lights.visionProgress = -1;
+        if (failed) {
+            Component.lights.flashColor(LightSubsystem.Color.FAIL);
+        }
     }
 
     /**

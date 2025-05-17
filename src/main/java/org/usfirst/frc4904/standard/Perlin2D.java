@@ -19,6 +19,9 @@ public class Perlin2D {
         for (int i = 0; i < 512; i++) perm[i] = p[i & 255];
     }
 
+    private static final float SQRT_2 = (float) Math.sqrt(2);
+
+    /** Noise values are from 0-1 (probably) */
     public float noise(float x, float y) {
         int xi = (int) Math.floor(x) & 255;
         int yi = (int) Math.floor(y) & 255;
@@ -33,7 +36,7 @@ public class Perlin2D {
 
         float x1 = lerp(u, grad(aa, xf, yf), grad(ba, xf - 1, yf));
         float x2 = lerp(u, grad(ab, xf, yf - 1), grad(bb, xf - 1, yf - 1));
-        return lerp(v, x1, x2);
+        return lerp(v, x1, x2) / SQRT_2 / 2 + 0.5f;
     }
 
     private float fade(float t) {

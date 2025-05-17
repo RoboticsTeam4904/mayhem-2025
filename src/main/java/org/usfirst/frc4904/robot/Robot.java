@@ -6,9 +6,6 @@
 /*----------------------------------------------------------------------------*/
 package org.usfirst.frc4904.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap.Component;
@@ -24,7 +21,7 @@ public class Robot extends CommandRobotBase {
     public static class AutonConfig {
 
         /** Whether to run auton at all */
-        public static final boolean ENABLED = true;
+        public static final boolean ENABLED = false;
 
         /** Whether to flip the path to the other side of the current alliance's field */
         public static final boolean FLIP_SIDE = false;
@@ -85,19 +82,20 @@ public class Robot extends CommandRobotBase {
         }
     }
 
-    Timer timer = new Timer();
+    // Timer timer = new Timer();
 
     @Override
     public void autonomousInitialize() {
         if (!AutonConfig.ENABLED) return;
 
-        try {
-            // Load the path you want to follow using its name in the GUI
-            PathPlannerPath path = PathPlannerPath.fromPathFile("straight");
-            AutoBuilder.followPath(path).schedule();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        // PATHPLANNER ATTEMPT #1520367
+        // try {
+        //     // Load the path you want to follow using its name in the GUI
+        //     PathPlannerPath path = PathPlannerPath.fromPathFile("straight");
+        //     AutoBuilder.followPath(path).schedule();
+        // } catch (Exception e) {
+        //     System.out.println(e);
+        // }
 
         // Component.chassis.getAutonomousCommand("straight", true, false).schedule();;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -106,7 +104,7 @@ public class Robot extends CommandRobotBase {
         // timer.reset();
         // timer.start();
 
-        // AutonConfig.COMMAND.get().schedule();
+        AutonConfig.COMMAND.get().schedule();
     }
 
     @Override
