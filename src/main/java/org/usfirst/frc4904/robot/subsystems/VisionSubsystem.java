@@ -61,8 +61,8 @@ public class VisionSubsystem extends SubsystemBase {
     private static final double HORIZ_ALIGN_OFFSET = Units.inchesToMeters(6.5);
 
     // max speeds
-    private final double MAX_LINEAR_SPEED = 2; // meters per second
-    private final double MAX_ROT_SPEED = Math.PI; // radians per second
+    private final double MAX_LINEAR_SPEED = 5; // meters per second
+    private final double MAX_ROT_SPEED = 2 * Math.PI; // radians per second
 
     // tolerance thresholds for positioning
     private final double POS_TOLERANCE_METERS = 0.005;

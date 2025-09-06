@@ -44,13 +44,13 @@ public class LightSubsystem extends SubsystemBase {
         public void copyColorsToBuffer() {
             for (int i = 0; i < colorArray.length; i++) {
                 float[] color = colorArray[i];
-                float scale = color[3] * 255;
+                float a = color[3];
 
                 view.setRGB(
                     i,
-                    (int) (color[0] * scale),
-                    (int) (color[1] * scale),
-                    (int) (color[2] * scale)
+                    (int) (Math.pow(color[0] * a, 2) * 255),
+                    (int) (Math.pow(color[1] * a, 2) * 255),
+                    (int) (Math.pow(color[2] * a, 2) * 255)
                 );
             }
         }
@@ -102,7 +102,8 @@ public class LightSubsystem extends SubsystemBase {
                 colors[i][1] = color[1] / 255f;
                 colors[i][2] = color[2] / 255f;
             }
-            colors[i][3] = color[3] * strength;
+            float alpha = color.length == 4 ? color[3] : 1;
+            colors[i][3] = alpha * strength;
         }
     }
 
@@ -113,17 +114,19 @@ public class LightSubsystem extends SubsystemBase {
 
         for (int i = 0; i < colors.length; i++) {
             float height = 1 - (float) i / (colors.length - 1);
-            float noise = fireNoise.noise(time, i * 0.13f + time * 2);
-            float strength = (float) Math.pow(noise, 2.5) + height - 0.45f;
+            float noise = fireNoise.noise(time, -i * 0.13f + time * 2);
+            float strength = (float) Math.pow(noise, 2.5) * 1.3f + height - 0.55f;
 
             float r = 1;
             float g = Util.clamp(strength * 2 - 0.5f, 0, 1);
             float b = Util.clamp(strength * 4 - 3, 0, 1);
             float a = Util.clamp(strength * 4, 0, 1);
 
-            colors[i][0] = blue ? b : r;
+
+            //TODO: make "blue" and "!blue depending on alliance colour"
+            colors[i][0] = !blue ? b : r;
             colors[i][1] = g * 0.8f; // green LEDs are brighter
-            colors[i][2] = blue ? r : b;
+            colors[i][2] = !blue ? r : b;
             colors[i][3] = a;
         }
     }
@@ -159,7 +162,7 @@ public class LightSubsystem extends SubsystemBase {
 
     private final LEDPattern rainbowPattern = LEDPattern.rainbow(255, 128)
                                                         .scrollAtAbsoluteSpeed(
-                                                            Units.MetersPerSecond.of(1),
+                                                            Units.MetersPerSecond.of(0.3),
                                                             Units.Meters.of(1.0 / 60)
                                                         );
 
@@ -175,17 +178,17 @@ public class LightSubsystem extends SubsystemBase {
             for (var view : views) {
                 float[][] colors = view.colorArray;
 
-                if (visionProgress != -1) {
-                    progressBar(colors, (float) visionProgress, Color.VISION);
-                } else if (elevatorProgress != -1) {
-                    progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
-                } else {
+                // if (visionProgress != -1) {
+                //     progressBar(colors, (float) visionProgress, Color.VISION);
+                // } else if (elevatorProgress != -1) {
+                //     progressBar(colors, (float) elevatorProgress, Color.ELEVATOR);
+                // } else {
                     fire(colors, DriverStation.isAutonomous());
-                }
+                // }
 
                 if (flashStrength > 0) {
-                    alphaBlend(colors, flashColor, flashStrength);
-                    flashStrength -= (float) deltaTime;
+                    alphaBlend(colors, flashColor, (float) Math.sqrt(flashStrength));
+                    flashStrength -= (float) deltaTime / 1.5;
                 }
 
                 view.copyColorsToBuffer();

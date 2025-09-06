@@ -33,7 +33,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     public static final double MAX_ACCEL = MAX_VEL * 4; // accelerate to max speed in 1/4 of a second
 
     public static final double MIN_HEIGHT = 0;
-    public static final double MAX_HEIGHT = 12.5;
+    public static final double MAX_HEIGHT = 12.5; //12.5 normal, 6 w/o 3rd stage
 
     public final ElevatorFeedforward feedforward;
     public final CustomEncoder encoder;

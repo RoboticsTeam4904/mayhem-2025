@@ -23,13 +23,13 @@ public class Robot extends CommandRobotBase {
     public static class AutonConfig {
 
         /** Whether to run auton at all */
-        public static final boolean ENABLED = false;
+        public static final boolean ENABLED = true;
 
         /** Whether to flip the path to the other side of the current alliance's field */
         public static final boolean FLIP_SIDE = false;
 
         /** The auton to run */
-        public static Supplier<Command> COMMAND = Auton::c_straight;
+        public static Supplier<Command> COMMAND = Auton::c_jankRightCoral;
     }
 
     private final Driver driver = new SwerveGain();
@@ -52,8 +52,6 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopInitialize() {
-        enc.setDistancePerRotation(360.0);
-
         driver.bindCommands();
         operator.bindCommands();
         //Component.elevator.encoder.reset();
@@ -69,7 +67,7 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopExecute() {
-        System.out.println("enc: " + enc.getAbsolutePosition());
+        System.out.println("enc: " + enc.get());
 
         // TODO maybe unnecessary
         Component.vision.periodic();

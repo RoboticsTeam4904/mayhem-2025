@@ -65,14 +65,28 @@ public class Auton {
 
     public static Command c_jankStraight() {
         return new SequentialCommandGroup(
-            new WaitCommand(13),
+            new WaitCommand(12),
             new ParallelDeadlineGroup(
-                new WaitCommand(1.5),
+                new WaitCommand(2),
                 new Command() {
                     @Override
                     public void execute() {
-                        // IN CHEESE WORLD, CHEDDAR IS ACCEPTABLE, PARMESAN IS FINE
-                        // IN BIZARRO WORLD, FORWARD IS POSITIVE, LEFT IS POSITIVE
+                        Component.chassis.drive(new ChassisSpeeds(-0.5, 0, 0));
+                    }
+                }
+            ),
+            new InstantCommand(() -> Component.chassis.drive(new ChassisSpeeds(0, 0, 0)))
+        );
+    }
+
+    public static Command c_jankReverse() {
+        return new SequentialCommandGroup(
+            new WaitCommand(12),
+            new ParallelDeadlineGroup(
+                new WaitCommand(2),
+                new Command() {
+                    @Override
+                    public void execute() {
                         Component.chassis.drive(new ChassisSpeeds(0.5, 0, 0));
                     }
                 }
@@ -91,7 +105,6 @@ public class Auton {
 
     /** @param side 1 = robot-relative left, -1 = robot-relative right */
     public static Command c_jankSideCoral(int side) {
-        // TODO super janky
         return new SequentialCommandGroup(
             new WaitCommand(3),
             new ParallelDeadlineGroup(
@@ -99,9 +112,7 @@ public class Auton {
                 new Command() {
                     @Override
                     public void execute() {
-                        // IN CHEESE WORLD, CHEDDAR IS ACCEPTABLE, PARMESAN IS FINE
-                        // IN BIZARRO WORLD, FORWARD IS POSITIVE, LEFT IS POSITIVE
-                        Component.chassis.drive(new ChassisSpeeds(0.4 / Math.sqrt(3), 0.4 * side, 0));
+                        Component.chassis.drive(new ChassisSpeeds(-0.4 / Math.sqrt(3), -0.4 * side, 0));
                     }
                 }
             ),

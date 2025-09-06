@@ -147,20 +147,21 @@ public class RobotMap {
             new File(Filesystem.getDeployDirectory(), "swerve"),
             360,
             0.0473,
-            5
-        );
+            3
+        ); //BENSPEED IS 5, NOTBENSPEED IS 3
         // Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, Units.degreesToRadians(180)));
 
-        // Component.cameraLeft = new PhotonCamera("dauntless-camera-left");
-        Component.cameraRight = new PhotonCamera("dauntless-camera");
+        Component.cameraLeft = new PhotonCamera("dauntless-left");
+        Component.cameraRight = new PhotonCamera("dauntless-right");
         Component.vision = new VisionSubsystem(
             new PhotonCamera[] {
-                // Component.cameraLeft,
+                Component.cameraLeft,
                 Component.cameraRight
             },
             new Transform2d[] {
-                // new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
+                new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
                 new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(10.6), Rotation2d.kZero)
+                
                 // new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.kZero)
             }
         );
