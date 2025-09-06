@@ -14,6 +14,8 @@ import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+
 import java.util.function.Supplier;
 
 public class Robot extends CommandRobotBase {
@@ -34,6 +36,8 @@ public class Robot extends CommandRobotBase {
     private final DefaultOperator operator = new DefaultOperator();
     private final RobotMap map = new RobotMap();
 
+    private final DutyCycleEncoder enc = new DutyCycleEncoder(8);
+
     protected double scaleGain(double input, double gain, double exp) {
         return Math.pow(Math.abs(input), exp) * gain * Math.signum(input);
     }
@@ -48,6 +52,8 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopInitialize() {
+        enc.setDistancePerRotation(360.0);
+
         driver.bindCommands();
         operator.bindCommands();
         //Component.elevator.encoder.reset();
@@ -63,6 +69,8 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopExecute() {
+        System.out.println("enc: " + enc.getAbsolutePosition());
+
         // TODO maybe unnecessary
         Component.vision.periodic();
 
@@ -70,7 +78,7 @@ public class Robot extends CommandRobotBase {
 
         if (Math.abs(y) >= 0.05) {
             wasControllingElevator = true;
-            
+
             var command = new InstantCommand(
                 () -> Component.elevator.setVoltage(Math.pow(y, 2) * Math.signum(y) * 12.0)
             );
