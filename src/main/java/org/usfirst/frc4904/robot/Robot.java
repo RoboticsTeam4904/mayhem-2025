@@ -36,8 +36,6 @@ public class Robot extends CommandRobotBase {
     private final DefaultOperator operator = new DefaultOperator();
     private final RobotMap map = new RobotMap();
 
-    private final DutyCycleEncoder enc = new DutyCycleEncoder(8);
-
     protected double scaleGain(double input, double gain, double exp) {
         return Math.pow(Math.abs(input), exp) * gain * Math.signum(input);
     }
@@ -67,8 +65,6 @@ public class Robot extends CommandRobotBase {
 
     @Override
     public void teleopExecute() {
-        System.out.println("enc: " + enc.get());
-
         // TODO maybe unnecessary
         Component.vision.periodic();
 
