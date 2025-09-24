@@ -5,16 +5,12 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.Filesystem;
-import org.photonvision.PhotonCamera;
 import org.usfirst.frc4904.robot.humaninterface.HumanInterfaceConfig;
 import org.usfirst.frc4904.robot.subsystems.*;
-import org.usfirst.frc4904.standard.custom.CustomEncoder;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
-import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 
 import java.io.File;
 
@@ -36,6 +32,8 @@ public class RobotMap {
         }
 
         public static class CANMotor {
+
+            // TODO MAYHEM: setup motor ports
 
         }
 
@@ -107,7 +105,7 @@ public class RobotMap {
             3
         );
 
-        // TODO 2025: initialize robot parts
+        // TODO MAYHEM: initialize robot parts
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

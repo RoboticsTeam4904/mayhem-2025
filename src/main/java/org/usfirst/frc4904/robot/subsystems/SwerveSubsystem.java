@@ -20,7 +20,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.File;
@@ -337,6 +336,13 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void drive(ChassisSpeeds velocity) {
         swerveDrive.drive(velocity);
+    }
+
+    /**
+     * Set wheel velocity to zero.
+     */
+    public void stop() {
+        drive(new ChassisSpeeds(0, 0, 0));
     }
 
     @Override

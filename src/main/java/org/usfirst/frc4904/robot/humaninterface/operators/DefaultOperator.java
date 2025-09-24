@@ -23,7 +23,7 @@ public class DefaultOperator extends Operator {
         var xyJoystick = RobotMap.HumanInput.Driver.xyJoystick;
         var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
 
-        // TODO: bind commands
+        // TODO MAYHEM: bind commands
 
         /// ODOMETRY RESETTING
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));

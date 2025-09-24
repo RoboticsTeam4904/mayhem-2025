@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 public class Robot extends CommandRobotBase {
 
     public static class AutonConfig {
+        // TODO MAYHEM: update auton command (or don't and just leave it disabled)
 
         /** Whether to run auton at all */
         public static final boolean ENABLED = false;

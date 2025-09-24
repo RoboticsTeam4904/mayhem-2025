@@ -1,6 +1,7 @@
 package org.usfirst.frc4904.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.*;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 
 public class Auton {
@@ -13,7 +14,15 @@ public class Auton {
      * Move straight out of the starting zone and do nothing.
      */
     public static Command c_straight() {
-        return Component.chassis.getAutonomousCommand("straight", true, false);
+        ChassisSpeeds speed = new ChassisSpeeds(-0.5, 0, 0);
+
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                new WaitCommand(2),
+                new RunCommand(() -> Component.chassis.drive(speed))
+            ),
+            new InstantCommand(Component.chassis::stop)
+        );
     }
 
 }
