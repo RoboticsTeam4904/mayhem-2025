@@ -1,11 +1,7 @@
 package org.usfirst.frc4904.robot;
 
-import com.revrobotics.spark.SparkLowLevel;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,7 +15,6 @@ import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
-import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 import java.io.File;
 
@@ -42,27 +37,10 @@ public class RobotMap {
 
         public static class CANMotor {
 
-            public static final int RAMP = 10;
-
-            public static final int OUTTAKE_MOTOR_RIGHT = 26;
-            public static final int OUTTAKE_MOTOR_LEFT = 27;
-
-            public static final int CLIMBER = 60;
-
-            public static final int ELEVATOR_RIGHT = 15;
-            public static final int ELEVATOR_LEFT = 16;
         }
 
         public static class PWM {
 
-            public static final int ENCODER_FL = 0;
-            public static final int ENCODER_FR = 1;
-            public static final int ENCODER_BL = 2;
-            public static final int ENCODER_BR = 3;
-
-            public static final int ELEVATOR_ENCODER = 0;
-
-            public static final int LED_STRIP = 9;
         }
     }
 
@@ -73,34 +51,13 @@ public class RobotMap {
         public static CANTalonFX blDrive;
         public static CANTalonFX brDrive;
 
-        public static CustomEncoder elevatorEncoder;
-
         public static AHRS navx;
 
         // subsystems
         public static SwerveSubsystem chassis;
-        public static MotorSubsystem ramp;
-        public static ElevatorSubsystem elevator;
-        public static MotorSubsystem outtake;
-        public static MotorSubsystem climber;
-        public static VisionSubsystem vision;
-        public static LightSubsystem lights;
 
         // motors
-        public static CustomCANSparkMax rampMotor;
-
-        public static CustomCANSparkMax outtakeMotorLeft;
-        public static CustomCANSparkMax outtakeMotorRight;
-
-        public static CANTalonFX elevatorMotorOne;
-        public static CANTalonFX elevatorMotorTwo;
-
-        public static CANTalonFX climberMotor;
-
-        public static PhotonCamera cameraLeft;
-        public static PhotonCamera cameraRight;
-
-        public static AddressableLED ledStrip;
+        // TODO
     }
 
     public static class NetworkTables {
@@ -148,65 +105,9 @@ public class RobotMap {
             360,
             0.0473,
             3
-        ); //BENSPEED IS 5, NOTBENSPEED IS 3
-        // Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, Units.degreesToRadians(180)));
-
-        Component.cameraLeft = new PhotonCamera("dauntless-left");
-        Component.cameraRight = new PhotonCamera("dauntless-right");
-        Component.vision = new VisionSubsystem(
-            new PhotonCamera[] {
-                Component.cameraLeft,
-                Component.cameraRight
-            },
-            new Transform2d[] {
-                new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
-                new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(10.6), Rotation2d.kZero)
-                
-                // new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.kZero)
-            }
         );
 
-        Component.rampMotor = new CustomCANSparkMax(
-            Port.CANMotor.RAMP,
-            SparkLowLevel.MotorType.kBrushless,
-            false
-        );
-        Component.ramp = new MotorSubsystem(Component.rampMotor, -7);
-
-        Component.outtakeMotorLeft = new CustomCANSparkMax(
-            Port.CANMotor.OUTTAKE_MOTOR_LEFT,
-            SparkLowLevel.MotorType.kBrushless,
-            false
-        );
-        Component.outtakeMotorRight = new CustomCANSparkMax(
-            Port.CANMotor.OUTTAKE_MOTOR_RIGHT,
-            SparkLowLevel.MotorType.kBrushless,
-            false
-        );
-        Component.outtake = new MotorSubsystem(
-            new SmartMotorController[] { Component.outtakeMotorLeft, Component.outtakeMotorRight },
-            -4
-        );
-
-        Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
-        Component.climber = new MotorSubsystem(Component.climberMotor, 6);
-
-        Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
-        Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
-        Component.elevatorEncoder = new CustomEncoder(Port.PWM.ELEVATOR_ENCODER);
-        Component.elevator = new ElevatorSubsystem(
-            Component.elevatorMotorOne,
-            Component.elevatorMotorTwo,
-            Component.elevatorEncoder
-        );
-
-        Component.ledStrip = new AddressableLED(Port.PWM.LED_STRIP);
-        Component.lights = new LightSubsystem(
-            Component.ledStrip,
-            107,
-            new int[] { 20, 37, 34, 16 },
-            new boolean[] { false, true, false, true }
-        );
+        // TODO 2025: initialize robot parts
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

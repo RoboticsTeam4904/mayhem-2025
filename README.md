@@ -1,6 +1,1 @@
-# 2025 Roofscape
-
-Set up the Git hooks by running:
-```sh
-$ ./setup
-```
+# 2025 Mechanical M-Ayhem
