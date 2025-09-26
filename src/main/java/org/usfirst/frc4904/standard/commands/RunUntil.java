@@ -1,45 +1,14 @@
 package org.usfirst.frc4904.standard.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.Supplier;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class RunUntil extends Command {
+import java.util.function.BooleanSupplier;
 
-    protected final Command command;
-    protected final Supplier<Boolean> stopCondition;
-    protected final boolean cancelOnEnd;
+public class RunUntil extends ParallelRaceGroup {
 
-    public RunUntil(
-        String name,
-        Command command,
-        Supplier<Boolean> stopCondition,
-        boolean cancelOnEnd
-    ) {
-        super();
-        setName(name);
-        this.command = command;
-        this.stopCondition = stopCondition;
-        this.cancelOnEnd = cancelOnEnd;
-    }
-
-    public RunUntil(Command command, Supplier<Boolean> stopCondition) {
-        this("RunUntil", command, stopCondition, true);
-    }
-
-    @Override
-    public void initialize() {
-        command.schedule();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return stopCondition.get();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        if (cancelOnEnd) {
-            command.cancel();
-        }
+    public RunUntil(Command command, BooleanSupplier condition) {
+        super(command, new WaitUntilCommand(condition));
     }
 }

@@ -17,7 +17,6 @@ public class Cancel extends Command {
     }
 
     public void initialize() {
-        // LogKitten.v("Initializing " + getName());
         command.cancel();
     }
 

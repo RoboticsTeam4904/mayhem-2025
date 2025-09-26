@@ -1,36 +1,13 @@
 package org.usfirst.frc4904.standard.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.Supplier;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 
-public class RunWhile extends Command {
+import java.util.function.BooleanSupplier;
 
-    protected final Command command;
-    protected final Supplier<Boolean> stopCondition;
+public class RunWhile extends ParallelRaceGroup {
 
-    public RunWhile(String name, Command command, Supplier<Boolean> stopCondition) {
-        super();
-        setName(name);
-        this.command = command;
-        this.stopCondition = stopCondition;
-    }
-
-    public RunWhile(Command command, Supplier<Boolean> stopCondition) {
-        this("RunWhile", command, stopCondition);
-    }
-
-    @Override
-    public void initialize() {
-        command.schedule();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return !stopCondition.get();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        command.cancel();
+    public RunWhile(Command command, BooleanSupplier condition) {
+        super(command, new WaitWhileCommand(condition));
     }
 }

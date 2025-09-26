@@ -2,7 +2,6 @@ package org.usfirst.frc4904.standard.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.usfirst.frc4904.standard.commands.SolenoidSet;
 
 /**
  * A class that wraps multiple DoubleSolenoid objects with subsystem
@@ -34,7 +33,7 @@ public class SolenoidSubsystem extends SubsystemBase {
     ) {
         super();
         setName(name);
-        setDefaultCommand(new SolenoidSet(this, defaultState));
+        setDefaultCommand(runOnce(() -> set(this.defaultState)));
         this.solenoids = solenoids;
         this.isInverted = isInverted;
         this.defaultState = defaultState;
@@ -103,7 +102,7 @@ public class SolenoidSubsystem extends SubsystemBase {
 
         public final DoubleSolenoid.Value value;
 
-        private SolenoidState(DoubleSolenoid.Value value) {
+        SolenoidState(DoubleSolenoid.Value value) {
             this.value = value;
         }
     }
@@ -123,19 +122,15 @@ public class SolenoidSubsystem extends SubsystemBase {
      *
      */
     public SolenoidState invertState(SolenoidState state) {
-        switch (state) {
-            case EXTEND:
-                return SolenoidState.RETRACT;
-            case RETRACT:
-                return SolenoidState.EXTEND;
-            case OFF:
-                return SolenoidState.OFF;
-        }
-        return state;
+        return switch (state) {
+            case EXTEND  -> SolenoidState.RETRACT;
+            case RETRACT -> SolenoidState.EXTEND;
+            case OFF     -> SolenoidState.OFF;
+        };
     }
 
     /**
-     * Sets the state of the system Only sets if current state is not equal to state
+     * Sets the state of the system. Only sets if current state is not equal to state
      * to be set
      *
      * @param state State to set system

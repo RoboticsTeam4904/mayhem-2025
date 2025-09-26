@@ -3,6 +3,7 @@ package org.usfirst.frc4904.standard;
 import edu.wpi.first.hal.util.BoundaryException;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /**
  * Common utilities
@@ -119,5 +120,35 @@ public class Util {
         } else {
             return 1.0 / from.convert(1, to);
         }
+    }
+
+    /**
+     * Combines multiple boolean suppliers with a logical OR operator.
+     *
+     * @param conditions the boolean suppliers
+     * @return callback which returns true if any of the suppliers return true
+     */
+    public static BooleanSupplier any(BooleanSupplier... conditions) {
+        return () -> {
+            for (var supplier : conditions) {
+                if (supplier.getAsBoolean()) return true;
+            }
+            return false;
+        };
+    }
+
+    /**
+     * Combines multiple boolean suppliers with a logical AND operator.
+     *
+     * @param conditions the boolean suppliers
+     * @return callback which returns true if all of the suppliers return true
+     */
+    public static BooleanSupplier all(BooleanSupplier... conditions) {
+        return () -> {
+            for (var supplier : conditions) {
+                if (!supplier.getAsBoolean()) return false;
+            }
+            return true;
+        };
     }
 }

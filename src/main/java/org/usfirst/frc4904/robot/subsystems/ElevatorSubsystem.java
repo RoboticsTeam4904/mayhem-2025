@@ -5,17 +5,16 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.function.DoubleSupplier;
-
 import org.usfirst.frc4904.robot.RobotMap.Component;
+import org.usfirst.frc4904.standard.commands.CreateOnInitialize;
 import org.usfirst.frc4904.standard.commands.NoOp;
 import org.usfirst.frc4904.standard.custom.CustomEncoder;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezControl;
 import org.usfirst.frc4904.standard.custom.motioncontrollers.ezMotion;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
+
+import java.util.HashMap;
+import java.util.function.DoubleSupplier;
 
 public class ElevatorSubsystem extends MotorSubsystem {
 
@@ -184,10 +183,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     }
 
     public Command c_gotoHeight(double height) {
-        return new DeferredCommand(
-            () -> this.getRawHeightCommand(height),
-            Collections.singleton(this)
-        );
+        return new CreateOnInitialize(() -> this.getRawHeightCommand(height));
     }
 
     private Command getRawHeightCommand(double height) {

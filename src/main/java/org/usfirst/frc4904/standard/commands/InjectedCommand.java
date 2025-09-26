@@ -1,6 +1,7 @@
 package org.usfirst.frc4904.standard.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public abstract class InjectedCommand extends Command {
 
@@ -10,6 +11,8 @@ public abstract class InjectedCommand extends Command {
         super();
         setName(name);
         this.previous = previous;
+
+        CommandScheduler.getInstance().registerComposedCommands(previous);
     }
 
     public InjectedCommand(Command previous) {
@@ -26,11 +29,7 @@ public abstract class InjectedCommand extends Command {
 
     @Override
     public final void end(boolean interrupted) {
-        if (interrupted) {
-            onInterrupted();
-        } else {
-            onEnd();
-        }
+        onEnd(interrupted);
         if (previous != null && !previous.isScheduled()) {
             previous.schedule();
         }
@@ -40,5 +39,5 @@ public abstract class InjectedCommand extends Command {
 
     protected abstract void onInterrupted();
 
-    protected abstract void onEnd();
+    protected abstract void onEnd(boolean interrupted);
 }

@@ -16,7 +16,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.Util;
-import org.usfirst.frc4904.standard.commands.WaitWhile;
+import org.usfirst.frc4904.standard.commands.WaitWhileCommand;
 
 import java.util.*;
 
@@ -427,7 +427,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         var command = new SequentialCommandGroup(
             this.runOnce(() -> startPositioning(targetTagIds, offset)),
-            new WaitWhile(this::isPositioning)
+            new WaitWhileCommand(this::isPositioning)
         ) {
             @Override
             public void cancel() {

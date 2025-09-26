@@ -1,6 +1,8 @@
 package org.usfirst.frc4904.standard.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import java.util.function.Supplier;
 
 /**
@@ -27,6 +29,9 @@ public class ThresholdCommand<T extends Comparable<T>> extends Command {
         this.supplier = supplier;
         this.threshold = threshold;
         this.invert = invert;
+
+        addRequirements(command.getRequirements());
+        CommandScheduler.getInstance().registerComposedCommands(command);
     }
 
     public ThresholdCommand(Command command, Supplier<T> supplier, T threshold, boolean invert) {
@@ -49,10 +54,5 @@ public class ThresholdCommand<T extends Comparable<T>> extends Command {
         } else if (!pastThreshold() && command.isScheduled()) {
             command.cancel();
         }
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
     }
 }
