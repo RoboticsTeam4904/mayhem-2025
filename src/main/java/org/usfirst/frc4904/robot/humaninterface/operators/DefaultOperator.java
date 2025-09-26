@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
+import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
 public class DefaultOperator extends Operator {
