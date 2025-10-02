@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
+import org.usfirst.frc4904.robot.humaninterface.operators.AyushOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 import org.usfirst.frc4904.standard.humaninput.Driver;
 
@@ -33,7 +34,8 @@ public class Robot extends CommandRobotBase {
     }
 
     private final Driver driver = new SwerveGain();
-    private final DefaultOperator operator = new DefaultOperator();
+    // private final DefaultOperator operator = new DefaultOperator();
+    private final AyushOperator operator = new AyushOperator();
     private final RobotMap map = new RobotMap();
 
     protected double scaleGain(double input, double gain, double exp) {
