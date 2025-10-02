@@ -8,13 +8,13 @@ import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
-public class DefaultOperator extends Operator {
+public class AnnaOperator extends Operator {
 
-    public DefaultOperator() {
-        super("DefaultOperator");
+    public AnnaOperator() {
+        super("AnnaOperator");
     }
 
-    public DefaultOperator(String name) {
+    public AnnaOperator(String name) {
         super(name);
     }
 
@@ -25,9 +25,12 @@ public class DefaultOperator extends Operator {
         var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
 
         /// ELEVATOR SETPOINTS
-        joystick.button11.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
-        joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
-        joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
+        joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
+        joystick.button8.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
+        joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
+
+        /// INTAKE
+        joystick.button11.onTrue(Component.elevator.c_intakeRaw());
 
         /// MANUAL RAMP CONTROL
         joystick.button3.onTrue(Component.ramp.c_forward());
@@ -36,8 +39,9 @@ public class DefaultOperator extends Operator {
         joystick.button5.onFalse(Component.ramp.c_stop());
 
         /// MANUAL OUTTAKE CONTROL
-        joystick.button4.onTrue(Component.elevator.c_intakeRaw());
+        joystick.button4.onTrue(Component.outtake.c_backward());
         joystick.button6.onTrue(Component.outtake.c_forward());
+        joystick.button4.onFalse(Component.outtake.c_stop());
         joystick.button6.onFalse(Component.outtake.c_stop());
 
         /// VISION
@@ -48,7 +52,7 @@ public class DefaultOperator extends Operator {
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
 
         /// ELEVATOR ENCODER RESETTING
-        joystick.button8.onTrue(Component.elevator.c_forceDown());
-        joystick.button8.onFalse(Component.elevator.c_resetEncoder());
+        joystick.button10.onTrue(Component.elevator.c_forceDown());
+        joystick.button10.onFalse(Component.elevator.c_resetEncoder());
     }
 }

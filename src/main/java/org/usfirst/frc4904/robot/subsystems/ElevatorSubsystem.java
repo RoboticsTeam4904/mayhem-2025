@@ -160,6 +160,19 @@ public class ElevatorSubsystem extends MotorSubsystem {
         );
     }
 
+    /** Move down while bypassing software stops, to be used with {@link c_resetEncoder} */
+    public Command c_forceDown() {
+        return this.run(() -> Component.elevator.setVoltage(-3, true));
+    }
+
+    /** Stop movement and reset encoder, to be used with {@link c_forceDown} */
+    public Command c_resetEncoder() {
+        return this.run(() -> {
+            Component.elevator.setVoltage(0);
+            Component.elevatorEncoder.reset();
+        });
+    }
+
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
         var cmd = this.run(() -> {
             var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
