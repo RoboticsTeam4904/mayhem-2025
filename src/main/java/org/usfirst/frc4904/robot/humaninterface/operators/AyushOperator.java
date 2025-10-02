@@ -8,13 +8,13 @@ import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
-public class AyushGain extends Operator {
+public class AyushOperator extends Operator {
 
-    public AyushGain() {
-        super("AyushGain");
+    public AyushOperator() {
+        super("AyushOperator");
     }
 
-    public AyushGain(String name) {
+    public AyushOperator(String name) {
         super(name);
     }
 
