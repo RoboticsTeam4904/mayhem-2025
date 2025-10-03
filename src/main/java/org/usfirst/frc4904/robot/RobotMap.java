@@ -151,18 +151,17 @@ public class RobotMap {
         ); //BENSPEED IS 5, NOTBENSPEED IS 3
         // Component.chassis.swerveDrive.setGyroOffset(new Rotation3d(0, 0, Units.degreesToRadians(180)));
 
-        Component.cameraLeft = new PhotonCamera("dauntless-left");
+        // TODO: left camera is broken - uncomment when (if) fixed
+        // Component.cameraLeft = new PhotonCamera("dauntless-left");
         Component.cameraRight = new PhotonCamera("dauntless-right");
         Component.vision = new VisionSubsystem(
             new PhotonCamera[] {
-                Component.cameraLeft,
+                // Component.cameraLeft,
                 Component.cameraRight
             },
             new Transform2d[] {
-                new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
+                // new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(-10.6), Rotation2d.kZero),
                 new Transform2d(Units.inchesToMeters(8), Units.inchesToMeters(10.6), Rotation2d.kZero)
-                
-                // new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.kZero)
             }
         );
 
@@ -188,8 +187,8 @@ public class RobotMap {
             -4
         );
 
-        Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
-        Component.climber = new MotorSubsystem(Component.climberMotor, 6);
+        // Component.climberMotor = new CANTalonFX(Port.CANMotor.CLIMBER);
+        // Component.climber = new MotorSubsystem(Component.climberMotor, 6);
 
         Component.elevatorMotorOne = new CANTalonFX(Port.CANMotor.ELEVATOR_LEFT);
         Component.elevatorMotorTwo = new CANTalonFX(Port.CANMotor.ELEVATOR_RIGHT);
