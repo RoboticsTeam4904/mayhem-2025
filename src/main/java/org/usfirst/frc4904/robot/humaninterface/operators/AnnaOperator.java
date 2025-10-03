@@ -1,10 +1,8 @@
 package org.usfirst.frc4904.robot.humaninterface.operators;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import org.usfirst.frc4904.robot.RobotMap;
 import org.usfirst.frc4904.robot.RobotMap.Component;
-import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem;
+import org.usfirst.frc4904.robot.RobotMap.HumanInput;
+import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem.Position;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
 import org.usfirst.frc4904.standard.humaninput.Operator;
 
@@ -20,17 +18,17 @@ public class AnnaOperator extends Operator {
 
     @Override
     public void bindCommands() {
-        var joystick = RobotMap.HumanInput.Operator.joystick;
-        var xyJoystick = RobotMap.HumanInput.Driver.xyJoystick;
-        var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
+        var joystick = HumanInput.Operator.joystick;
+        var xyJoystick = HumanInput.Driver.xyJoystick;
+        var turnJoystick = HumanInput.Driver.turnJoystick;
 
         /// ELEVATOR SETPOINTS
-        joystick.button7.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.INTAKE));
-        joystick.button8.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L2));
-        joystick.button9.onTrue(Component.elevator.c_gotoPosition(ElevatorSubsystem.Position.L3));
+        joystick.button7.onTrue(Component.elevator.c_gotoPosition(Position.INTAKE));
+        joystick.button8.onTrue(Component.elevator.c_gotoPosition(Position.L2));
+        joystick.button9.onTrue(Component.elevator.c_gotoPosition(Position.L3));
 
         /// INTAKE
-        joystick.button11.onTrue(Component.elevator.c_intakeRaw());
+        joystick.button11.onTrue(Component.elevator.c_intake());
 
         /// MANUAL RAMP CONTROL
         joystick.button3.onTrue(Component.ramp.c_forward());
@@ -49,10 +47,9 @@ public class AnnaOperator extends Operator {
         turnJoystick.button2.whileTrue(Component.vision.c_align(TagGroup.ANY, 1));
 
         /// ODOMETRY RESETTING
-        xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry(Pose2d.kZero)));
+        xyJoystick.button1.onTrue(c_resetOdometry());
 
         /// ELEVATOR ENCODER RESETTING
-        joystick.button10.onTrue(Component.elevator.c_forceDown());
-        joystick.button10.onFalse(Component.elevator.c_resetEncoder());
+        joystick.button10.whileTrue(c_manualElevatorZero());
     }
 }

@@ -3,7 +3,6 @@ package org.usfirst.frc4904.robot.subsystems;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.standard.commands.CreateOnInitialize;
@@ -80,7 +79,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     }
 
     /** Intake at the current elevator position */
-    public Command c_intakeRaw() {
+    public Command c_intake() {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.4),
@@ -99,7 +98,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     }
 
     /** Outtake at the current elevator position */
-    public Command c_outtakeRaw() {
+    public Command c_outtake() {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5),
@@ -110,7 +109,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     }
 
     /** Outtake at the current elevator position */
-    public Command c_rampOuttakeRaw() {
+    public Command c_rampOuttake() {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 new WaitCommand(1),
@@ -124,28 +123,6 @@ public class ElevatorSubsystem extends MotorSubsystem {
         );
     }
 
-    /** Go to the intake position and then intake */
-    public Command c_intake() {
-        return new SequentialCommandGroup(
-            c_gotoPosition(Position.INTAKE),
-            new ParallelDeadlineGroup(
-                c_intakeRaw(),
-                c_controlVelocity(() -> 0)
-            )
-        );
-    }
-
-    /** Go to the intake position and then ramp outtake */
-    public Command c_rampOuttake() {
-        return new SequentialCommandGroup(
-            c_gotoPosition(Position.INTAKE),
-            new ParallelDeadlineGroup(
-                c_rampOuttakeRaw(),
-                c_controlVelocity(() -> 0)
-            )
-        );
-    }
-
     /** Go to the specified position and then outtake */
     public Command c_outtakeAtPosition(Position pos) {
         return new SequentialCommandGroup(
@@ -154,30 +131,16 @@ public class ElevatorSubsystem extends MotorSubsystem {
                 c_gotoPosition(pos)
             ),
             new ParallelDeadlineGroup(
-                c_outtakeRaw(),
+                c_outtake(),
                 c_controlVelocity(() -> 0)
             )
         );
     }
 
-    /** Move down while bypassing software stops, to be used with {@link c_resetEncoder} */
-    public Command c_forceDown() {
-        return this.run(() -> Component.elevator.setVoltage(-3, true));
-    }
-
-    /** Stop movement and reset encoder, to be used with {@link c_forceDown} */
-    public Command c_resetEncoder() {
-        return this.run(() -> {
-            Component.elevator.setVoltage(0);
-            Component.elevatorEncoder.reset();
-        });
-    }
-
     public Command c_controlVelocity(DoubleSupplier metersPerSecDealer) {
-        var cmd = this.run(() -> {
-            var ff = this.feedforward.calculate(metersPerSecDealer.getAsDouble());
-            SmartDashboard.putNumber("feedforward", ff);
-            this.setVoltage(ff);
+        var cmd = run(() -> {
+            var ff = feedforward.calculate(metersPerSecDealer.getAsDouble());
+            setVoltage(ff);
         });
         cmd.setName("elevator - c_controlVelocity");
 
@@ -202,7 +165,7 @@ public class ElevatorSubsystem extends MotorSubsystem {
     private Command getRawHeightCommand(double height) {
         ezControl controller = new ezControl(
             kP, kI, kD,
-            (position, velocityMetersPerSec) -> this.feedforward.calculate(velocityMetersPerSec),
+            (position, velocityMetersPerSec) -> feedforward.calculate(velocityMetersPerSec),
             0.02
         );
 
