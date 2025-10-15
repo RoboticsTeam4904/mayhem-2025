@@ -31,16 +31,16 @@ public class AnnaOperator extends Operator {
         joystick.button11.onTrue(Component.elevator.c_intake());
 
         /// MANUAL RAMP CONTROL
-        joystick.button3.onTrue(Component.ramp.c_forward());
-        joystick.button5.onTrue(Component.ramp.c_backward());
-        joystick.button3.onFalse(Component.ramp.c_stop());
-        joystick.button5.onFalse(Component.ramp.c_stop());
+        joystick.button6.onTrue(Component.ramp.c_forward());
+        joystick.button4.onTrue(Component.ramp.c_backward());
+        joystick.button6.onFalse(Component.ramp.c_stop());
+        joystick.button4.onFalse(Component.ramp.c_stop());
 
         /// MANUAL OUTTAKE CONTROL
-        joystick.button4.onTrue(Component.outtake.c_backward());
-        joystick.button6.onTrue(Component.outtake.c_forward());
-        joystick.button4.onFalse(Component.outtake.c_stop());
-        joystick.button6.onFalse(Component.outtake.c_stop());
+        joystick.button3.onTrue(Component.outtake.c_backward());
+        joystick.button5.onTrue(Component.outtake.c_forward());
+        joystick.button3.onFalse(Component.outtake.c_stop());
+        joystick.button5.onFalse(Component.outtake.c_stop());
 
         /// VISION
         turnJoystick.button1.whileTrue(Component.vision.c_align(TagGroup.ANY, -1));

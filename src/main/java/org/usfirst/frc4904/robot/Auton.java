@@ -75,9 +75,9 @@ public class Auton {
 
     public static Command c_jankReverse() {
         return new SequentialCommandGroup(
-            new WaitCommand(12),
+            new WaitCommand(3),
             new ParallelDeadlineGroup(
-                new WaitCommand(2),
+                new WaitCommand(12),
                 new Command() {
                     @Override
                     public void execute() {

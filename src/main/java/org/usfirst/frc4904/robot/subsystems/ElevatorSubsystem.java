@@ -78,6 +78,10 @@ public class ElevatorSubsystem extends MotorSubsystem {
         return encoder.get();
     }
 
+    public boolean atBottom() {
+        return getHeight() < 0.1;
+    }
+
     /** Intake at the current elevator position */
     public Command c_intake() {
         return new SequentialCommandGroup(

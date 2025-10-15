@@ -124,9 +124,9 @@ public class LightSubsystem extends SubsystemBase {
 
 
             //TODO: make "blue" and "!blue depending on alliance colour"
-            colors[i][0] = !blue ? b : r;
+            colors[i][0] = blue ? b : r;
             colors[i][1] = g * 0.8f; // green LEDs are brighter
-            colors[i][2] = !blue ? r : b;
+            colors[i][2] = blue ? r : b;
             colors[i][3] = a;
         }
     }

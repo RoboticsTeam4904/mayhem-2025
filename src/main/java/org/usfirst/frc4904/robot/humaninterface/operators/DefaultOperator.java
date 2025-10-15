@@ -4,7 +4,11 @@ import org.usfirst.frc4904.robot.RobotMap.Component;
 import org.usfirst.frc4904.robot.RobotMap.HumanInput;
 import org.usfirst.frc4904.robot.subsystems.ElevatorSubsystem.Position;
 import org.usfirst.frc4904.robot.subsystems.VisionSubsystem.TagGroup;
+import org.usfirst.frc4904.standard.commands.RunIf;
 import org.usfirst.frc4904.standard.humaninput.Operator;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 public class DefaultOperator extends Operator {
 
@@ -33,8 +37,11 @@ public class DefaultOperator extends Operator {
         joystick.button3.onFalse(Component.ramp.c_stop());
         joystick.button5.onFalse(Component.ramp.c_stop());
 
-        /// MANUAL OUTTAKE CONTROL
-        joystick.button4.onTrue(Component.elevator.c_intake());
+        /// INTAKE/OUTTAKE
+        joystick.button4.onTrue(new RunIf(
+            Component.elevator.c_intake(),
+            Component.elevator::atBottom
+        ));
         joystick.button6.onTrue(Component.outtake.c_forward());
         joystick.button6.onFalse(Component.outtake.c_stop());
 
@@ -47,5 +54,11 @@ public class DefaultOperator extends Operator {
 
         /// ELEVATOR ENCODER RESETTING
         joystick.button8.whileTrue(c_manualElevatorZero());
+
+        System.out.println("test");
+
+        joystick.button12.whileTrue(
+            new RunCommand(() -> System.out.println("height: " + Component.elevator.getHeight()))
+        );
     }
 }
