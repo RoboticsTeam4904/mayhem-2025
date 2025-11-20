@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+
 import org.usfirst.frc4904.robot.swerve.SwerveModule;
 import org.usfirst.frc4904.robot.swerve.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -97,34 +99,29 @@ public class RobotMap {
     public RobotMap() {
         Component.navx = new AHRS(NavXComType.kMXP_SPI);
 
-        var flTurn = new CustomCANSparkMax(5, MotorType.kBrushless, false);
-        var frTurn = new CustomCANSparkMax(6, MotorType.kBrushless, false);
-        var blTurn = new CustomCANSparkMax(7, MotorType.kBrushless, false);
-        var brTurn = new CustomCANSparkMax(8, MotorType.kBrushless, false);
-
         Component.chassis = new SwerveSubsystem(
             new SwerveModule(
                 new CANTalonFX(1),
-                flTurn,
-                flTurn.getAbsoluteEncoder(),
+                new CustomCANSparkMax(5, MotorType.kBrushless, false),
+                new DutyCycleEncoder(Port.PWM.ENCODER_FL),
                 new Translation2d(-1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(2),
-                frTurn,
-                frTurn.getAbsoluteEncoder(),
+                new CustomCANSparkMax(6, MotorType.kBrushless, false),
+                new DutyCycleEncoder(Port.PWM.ENCODER_FR),
                 new Translation2d(1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(3),
-                blTurn,
-                blTurn.getAbsoluteEncoder(),
+                new CustomCANSparkMax(7, MotorType.kBrushless, false),
+                new DutyCycleEncoder(Port.PWM.ENCODER_BL),
                 new Translation2d(-1, -1)
             ),
             new SwerveModule(
                 new CANTalonFX(4),
-                brTurn,
-                brTurn.getAbsoluteEncoder(),
+                new CustomCANSparkMax(8, MotorType.kBrushless, false),
+                new DutyCycleEncoder(Port.PWM.ENCODER_BR),
                 new Translation2d(1, -1)
             )
         );
