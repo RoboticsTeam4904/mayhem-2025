@@ -1,5 +1,6 @@
 package org.usfirst.frc4904.robot;
 
+import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -9,6 +10,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
+import org.usfirst.frc4904.robot.subsystems.ShooterSubsystem;
 import org.usfirst.frc4904.robot.swerve.SwerveModule;
 import org.usfirst.frc4904.robot.swerve.SwerveSubsystem;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
@@ -30,7 +32,7 @@ public class RobotMap {
 
         public static class CANMotor {
 
-            // TODO
+            public static final int WHEEL = -1;
         }
 
         public static class PWM {
@@ -39,8 +41,6 @@ public class RobotMap {
             public static final int ENCODER_FR = 1;
             public static final int ENCODER_BL = 2;
             public static final int ENCODER_BR = 3;
-
-            // TODO
         }
     }
 
@@ -56,7 +56,9 @@ public class RobotMap {
         // subsystems
         public static SwerveSubsystem chassis;
 
-        // TODO
+        public static ShooterSubsystem shooter;
+
+        public static CustomCANSparkMax wheelMotor;
     }
 
     public static class NetworkTables {
@@ -125,6 +127,14 @@ public class RobotMap {
                 new Translation2d(1, -1)
             )
         );
+
+        Component.wheelMotor = new CustomCANSparkMax(
+            Port.CANMotor.WHEEL,
+            SparkLowLevel.MotorType.kBrushless,
+            false
+        );
+
+        Component.shooter = new ShooterSubsystem(Component.wheelMotor);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,
