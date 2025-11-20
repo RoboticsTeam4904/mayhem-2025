@@ -104,25 +104,25 @@ public class RobotMap {
         Component.chassis = new SwerveSubsystem(
             new SwerveModule(
                 new CANTalonFX(1),
-                new CustomCANSparkMax(5, MotorType.kBrushless, false),
+                new CANTalonFX(5),
                 new DutyCycleEncoder(Port.PWM.ENCODER_FL),
                 new Translation2d(-1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(2),
-                new CustomCANSparkMax(6, MotorType.kBrushless, false),
+                new CANTalonFX(6),
                 new DutyCycleEncoder(Port.PWM.ENCODER_FR),
                 new Translation2d(1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(3),
-                new CustomCANSparkMax(7, MotorType.kBrushless, false),
+                new CANTalonFX(7),
                 new DutyCycleEncoder(Port.PWM.ENCODER_BL),
                 new Translation2d(-1, -1)
             ),
             new SwerveModule(
                 new CANTalonFX(4),
-                new CustomCANSparkMax(8, MotorType.kBrushless, false),
+                new CANTalonFX(8),
                 new DutyCycleEncoder(Port.PWM.ENCODER_BR),
                 new Translation2d(1, -1)
             )
