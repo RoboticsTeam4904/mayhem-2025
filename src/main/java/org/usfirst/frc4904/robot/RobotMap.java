@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import org.usfirst.frc4904.robot.subsystems.ShooterSubsystem;
 import org.usfirst.frc4904.robot.swerve.SwerveModule;
 import org.usfirst.frc4904.robot.swerve.SwerveSubsystem;
+import org.usfirst.frc4904.standard.custom.CustomDutyCycleEncoder;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandJoystick;
 import org.usfirst.frc4904.standard.custom.controllers.CustomCommandXbox;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.CANTalonFX;
@@ -105,30 +106,26 @@ public class RobotMap {
             new SwerveModule(
                 new CANTalonFX(1),
                 new CANTalonFX(5),
-                new DutyCycleEncoder(Port.PWM.ENCODER_FL),
-                new Translation2d(1, -1),
-                0.07715 + 0.5
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FL),
+                new Translation2d(1, -1)
             ),
             new SwerveModule(
                 new CANTalonFX(2),
                 new CANTalonFX(6),
-                new DutyCycleEncoder(Port.PWM.ENCODER_FR),
-                new Translation2d(1, 1),
-                0.07719 - 0.125 - 0.25
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FR),
+                new Translation2d(1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(3),
                 new CANTalonFX(7),
-                new DutyCycleEncoder(Port.PWM.ENCODER_BL),
-                new Translation2d(-1, -1),
-                0.07712
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BL),
+                new Translation2d(-1, -1)
             ),
             new SwerveModule(
                 new CANTalonFX(4),
                 new CANTalonFX(8),
-                new DutyCycleEncoder(Port.PWM.ENCODER_BR),
-                new Translation2d(1, -1),
-                0.07945
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BR),
+                new Translation2d(1, -1)
             )
         );
 

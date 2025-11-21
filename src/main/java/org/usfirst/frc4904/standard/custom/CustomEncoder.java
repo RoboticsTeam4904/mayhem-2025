@@ -7,8 +7,8 @@ public class CustomEncoder {
 
     private double resetOffset = 0;
 
-    public CustomEncoder(int encoder) {
-        this.encoder = new DutyCycleEncoder(encoder);
+    public CustomEncoder(int channel) {
+        encoder = new DutyCycleEncoder(channel);
         reset();
     }
 

@@ -40,6 +40,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Zero the rotation encoders for all swerve modules.
+     */
+    public void zero() {
+        for (var module : modules) {
+            module.zero();
+        }
+    }
+
+    /**
      * Drive according to joystick inputs. {@code hypot(x, y)} should be <= 1.
      * @param translation X/Y movement from [-1, 1]
      * @param theta Turn speed from [-1, 1]

@@ -2,9 +2,9 @@ package org.usfirst.frc4904.robot.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 import org.usfirst.frc4904.standard.Util;
+import org.usfirst.frc4904.standard.custom.CustomDutyCycleEncoder;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 public class SwerveModule {
@@ -17,16 +17,19 @@ public class SwerveModule {
     public SwerveModule(
         SmartMotorController driveMotor,
         SmartMotorController rotMotor,
-        DutyCycleEncoder rotEncoder,
-        Translation2d direction,
-        double rotStart
+        CustomDutyCycleEncoder rotEncoder,
+        Translation2d direction
     ) {
         drive = new DriveController(driveMotor);
-        rotation = new RotationController(rotMotor, rotEncoder, rotStart, direction);
+        rotation = new RotationController(rotMotor, rotEncoder, direction);
     }
 
     public Translation2d rotToTranslation(double theta) {
         return rotation.toTranslation(theta);
+    }
+
+    public void zero() {
+        rotation.zero();
     }
 
     public void moveTo(double magnitude, double theta) {
@@ -55,8 +58,7 @@ class RotationController {
     private static final double MAX_VOLTAGE = 4;
 
     public final SmartMotorController motor;
-    private final DutyCycleEncoder encoder;
-    private final double start;
+    private final CustomDutyCycleEncoder encoder;
 
     private final Translation2d direction;
 
@@ -64,14 +66,12 @@ class RotationController {
 
     public RotationController(
         SmartMotorController motor,
-        DutyCycleEncoder encoder,
-        double start,
+        CustomDutyCycleEncoder encoder,
         Translation2d direction
     ) {
         this.motor = motor;
 
         this.encoder = encoder;
-        this.start = start;
         System.out.println("ENC HALP "+encoder.get());
 
         this.direction = direction.div(direction.getNorm());
@@ -86,9 +86,12 @@ class RotationController {
         return direction.times(theta);
     }
 
+    public void zero() {
+        encoder.reset();
+    }
+
     private double getRotation() {
-        // flip so that positive is counterclockwise
-        return encoder.get() + 0.125 + start;
+        return encoder.get();
     }
 
     private void setVoltage(double voltage) {
