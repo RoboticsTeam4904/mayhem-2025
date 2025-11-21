@@ -18,10 +18,11 @@ public class SwerveModule {
         SmartMotorController driveMotor,
         SmartMotorController rotMotor,
         DutyCycleEncoder rotEncoder,
-        Translation2d direction
+        Translation2d direction,
+        double rotStart
     ) {
         drive = new DriveController(driveMotor);
-        rotation = new RotationController(rotMotor, rotEncoder, direction);
+        rotation = new RotationController(rotMotor, rotEncoder, rotStart, direction);
     }
 
     public Translation2d rotToTranslation(double theta) {
@@ -47,14 +48,15 @@ record DriveController(SmartMotorController motor) {
 }
 
 class RotationController {
-    private static final double kP = 40;
+    private static final double kP = 10;
     private static final double kI = 0;
     private static final double kD = 0;
 
-    private static final double MAX_VOLTAGE = 8;
+    private static final double MAX_VOLTAGE = 4;
 
     public final SmartMotorController motor;
     private final DutyCycleEncoder encoder;
+    private final double start;
 
     private final Translation2d direction;
 
@@ -63,10 +65,14 @@ class RotationController {
     public RotationController(
         SmartMotorController motor,
         DutyCycleEncoder encoder,
+        double start,
         Translation2d direction
     ) {
         this.motor = motor;
+
         this.encoder = encoder;
+        this.start = start;
+        System.out.println("ENC HALP "+encoder.get());
 
         this.direction = direction.div(direction.getNorm());
 
@@ -82,7 +88,7 @@ class RotationController {
 
     private double getRotation() {
         // flip so that positive is counterclockwise
-        return encoder.get();
+        return encoder.get() + 0.125 + start;
     }
 
     private void setVoltage(double voltage) {
