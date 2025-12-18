@@ -1,6 +1,8 @@
 package org.usfirst.frc4904.robot;
 
+import com.revrobotics.jni.CANSparkJNI;
 import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -33,7 +35,7 @@ public class RobotMap {
 
         public static class CANMotor {
 
-            public static final int WHEEL = -1;
+            public static final int WHEEL = 15;
         }
 
         public static class PWM {
@@ -57,9 +59,9 @@ public class RobotMap {
         // subsystems
         public static SwerveSubsystem chassis;
 
-        public static ShooterSubsystem shooter;
+        // public static ShooterSubsystem shooter;
 
-        public static CustomCANSparkMax wheelMotor;
+        // public static CustomCANSparkMax wheelMotor;
     }
 
     public static class NetworkTables {
@@ -104,38 +106,44 @@ public class RobotMap {
 
         Component.chassis = new SwerveSubsystem(
             new SwerveModule(
-                new CANTalonFX(1),
+                null,
                 new CANTalonFX(5),
-                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FL),
-                new Translation2d(1, -1)
-            ),
-            new SwerveModule(
-                new CANTalonFX(2),
-                new CANTalonFX(6),
-                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FR),
-                new Translation2d(1, 1)
-            ),
-            new SwerveModule(
-                new CANTalonFX(3),
-                new CANTalonFX(7),
-                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BL),
-                new Translation2d(-1, -1)
-            ),
-            new SwerveModule(
-                new CANTalonFX(4),
-                new CANTalonFX(8),
-                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BR),
-                new Translation2d(1, -1)
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FL, 0.562),
+                new Translation2d(-1, -1), // 1, 1
+                false
             )
+            // new SwerveModule(
+            //     new CANTalonFX(2),
+            //     new CANTalonFX(6),
+            //     new CustomDutyCycleEncoder(Port.PWM.ENCODER_FR, 0.804),
+            //     new Translation2d(1, -1), // 1, -1
+            //     false
+            // ),
+            // new SwerveModule(
+            //     new CANTalonFX(3),
+            //     new CANTalonFX(7),
+            //     new CustomDutyCycleEncoder(Port.PWM.ENCODER_BL, 0.951),
+            //     new Translation2d(-1, 1), // -1, 1
+            //     true
+            // ),
+            // new SwerveModule(
+            //     new CANTalonFX(4),
+            //     new CANTalonFX(8),
+            //     new CustomDutyCycleEncoder(Port.PWM.ENCODER_BR, 0.092),
+            //     new Translation2d(1, 1), // -1, -1
+            //     false
+            // )
         );
 
-        Component.wheelMotor = new CustomCANSparkMax(
-            Port.CANMotor.WHEEL,
-            SparkLowLevel.MotorType.kBrushless,
-            false
-        );
+        // Component.wheelMotor = new SparkMax(32, MotorType.kBrushless);
 
-        Component.shooter = new ShooterSubsystem(Component.wheelMotor);
+        // Component.wheelMotor = new CustomCANSparkMax(
+        //     32,
+        //     SparkLowLevel.MotorType.kBrushless,
+        //     true
+        // );
+
+        // Component.shooter = new ShooterSubsystem(Component.wheelMotor);
 
         HumanInput.Driver.xyJoystick = new CustomCommandJoystick(
             Port.HumanInput.xyJoystickPort,

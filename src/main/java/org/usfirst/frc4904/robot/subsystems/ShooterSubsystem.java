@@ -4,6 +4,8 @@ import org.usfirst.frc4904.standard.custom.motorcontrollers.CustomCANSparkMax;
 import org.usfirst.frc4904.standard.custom.motorcontrollers.SmartMotorController;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class ShooterSubsystem extends MotorSubsystem {
@@ -12,7 +14,7 @@ public class ShooterSubsystem extends MotorSubsystem {
     }
 
     public Command c_shoot() {
-        return c_forward();
+        return new ParallelCommandGroup(c_forward(), new PrintCommand("AAAAAA"));
     }
 
     public Command c_stopShoot() {

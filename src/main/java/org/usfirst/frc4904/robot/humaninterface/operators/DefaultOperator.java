@@ -22,8 +22,8 @@ public class DefaultOperator extends Operator {
         var xyJoystick = RobotMap.HumanInput.Driver.xyJoystick;
         var turnJoystick = RobotMap.HumanInput.Driver.turnJoystick;
 
-        opJoystick.button11.whileTrue(Component.shooter.c_shoot());
-        opJoystick.button11.onFalse(Component.shooter.c_stopShoot());
+        // opJoystick.button11.whileTrue(Component.shooter.c_shoot());
+        // opJoystick.button11.onFalse(Component.shooter.c_stopShoot());
 
         xyJoystick.button1.onTrue(new InstantCommand(() -> Component.chassis.resetOdometry()));
         xyJoystick.button2.onTrue(new InstantCommand(() -> Component.chassis.zero()));

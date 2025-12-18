@@ -6,12 +6,17 @@ public class CustomDutyCycleEncoder extends DutyCycleEncoder {
     private double resetOffset = 0;
 
     public CustomDutyCycleEncoder(int channel) {
-        super(channel);
-        reset();
+        this(channel, 0);
+    }
+
+    public CustomDutyCycleEncoder(int channel, double zeroOffset) {
+        super(channel, 1, zeroOffset);
+        // reset();
     }
 
     public void reset() {
         resetOffset = super.get();
+        System.out.println("HALP OFFSET " + resetOffset);
     }
 
     @Override

@@ -18,10 +18,15 @@ public class SwerveModule {
         SmartMotorController driveMotor,
         SmartMotorController rotMotor,
         CustomDutyCycleEncoder rotEncoder,
-        Translation2d direction
+        Translation2d direction,
+        boolean jank
     ) {
-        drive = new DriveController(driveMotor);
-        rotation = new RotationController(rotMotor, rotEncoder, direction);
+        if (driveMotor != null) {
+            drive = new DriveController(driveMotor, jank);
+        } else {
+            drive = null;
+        }
+        rotation = new RotationController(rotMotor, rotEncoder, direction, jank);
     }
 
     public Translation2d rotToTranslation(double theta) {
@@ -40,11 +45,11 @@ public class SwerveModule {
     public void periodic() {
         // TODO run this faster than 50hz - run pid on motor
         boolean flip = rotation.rotateToward(theta);
-        drive.setMagnitude(flip ? -magnitude : magnitude);
+        if (drive != null) drive.setMagnitude(flip ? -magnitude : magnitude);
     }
 }
 
-record DriveController(SmartMotorController motor) {
+record DriveController(SmartMotorController motor, boolean jank) {
     public void setMagnitude(double magnitude) {
         motor.set(magnitude / SwerveConstants.LIN_SPEED);
     }
@@ -67,7 +72,8 @@ class RotationController {
     public RotationController(
         SmartMotorController motor,
         CustomDutyCycleEncoder encoder,
-        Translation2d direction
+        Translation2d direction,
+        boolean jank
     ) {
         this.motor = motor;
 
@@ -76,7 +82,7 @@ class RotationController {
 
         this.direction = direction.div(direction.getNorm());
 
-        this.pid = new PIDController(kP, kI, kD);
+        this.pid = new PIDController(kP * 1.5, kI, kD);
         // encoder readings are from 0-1 but opposite angles are equivalent
         // since we can just run the wheels backwards
         this.pid.enableContinuousInput(0, 0.5);

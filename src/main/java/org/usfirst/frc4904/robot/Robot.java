@@ -12,6 +12,8 @@ import org.usfirst.frc4904.robot.humaninterface.drivers.SwerveGain;
 import org.usfirst.frc4904.robot.humaninterface.operators.DefaultOperator;
 import org.usfirst.frc4904.standard.CommandRobotBase;
 
+import com.revrobotics.jni.CANSparkJNI;
+
 import java.util.function.Supplier;
 
 public class Robot extends CommandRobotBase {
@@ -19,7 +21,7 @@ public class Robot extends CommandRobotBase {
     public static class AutonConfig {
 
         /** Whether to run auton at all */
-        public static final boolean ENABLED = true;
+        public static final boolean ENABLED = false;
 
         /** Whether to flip the path to the other side of the current alliance's field */
         public static final boolean FLIP_SIDE = false;
@@ -51,10 +53,15 @@ public class Robot extends CommandRobotBase {
         Component.chassis.setDefaultCommand(
             Component.chassis.c_input(driver::getTranslation, driver::getTurnSpeed)
         );
+
+        Component.chassis.resetOdometry();
+
+        // Component.chassis.zero();
     }
 
     @Override
     public void teleopExecute() {
+        // RobotMap.Component.wheelMotor.setVoltage(2);
     }
 
     @Override
