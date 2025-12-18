@@ -106,7 +106,7 @@ public class RobotMap {
 
         Component.chassis = new SwerveSubsystem(
             new SwerveModule(
-                null,
+                new CANTalonFX(1),
                 new CANTalonFX(5),
                 new CustomDutyCycleEncoder(Port.PWM.ENCODER_FL, 0.562),
                 new Translation2d(-1, -1), // 1, 1

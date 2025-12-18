@@ -110,7 +110,7 @@ class RotationController {
      */
     public boolean rotateToward(double theta) {
         double current = getRotation();
-        double voltage = pid.calculate(current, theta);
+        double voltage = -pid.calculate(current, theta);
         setVoltage(Util.clamp(voltage, -MAX_VOLTAGE, MAX_VOLTAGE));
 
         double dist = Math.abs(theta - current);
