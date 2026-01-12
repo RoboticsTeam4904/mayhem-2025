@@ -18,15 +18,14 @@ public class SwerveModule {
         SmartMotorController driveMotor,
         SmartMotorController rotMotor,
         CustomDutyCycleEncoder rotEncoder,
-        Translation2d direction,
-        boolean jank
+        Translation2d direction
     ) {
         if (driveMotor != null) {
-            drive = new DriveController(driveMotor, jank);
+            drive = new DriveController(driveMotor);
         } else {
             drive = null;
         }
-        rotation = new RotationController(rotMotor, rotEncoder, direction, jank);
+        rotation = new RotationController(rotMotor, rotEncoder, direction);
     }
 
     public Translation2d rotToTranslation(double theta) {
@@ -49,7 +48,7 @@ public class SwerveModule {
     }
 }
 
-record DriveController(SmartMotorController motor, boolean jank) {
+record DriveController(SmartMotorController motor) {
     public void setMagnitude(double magnitude) {
         motor.set(magnitude / SwerveConstants.LIN_SPEED);
     }
@@ -72,8 +71,7 @@ class RotationController {
     public RotationController(
         SmartMotorController motor,
         CustomDutyCycleEncoder encoder,
-        Translation2d direction,
-        boolean jank
+        Translation2d direction
     ) {
         this.motor = motor;
 

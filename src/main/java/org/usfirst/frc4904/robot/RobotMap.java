@@ -108,25 +108,25 @@ public class RobotMap {
             new SwerveModule(
                 new CANTalonFX(2),
                 new CANTalonFX(17),
-                new DutyCycleEncoder(Port.PWM.ENCODER_FL),
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FL),
                 new Translation2d(-1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(4),
                 new CANTalonFX(18),
-                new DutyCycleEncoder(Port.PWM.ENCODER_FR),
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_FR),
                 new Translation2d(1, 1)
             ),
             new SwerveModule(
                 new CANTalonFX(1),
                 new CANTalonFX(16),
-                new DutyCycleEncoder(Port.PWM.ENCODER_BL),
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BL),
                 new Translation2d(-1, -1)
             ),
             new SwerveModule(
                 new CANTalonFX(3),
                 new CANTalonFX(15),
-                new DutyCycleEncoder(Port.PWM.ENCODER_BR),
+                new CustomDutyCycleEncoder(Port.PWM.ENCODER_BR),
                 new Translation2d(1, -1)
             )
         );

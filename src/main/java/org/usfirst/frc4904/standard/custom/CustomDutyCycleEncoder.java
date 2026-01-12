@@ -1,22 +1,34 @@
 package org.usfirst.frc4904.standard.custom;
 
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class CustomDutyCycleEncoder extends DutyCycleEncoder {
+    private int channel;
+    private double zeroOffset;
     private double resetOffset = 0;
 
     public CustomDutyCycleEncoder(int channel) {
-        this(channel, 0);
+        super(channel, 1, entry(channel).get());
+
+        this.channel = channel;
+        this.zeroOffset = entry(channel).get();
     }
 
-    public CustomDutyCycleEncoder(int channel, double zeroOffset) {
-        super(channel, 1, zeroOffset);
-        // reset();
+    private static DoubleEntry entry(int channel) {
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
+        DoubleTopic topic = inst.getDoubleTopic("/zeros/" + channel);
+        topic.setPersistent(true);
+
+        return topic.getEntry(0.0);
     }
 
     public void reset() {
         resetOffset = super.get();
-        System.out.println("HALP OFFSET " + resetOffset);
+        entry(channel).set(zeroOffset + resetOffset);
     }
 
     @Override
